@@ -1,0 +1,7 @@
+{
+  "name": "DOST PES Portal",
+  "description": "A centralized, interactive portal for the DOST Planning and Evaluation Service (PES) featuring mandates, divisions, issuances, and Digital Transformation initiatives.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

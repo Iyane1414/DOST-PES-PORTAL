@@ -1,0 +1,164 @@
+.portal-navbar { padding: 1rem 0; transition: background-color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease; }
+.portal-navbar.scrolled { background: rgba(255,255,255,.62); backdrop-filter: blur(18px); box-shadow: 0 10px 30px rgba(0,0,0,.04); }
+[data-bs-theme="dark"] .portal-navbar.scrolled { background: rgba(9,13,18,.62); }
+.portal-navbar .nav-link { color: rgba(17, 17, 17, .78); transition: color .2s ease, opacity .2s ease; }
+.portal-navbar .nav-link:hover, .portal-navbar .nav-link:focus { color: var(--accent); }
+[data-bs-theme="dark"] .portal-navbar .nav-link { color: rgba(248, 249, 250, .82); }
+[data-bs-theme="dark"] .portal-navbar .nav-link:hover, [data-bs-theme="dark"] .portal-navbar .nav-link:focus { color: var(--accent-soft); }
+
+.brand-mark, .icon-chip { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 1rem; }
+.brand-mark { background: var(--accent); color: #fff; }
+.portal-brand { display: flex; align-items: center; gap: .9rem; }
+.portal-brand-logo-stack { position: relative; display: block; }
+.portal-brand-logo { display: block; width: auto; object-fit: contain; transition: opacity .35s ease; }
+.portal-brand-logo-main { height: 4.25rem; }
+.portal-brand-logo-side { height: 4.25rem; }
+.portal-brand-logo-light { position: absolute; inset: 0; opacity: 0; }
+[data-bs-theme="dark"] .portal-brand-logo-default { opacity: 0; }
+[data-bs-theme="dark"] .portal-brand-logo-light { opacity: 1; }
+.btn-theme-toggle { width: 2.75rem; height: 2.75rem; border-radius: 999px; border: 0; background: transparent; }
+
+.portal-footer { padding: 2.5rem 0; background: var(--surface); }
+
+.admin-shell { min-height: 100vh; background: var(--surface); display: grid; grid-template-columns: 19rem 1fr; }
+.admin-sidebar { padding: 2rem; background: #fff; border-right: 1px solid rgba(15,23,42,.06); display: flex; flex-direction: column; }
+[data-bs-theme="dark"] .admin-sidebar { background: #121214; }
+.admin-sidebar .nav-link { color: var(--text-soft); border-radius: 1rem; padding: .85rem 1rem; }
+.admin-sidebar .nav-link.active { background: rgba(0,174,239,.14); color: var(--accent); }
+.admin-main { padding: 2.5rem; }
+.admin-shell-enhanced {
+    grid-template-columns: 18rem 1fr;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 14% 16%, rgba(99, 195, 255, .14), transparent 18%),
+        radial-gradient(circle at 86% 14%, rgba(17, 136, 239, .08), transparent 18%),
+        linear-gradient(180deg, #f6f9fc 0%, #eef4f9 100%);
+}
+.admin-shell-enhanced::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(17, 136, 239, .028) 0, rgba(17, 136, 239, .028) 1px, transparent 1px),
+        linear-gradient(rgba(17, 136, 239, .026) 0, rgba(17, 136, 239, .026) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: .35;
+}
+.admin-sidebar-enhanced {
+    position: relative;
+    overflow: hidden;
+    background:
+        linear-gradient(180deg, rgba(247, 251, 255, .96), rgba(233, 244, 252, .98)),
+        linear-gradient(135deg, rgba(210, 238, 255, .28), rgba(255,255,255,0) 48%);
+    border-right: 1px solid rgba(17, 136, 239, .06);
+    box-shadow: inset -1px 0 0 rgba(255,255,255,.78);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+.admin-sidebar-enhanced::before,
+.admin-sidebar-enhanced::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+}
+.admin-sidebar-enhanced::before {
+    inset: 0;
+    background:
+        radial-gradient(circle at 8% 92%, rgba(78, 180, 255, .34), transparent 22%),
+        radial-gradient(circle at 18% 16%, rgba(38, 175, 236, .1), transparent 18%);
+    opacity: .9;
+}
+.admin-sidebar-enhanced::after {
+    width: 14rem;
+    height: 14rem;
+    left: -6rem;
+    bottom: -2rem;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(61, 194, 255, .3), rgba(61, 194, 255, 0) 72%);
+    filter: blur(30px);
+    opacity: .88;
+}
+.admin-main-enhanced {
+    position: relative;
+    padding: 2.35rem;
+}
+.admin-auth-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem;
+    background:
+        linear-gradient(180deg, rgba(4, 10, 18, .52), rgba(7, 14, 24, .64)),
+        url("/images/darkbg.png");
+    background-size: cover;
+    background-position: center;
+    isolation: isolate;
+}
+.admin-auth-shell::before,
+.admin-auth-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.admin-auth-shell::before {
+    background:
+        radial-gradient(circle at 18% 18%, rgba(0, 174, 239, .2), transparent 22%),
+        radial-gradient(circle at 82% 24%, rgba(61, 194, 255, .18), transparent 20%),
+        linear-gradient(90deg, rgba(0, 174, 239, .04) 0, rgba(0, 174, 239, .04) 1px, transparent 1px),
+        linear-gradient(rgba(0, 174, 239, .04) 0, rgba(0, 174, 239, .04) 1px, transparent 1px);
+    background-size: auto, auto, 28px 28px, 28px 28px;
+    opacity: .82;
+}
+.admin-auth-shell::after {
+    background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+}
+.admin-auth-card {
+    max-width: 32rem;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+.admin-auth-aurora,
+.admin-auth-mesh {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+}
+.admin-auth-aurora {
+    border-radius: 999px;
+    filter: blur(70px);
+    opacity: .72;
+    animation: adminAuroraFloat 9s ease-in-out infinite alternate;
+}
+.aurora-one {
+    width: 24rem;
+    height: 24rem;
+    top: 10%;
+    left: 8%;
+    background: radial-gradient(circle, rgba(0, 174, 239, .42), rgba(0, 174, 239, 0));
+}
+.aurora-two {
+    width: 28rem;
+    height: 28rem;
+    right: 6%;
+    bottom: 8%;
+    background: radial-gradient(circle, rgba(29, 93, 255, .34), rgba(29, 93, 255, 0));
+    animation-duration: 11s;
+}
+.admin-auth-mesh {
+    inset: 12% 18%;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(84, 190, 255, .18), transparent 18%),
+        radial-gradient(circle at 80% 40%, rgba(0, 174, 239, .14), transparent 20%),
+        radial-gradient(circle at 55% 80%, rgba(40, 130, 255, .16), transparent 24%);
+    filter: blur(36px);
+    animation: adminMeshShift 10s ease-in-out infinite alternate;
+}

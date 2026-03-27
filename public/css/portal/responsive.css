@@ -1,0 +1,142 @@
+@media (max-width: 991.98px) {
+    .hero-section { min-height: auto; padding-top: 7rem; }
+    .hero-section .container::before { inset: -1.25rem -.5rem; border-radius: 2rem; }
+    .portal-nav-dropdown {
+        width: 100%;
+    }
+    .portal-nav-toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .portal-nav-menu {
+        position: static;
+        min-width: 0;
+        margin-top: .55rem;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        display: none;
+        box-shadow: none;
+    }
+    .portal-nav-dropdown.is-open .portal-nav-menu {
+        display: grid;
+    }
+    .about-horizontal-stage {
+        position: static;
+        min-height: auto;
+        overflow: visible;
+    }
+    .about-intro-panel {
+        min-height: auto;
+        padding: 7rem 0 1.5rem;
+    }
+    .about-horizontal-track {
+        display: grid;
+        transform: none !important;
+    }
+    .about-panel {
+        width: auto;
+        min-height: auto;
+        padding: 7rem 0 1.5rem;
+    }
+    .about-panel:last-child {
+        padding-bottom: 0;
+    }
+    .about-hero-layout {
+        min-height: auto;
+        display: grid;
+        gap: 2rem;
+    }
+    .about-scroll-cue {
+        justify-items: start;
+    }
+    .about-title { font-size: clamp(2.8rem, 14vw, 4.5rem); }
+    .about-copy { font-size: 1.05rem; line-height: 1.7; }
+    .about-card,
+    .about-card-organization {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 1.5rem;
+    }
+    .about-card-showcase {
+        min-height: 18rem;
+    }
+    .about-feature-grid {
+        grid-template-columns: 1fr;
+    }
+    .about-mobile-scroll {
+        padding-top: 2rem;
+    }
+    .feature-carousel-card, .subscription-form { flex-direction: column; align-items: start; }
+    .pes-action-grid { grid-template-columns: 1fr; }
+    .pes-action-news-title { font-size: 1.4rem; }
+    .pes-action-modal .modal-body { grid-template-columns: 1fr; }
+    .pes-action-modal-media { min-height: 16rem; }
+    .pes-action-modal-content { padding: 1.5rem; }
+    .materials-home-grid { grid-template-columns: 1fr; }
+    .materials-resource-grid { grid-template-columns: 1fr; }
+    .materials-directory-spotlight { max-width: none; }
+    .materials-page-controls,
+    .materials-page-file { flex-direction: column; align-items: start; }
+    .materials-page-search-wrap { width: 100%; min-width: 0; }
+    .materials-page-year-wrap { width: 100%; justify-content: space-between; }
+    .materials-page-year { min-width: 0; width: 100%; max-width: 12rem; }
+    .materials-page-file-actions { justify-content: flex-start; width: 100%; }
+    .materials-page-file-actions .btn { width: 100%; }
+    .materials-browser-top,
+    .materials-result-card { flex-direction: column; align-items: start; }
+    .materials-result-actions { justify-content: flex-start; width: 100%; }
+    .materials-result-actions .btn { width: 100%; }
+    .issuance-filters .col-6, .materials-filters .col-6 { flex: 1 0 0%; }
+    .issuance-search, .materials-search { min-width: 100%; }
+    .dx-title { font-size: clamp(2.6rem, 10vw, 4rem); }
+    .dx-hero { padding-bottom: 2.5rem; }
+    .dx-hero-visual { margin-left: 0; }
+    .dx-hero-actions {
+        width: 100%;
+        gap: .9rem;
+    }
+    .dx-hero-actions .btn {
+        min-width: 0;
+        width: 100%;
+        min-height: 4rem;
+    }
+    .dx-roadmap-track {
+        grid-template-columns: 1fr;
+    }
+    .dx-roadmap-track::before {
+        left: 1.9rem;
+        right: auto;
+        top: 1rem;
+        bottom: 1rem;
+        width: 1px;
+        height: auto;
+    }
+    .dx-tabbar { display: flex; width: 100%; justify-content: stretch; }
+    .dx-tab { flex: 1 1 0; min-width: 0; }
+    .dx-domain-card,
+    .dx-program-tile { min-height: 20rem; }
+    .admin-auth-card-enhanced {
+        padding: 1.75rem 1.25rem;
+    }
+    .admin-auth-title {
+        font-size: clamp(2.2rem, 10vw, 3rem);
+    }
+    .admin-auth-copy {
+        font-size: .98rem;
+    }
+    .admin-shell-enhanced {
+        grid-template-columns: 1fr;
+    }
+    .admin-dashboard-top {
+        flex-direction: column;
+        align-items: start;
+    }
+    .admin-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .admin-shell { grid-template-columns: 1fr; }
+    .admin-sidebar { border-right: 0; border-bottom: 1px solid rgba(15,23,42,.06); }
+    .portal-brand-logo-main { height: 3.3rem; }
+    .portal-brand-logo-side { height: 3.3rem; }
+}
