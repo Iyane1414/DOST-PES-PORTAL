@@ -287,6 +287,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const dxMetricNumbers = document.querySelectorAll('.dx-metric-number[data-target]');
+
+    if ('IntersectionObserver' in window) {
+        const dxMetricObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+
+                const el = entry.target;
+                const target = Number.parseInt(el.getAttribute('data-target') || '0', 10);
+
+                if (!Number.isFinite(target)) {
+                    el.textContent = '0';
+                    observer.unobserve(el);
+                    return;
+                }
+
+                let start = 0;
+                const duration = target > 99 ? 1100 : 800;
+                const startedAt = performance.now();
+
+                const tick = (now) => {
+                    const progress = Math.min((now - startedAt) / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    const value = Math.round(target * eased);
+
+                    el.textContent = `${value}`;
+
+                    if (progress < 1) {
+                        window.requestAnimationFrame(tick);
+                    }
+                };
+
+                window.requestAnimationFrame(tick);
+                observer.unobserve(el);
+            });
+        }, {
+            threshold: 0.5,
+        });
+
+        dxMetricNumbers.forEach((metric) => dxMetricObserver.observe(metric));
+    } else {
+        dxMetricNumbers.forEach((metric) => {
+            metric.textContent = metric.getAttribute('data-target') || '0';
+        });
+    }
+
+    const dxGoToSubProgram = (domain) => {
+        setDxTab('programs');
+
+        window.setTimeout(() => {
+            const allCards = document.querySelectorAll('.dx-sub-card');
+
+            allCards.forEach((card) => {
+                card.classList.remove('highlighted', 'dimmed');
+            });
+
+            allCards.forEach((card) => {
+                if (card instanceof HTMLElement && card.dataset.domain === domain) {
+                    card.classList.add('highlighted');
+                } else {
+                    card.classList.add('dimmed');
+                }
+            });
+
+            const first = document.querySelector(`.dx-sub-card[data-domain="${domain}"]`);
+
+            if (first instanceof HTMLElement) {
+                first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            window.setTimeout(() => {
+                allCards.forEach((card) => {
+                    card.classList.remove('highlighted', 'dimmed');
+                });
+            }, 3000);
+        }, 100);
+    };
+
+    window.dxGoToSubProgram = dxGoToSubProgram;
+
     const dxOverviewModal = document.getElementById('dxOverviewModal');
     let pendingDxAction = null;
 

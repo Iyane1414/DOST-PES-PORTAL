@@ -2,16 +2,72 @@
     @php
         $coreDomains = collect([
             [
+                'key' => 'people',
                 'title' => 'People',
+                'icon' => 'bi-person',
+                'image' => 'images/people.png',
                 'description' => 'Individuals within the organization, their skills, knowledge, and how they interact with processes and technology including organizational structures.',
             ],
             [
+                'key' => 'process',
                 'title' => 'Process',
+                'icon' => 'bi-activity',
+                'image' => 'images/process.png',
                 'description' => 'Encompasses the workflows, procedures, and methodologies used to complete tasks and achieve goals.',
             ],
             [
+                'key' => 'technology',
                 'title' => 'Technology',
+                'icon' => 'bi-pc-display',
+                'image' => 'images/technology.png',
                 'description' => 'Infrastructure, tools, information systems, and software used to support and enhance processes and the work of individuals.',
+            ],
+        ]);
+
+        $programDomain = function ($item) {
+            $haystack = strtolower(trim(($item->title ?? '').' '.($item->description ?? '')));
+
+            if (str_contains($haystack, 'people') || str_contains($haystack, 'capability') || str_contains($haystack, 'training') || str_contains($haystack, 'culture') || str_contains($haystack, 'skills') || str_contains($haystack, 'change management')) {
+                return 'people';
+            }
+
+            if (str_contains($haystack, 'process') || str_contains($haystack, 'workflow') || str_contains($haystack, 'governance') || str_contains($haystack, 'policy') || str_contains($haystack, 'service') || str_contains($haystack, 'operations')) {
+                return 'process';
+            }
+
+            return 'technology';
+        };
+
+        $subProgramCards = collect([
+            [
+                'title' => 'Digital Literacy & Upskilling',
+                'description' => 'Building digital competencies across all levels of the organization through targeted training programs.',
+                'domain' => 'people',
+            ],
+            [
+                'title' => 'Change Management',
+                'description' => 'Guiding the organization through cultural and structural shifts needed for digital transformation.',
+                'domain' => 'people',
+            ],
+            [
+                'title' => 'Business Process Re-engineering',
+                'description' => 'Redesigning core workflows to eliminate redundancy and improve efficiency through digitization.',
+                'domain' => 'process',
+            ],
+            [
+                'title' => 'Service Automation',
+                'description' => 'Deploying intelligent automation tools to streamline repetitive tasks and citizen-facing services.',
+                'domain' => 'process',
+            ],
+            [
+                'title' => 'Data Governance',
+                'description' => 'Establishing standards and frameworks for data collection, management, and utilization across DOST.',
+                'domain' => 'technology',
+            ],
+            [
+                'title' => 'ICT Infrastructure',
+                'description' => 'Modernizing the technology backbone to support scalable, secure, and resilient digital operations.',
+                'domain' => 'technology',
             ],
         ]);
     @endphp
@@ -34,9 +90,8 @@
                 <div class="col-lg-6">
                     <div class="dx-hero-visual">
                         <div class="dx-hero-image">
-                            <img src="{{ asset('images/p1.png') }}" alt="DOST DX team" class="dx-hero-photo">
+                            <img src="{{ asset('images/dostdx.png') }}" alt="DOST DX logo" class="dx-hero-photo dx-hero-photo-logo">
                         </div>
-                        <div class="dx-hero-badge"><i class="bi bi-lightning-charge-fill"></i></div>
                     </div>
                 </div>
             </div>
@@ -105,49 +160,66 @@
             </div>
 
             <div class="dx-panel is-active" data-dx-panel="domains">
-                <div class="row g-4">
+                <div class="dx-domain-grid">
                     @forelse ($coreDomains as $item)
-                        <div class="col-md-6 col-xl-4">
-                            <article class="dx-domain-card">
-                                <div class="dx-domain-media">
-                                    <div class="dx-card-placeholder">Domain Photo</div>
-                                </div>
-                                <div class="dx-domain-overlay"></div>
-                                <div class="dx-domain-body">
-                                    <h3 class="dx-domain-title">{{ $item['title'] }}</h3>
-                                    <p class="dx-domain-copy mb-0">{{ $item['description'] }}</p>
-                                </div>
-                            </article>
-                        </div>
+                        <article class="dx-domain-card" role="button" tabindex="0" onclick="dxGoToSubProgram('{{ $item['key'] }}')" onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); dxGoToSubProgram('{{ $item['key'] }}'); }">
+                            <div class="dx-domain-media">
+                                <img src="{{ asset($item['image']) }}" alt="{{ $item['title'] }}" class="dx-domain-image">
+                            </div>
+                            <div class="dx-domain-overlay"></div>
+                            <div class="dx-domain-body">
+                                <div class="dx-domain-icon"><i class="bi {{ $item['icon'] }}"></i></div>
+                                <h3 class="dx-domain-title">{{ $item['title'] }}</h3>
+                                <p class="dx-domain-copy mb-0">{{ $item['description'] }}</p>
+                            </div>
+                        </article>
                     @empty
-                        <div class="col-12">
-                            <div class="dx-empty-state">No core domains available yet.</div>
-                        </div>
+                        <div class="dx-empty-state">No core domains available yet.</div>
                     @endforelse
                 </div>
             </div>
 
             <div class="dx-panel" data-dx-panel="programs" hidden>
-                <div class="row g-4">
-                    @forelse ($dxPrograms as $item)
-                        <div class="col-md-6 col-xl-4">
-                            <article class="dx-program-tile">
-                                <div class="dx-program-media">
-                                    <div class="dx-card-placeholder">Program Photo</div>
-                                </div>
-                                <div class="dx-program-body">
-                                    <div class="program-index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
-                                    <h3 class="dx-program-title">{{ $item->title }}</h3>
-                                    <p class="text-white-50 mb-0">{{ $item->description }}</p>
-                                </div>
-                            </article>
-                        </div>
+                <div class="dx-program-grid">
+                    @forelse ($subProgramCards as $item)
+                        <article class="dx-sub-card" data-domain="{{ $item['domain'] }}">
+                            <div class="program-index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+                            <h3 class="dx-program-title">{{ $item['title'] }}</h3>
+                            <p class="text-white-50 mb-0">{{ $item['description'] }}</p>
+                            <span class="dx-program-domain">{{ strtoupper($item['domain']) }}</span>
+                        </article>
                     @empty
-                        <div class="col-12">
-                            <div class="dx-empty-state">No sub-programs available yet.</div>
-                        </div>
+                        <div class="dx-empty-state">No sub-programs available yet.</div>
                     @endforelse
                 </div>
+            </div>
+
+            <div class="dx-metrics-board" aria-label="DOST DX quick stats">
+                <article class="dx-metric-card">
+                    <strong class="dx-metric-number" data-target="3">0</strong>
+                    <span>Core Domains</span>
+                </article>
+                <article class="dx-metric-card">
+                    <strong class="dx-metric-number" data-target="{{ $subProgramCards->count() }}">0</strong>
+                    <span>Sub-programs</span>
+                </article>
+                <article class="dx-metric-card">
+                    <strong class="dx-metric-number" data-target="132">0</strong>
+                    <span>Project</span>
+                </article>
+                <article class="dx-metric-card">
+                    <strong class="dx-metric-number" data-target="20">0</strong>
+                    <span>Project Done</span>
+                </article>
+                <article class="dx-metric-card dx-metric-card-secondary dx-metric-card-ongoing">
+                    <strong class="dx-metric-number" data-target="0">0</strong>
+                    <span>Ongoing Project</span>
+                </article>
+                <article class="dx-metric-card dx-metric-card-secondary dx-metric-card-planned">
+                    <strong class="dx-metric-number" data-target="0">0</strong>
+                    <span>Project Planned</span>
+                </article>
+                <div class="dx-metric-void" aria-hidden="true"></div>
             </div>
         </div>
     </div>
