@@ -27,8 +27,11 @@
                 <a class="btn admin-public-btn rounded-pill px-4" href="{{ route('portal.home') }}" target="_blank">View Public Portal</a>
             </div>
 
-            <div class="admin-stat-grid">
-                <div class="admin-stat-card">
+            <div class="admin-overview-shell">
+                <div class="admin-overview-shell-glow"></div>
+
+                <div class="admin-stat-grid admin-overview-stat-grid">
+                <div class="admin-stat-card admin-overview-stat-card">
                     <div class="admin-stat-icon icon-blue"><i class="bi bi-briefcase"></i></div>
                     <div class="admin-stat-body">
                         <div class="admin-stat-label">Issuances</div>
@@ -36,7 +39,7 @@
                         <div class="admin-stat-meta">Published records</div>
                     </div>
                 </div>
-                <div class="admin-stat-card">
+                <div class="admin-stat-card admin-overview-stat-card">
                     <div class="admin-stat-icon icon-green"><i class="bi bi-collection-play"></i></div>
                     <div class="admin-stat-body">
                         <div class="admin-stat-label">Materials</div>
@@ -44,7 +47,7 @@
                         <div class="admin-stat-meta">Active resources</div>
                     </div>
                 </div>
-                <div class="admin-stat-card">
+                <div class="admin-stat-card admin-overview-stat-card">
                     <div class="admin-stat-icon icon-cyan"><i class="bi bi-cpu"></i></div>
                     <div class="admin-stat-body">
                         <div class="admin-stat-label">DOST DX Projects</div>
@@ -52,7 +55,7 @@
                         <div class="admin-stat-meta">Tracked sub-programs</div>
                     </div>
                 </div>
-                <div class="admin-stat-card">
+                <div class="admin-stat-card admin-overview-stat-card">
                     <div class="admin-stat-icon icon-gold"><i class="bi bi-chat-left-text"></i></div>
                     <div class="admin-stat-body">
                         <div class="admin-stat-label">Contact Messages</div>
@@ -60,33 +63,11 @@
                         <div class="admin-stat-meta">Inbound concerns</div>
                     </div>
                 </div>
-            </div>
+                </div>
 
-            <div class="row g-4">
-                <div class="col-12 col-xxl-8">
-                    <div class="admin-card admin-workspace-card mb-4">
-                        <div class="admin-section-head admin-section-head-sm">
-                            <div>
-                                <h2 class="h3 fw-bold mb-1">Quick Links</h2>
-                                <p class="text-secondary-soft mb-0">Jump straight into the admin tasks you use most often.</p>
-                            </div>
-                        </div>
-
-                        <div class="admin-quick-links">
-                            @foreach ($quickLinks as $link)
-                                <a href="{{ $link['route'] }}" class="admin-quick-link" @if (str_contains($link['route'], route('portal.home'))) target="_blank" @endif>
-                                    <span class="admin-quick-link-icon"><i class="bi {{ $link['icon'] }}"></i></span>
-                                    <span class="admin-quick-link-body">
-                                        <strong>{{ $link['title'] }}</strong>
-                                        <span>{{ $link['copy'] }}</span>
-                                    </span>
-                                    <i class="bi bi-arrow-right admin-quick-link-arrow"></i>
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="admin-card admin-table-shell">
+                <div class="row g-4">
+                <div class="col-12">
+                    <div class="admin-card admin-table-shell admin-overview-card">
                         <div class="admin-section-head admin-section-head-sm">
                             <div>
                                 <h2 class="h4 fw-bold mb-1">Recent Public Content</h2>
@@ -124,25 +105,8 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-12 col-xxl-4">
-                    <div class="admin-card admin-side-card mb-4">
-                        <h2 class="h5 fw-bold mb-3">DOST DX Sub-programs</h2>
-                        <div class="admin-side-list">
-                            @forelse ($latestDxPrograms as $program)
-                                <div class="admin-side-item">
-                                    <div class="admin-side-item-title">{{ $program->title }}</div>
-                                    <div class="admin-side-item-meta">DOST DX Program</div>
-                                    <div class="admin-side-item-copy">{{ \Illuminate\Support\Str::limit($program->description, 100) }}</div>
-                                </div>
-                            @empty
-                                <div class="text-secondary-soft">No DOST DX sub-programs yet.</div>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <div class="admin-card admin-side-card">
+                    <div class="admin-card admin-side-card admin-overview-card mt-4">
                         <h2 class="h5 fw-bold mb-3">Latest Contact Messages</h2>
                         <div class="admin-side-list">
                             @forelse ($messages as $message)
@@ -156,6 +120,7 @@
                             @endforelse
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </main>

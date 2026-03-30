@@ -148,6 +148,12 @@
         width: 100%;
         justify-content: flex-start;
     }
+    .admin-overview-hero {
+        padding: 1.4rem 1.35rem;
+    }
+    .admin-overview-shell {
+        padding: 1rem;
+    }
     .admin-quick-link,
     .admin-overview-stream {
         grid-template-columns: 1fr;
