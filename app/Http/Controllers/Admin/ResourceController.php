@@ -131,6 +131,6 @@ class ResourceController extends Controller
 
     private function redirectWithTab(string $tab, string $status): RedirectResponse
     {
-        return redirect()->route('admin.dashboard', ['tab' => $tab])->with('status', $status);
+        return redirect()->route('admin.workspace', ['tab' => $tab])->with('status', $status);
     }
 }

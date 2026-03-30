@@ -19,7 +19,8 @@ Route::prefix('admin')->group(function (): void {
     });
 
     Route::middleware('admin.auth')->group(function (): void {
-        Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/', [DashboardController::class, 'overview'])->name('admin.dashboard');
+        Route::get('/workspace/{tab?}', [DashboardController::class, 'workspace'])->name('admin.workspace');
         Route::post('/logout', [AuthController::class, 'destroy'])->name('admin.logout');
 
         Route::post('/issuances', [ResourceController::class, 'storeIssuance'])->name('admin.issuances.store');

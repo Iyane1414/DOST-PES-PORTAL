@@ -1,4 +1,4 @@
-@extends('layouts.app', ['title' => 'DOST Admin'])
+@extends('layouts.app', ['title' => 'DOST Admin Workspace'])
 
 @section('body_class', 'admin-dashboard-page')
 
@@ -41,94 +41,24 @@
 
 @section('content')
     <div class="admin-shell admin-shell-enhanced">
-        <aside class="admin-sidebar admin-sidebar-enhanced">
-            <div class="admin-brand">
-                <div class="admin-brand-mark">
-                    <img src="{{ asset('images/dostlogo.png') }}" alt="DOST logo" class="admin-brand-logo">
-                </div>
-                <div>
-                    <div class="admin-brand-title">DOST Admin</div>
-                    <div class="admin-brand-copy">Planning and Evaluation Service</div>
-                </div>
-            </div>
-
-            <div class="admin-nav-group">
-                <div class="admin-nav-label">Dashboard</div>
-                <div class="nav flex-column nav-pills gap-2">
-                    @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'divisions' => 'Divisions', 'dx' => 'DOST DX', 'categories' => 'Categories'] as $tab => $label)
-                        <a href="{{ route('admin.dashboard', ['tab' => $tab]) }}" class="nav-link admin-nav-link @if ($activeTab === $tab) active @endif">
-                            <span class="admin-nav-link-main">
-                                <span class="admin-nav-link-icon">
-                                    <i class="bi {{ $tabMeta[$tab]['icon'] }}"></i>
-                                </span>
-                                <span>{{ $label }}</span>
-                            </span>
-                            <i class="bi bi-chevron-right admin-nav-link-arrow"></i>
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="admin-sidebar-note">
-                <div class="admin-sidebar-note-title">Administration Guide</div>
-                <p class="mb-0">Manage public-facing PES content, monitor inbound engagement, and keep the portal current.</p>
-                <form method="POST" action="{{ route('admin.logout') }}" class="admin-sidebar-logout">
-                    @csrf
-                    <button class="btn btn-outline-danger w-100 rounded-pill" type="submit">
-                        <i class="bi bi-power me-2"></i>Logout
-                    </button>
-                </form>
-            </div>
-        </aside>
+        @include('admin.partials.sidebar', ['activeSection' => 'workspace'])
 
         <main class="admin-main admin-main-enhanced">
-            <div class="admin-dashboard-top">
+            <div class="admin-dashboard-top admin-workspace-top">
                 <div>
-                    <div class="admin-kicker">Administrative Dashboard</div>
-                    <h1 class="admin-dashboard-title">DOST PES Control Center</h1>
-                    <p class="text-secondary-soft mb-0">Manage portal content and monitor inbound engagement through a cleaner publishing workspace.</p>
+                    <div class="admin-kicker">Publishing Workspace</div>
+                    <h1 class="admin-dashboard-title admin-workspace-title">{{ $activeMeta['label'] }}</h1>
+                    <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
                 </div>
-                <a class="btn admin-public-btn rounded-pill px-4" href="{{ route('portal.home') }}" target="_blank">View Public Portal</a>
+                <div class="admin-workspace-actions">
+                    <a class="btn admin-public-btn rounded-pill px-4" href="{{ route('admin.dashboard') }}">Dashboard Home</a>
+                    <a class="btn admin-public-btn rounded-pill px-4" href="{{ route('portal.home') }}" target="_blank">View Public Portal</a>
+                </div>
             </div>
 
             @if (session('status'))
                 <div class="alert alert-success admin-status-alert">{{ session('status') }}</div>
             @endif
-
-            <div class="admin-stat-grid">
-                <div class="admin-stat-card">
-                    <div class="admin-stat-icon icon-blue"><i class="bi bi-briefcase"></i></div>
-                    <div class="admin-stat-body">
-                        <div class="admin-stat-label">Issuances</div>
-                        <div class="admin-stat-value">{{ $stats['issuances'] }}</div>
-                        <div class="admin-stat-meta">Published records</div>
-                    </div>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-icon icon-green"><i class="bi bi-collection-play"></i></div>
-                    <div class="admin-stat-body">
-                        <div class="admin-stat-label">Materials</div>
-                        <div class="admin-stat-value">{{ $stats['materials'] }}</div>
-                        <div class="admin-stat-meta">Active resources</div>
-                    </div>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-icon icon-cyan"><i class="bi bi-people"></i></div>
-                    <div class="admin-stat-body">
-                        <div class="admin-stat-label">Subscribers</div>
-                        <div class="admin-stat-value">{{ $stats['subscribers'] }}</div>
-                        <div class="admin-stat-meta">PES access profiles</div>
-                    </div>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-icon icon-gold"><i class="bi bi-chat-left-text"></i></div>
-                    <div class="admin-stat-body">
-                        <div class="admin-stat-label">Contact Messages</div>
-                        <div class="admin-stat-value">{{ $stats['messages'] }}</div>
-                        <div class="admin-stat-meta">Inbound concerns</div>
-                    </div>
-                </div>
-            </div>
 
             <div class="row g-4">
                 <div class="col-12 col-xxl-8">
@@ -221,30 +151,34 @@
 
                 <div class="col-12 col-xxl-4">
                     <div class="admin-card admin-side-card mb-4">
-                        <h2 class="h5 fw-bold mb-3">Latest Subscribers</h2>
+                        <h2 class="h5 fw-bold mb-3">Quick Links</h2>
                         <div class="admin-side-list">
-                            @forelse ($subscriptions as $subscription)
-                                <div class="admin-side-item">
-                                    <div class="admin-side-item-title">{{ $subscription->email }}</div>
-                                    <div class="admin-side-item-meta">PES Access subscriber</div>
-                                </div>
-                            @empty
-                                <div class="text-secondary-soft">No subscribers yet.</div>
-                            @endforelse
+                            <a href="{{ route('admin.workspace', ['tab' => 'issuances']) }}" class="admin-side-item admin-side-link">
+                                <div class="admin-side-item-title">Go To Issuances</div>
+                                <div class="admin-side-item-meta">Publish and remove official issuances.</div>
+                            </a>
+                            <a href="{{ route('admin.workspace', ['tab' => 'materials']) }}" class="admin-side-item admin-side-link">
+                                <div class="admin-side-item-title">Go To Materials</div>
+                                <div class="admin-side-item-meta">Update resources, reports, and presentations.</div>
+                            </a>
+                            <a href="{{ route('admin.workspace', ['tab' => 'dx']) }}" class="admin-side-item admin-side-link">
+                                <div class="admin-side-item-title">Go To DOST DX</div>
+                                <div class="admin-side-item-meta">Maintain domains and digital transformation sub-programs.</div>
+                            </a>
                         </div>
                     </div>
 
                     <div class="admin-card admin-side-card">
-                        <h2 class="h5 fw-bold mb-3">Latest Contact Messages</h2>
+                        <h2 class="h5 fw-bold mb-3">DOST DX Snapshot</h2>
                         <div class="admin-side-list">
-                            @forelse ($messages as $message)
+                            @forelse ($dxPrograms->take(5) as $program)
                                 <div class="admin-side-item">
-                                    <div class="admin-side-item-title">{{ $message->subject }}</div>
-                                    <div class="admin-side-item-meta">{{ $message->name }} • {{ $message->email }}</div>
-                                    <div class="admin-side-item-copy">{{ \Illuminate\Support\Str::limit($message->message, 120) }}</div>
+                                    <div class="admin-side-item-title">{{ $program->title }}</div>
+                                    <div class="admin-side-item-meta">DOST DX sub-program</div>
+                                    <div class="admin-side-item-copy">{{ \Illuminate\Support\Str::limit($program->description, 110) }}</div>
                                 </div>
                             @empty
-                                <div class="text-secondary-soft">No contact messages yet.</div>
+                                <div class="text-secondary-soft">No DOST DX programs yet.</div>
                             @endforelse
                         </div>
                     </div>

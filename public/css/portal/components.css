@@ -595,6 +595,110 @@ textarea.form-control { min-height: auto; }
     margin-top: .5rem;
     line-height: 1.55;
 }
+.admin-workspace-top {
+    margin-bottom: 2rem;
+}
+.admin-workspace-title {
+    font-size: clamp(2.2rem, 4vw, 3.3rem);
+}
+.admin-workspace-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .8rem;
+}
+.admin-overview-hero {
+    margin-bottom: 2rem;
+}
+.admin-quick-links {
+    display: grid;
+    gap: 1rem;
+}
+.admin-quick-link,
+.admin-side-link {
+    text-decoration: none;
+    color: inherit;
+}
+.admin-quick-link {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.15rem 1.2rem;
+    border-radius: 1.3rem;
+    background: linear-gradient(180deg, rgba(243, 249, 254, .92), rgba(236, 245, 252, .98));
+    border: 1px solid rgba(17, 136, 239, .1);
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background-color .22s ease;
+}
+.admin-quick-link:hover,
+.admin-side-link:hover {
+    transform: translateY(-3px);
+    border-color: rgba(17, 136, 239, .18);
+    box-shadow: 0 18px 34px rgba(17, 136, 239, .1);
+    color: inherit;
+}
+.admin-quick-link-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(17, 136, 239, .12), rgba(61, 194, 255, .18));
+    color: var(--accent);
+    font-size: 1rem;
+}
+.admin-quick-link-body {
+    display: grid;
+    gap: .2rem;
+}
+.admin-quick-link-body strong {
+    color: #111;
+    font-size: 1.02rem;
+}
+.admin-quick-link-body span {
+    color: rgba(17,17,17,.58);
+    line-height: 1.55;
+}
+.admin-quick-link-arrow {
+    color: rgba(17, 136, 239, .6);
+    transition: transform .22s ease;
+}
+.admin-quick-link:hover .admin-quick-link-arrow,
+.admin-side-link:hover .admin-quick-link-arrow {
+    transform: translateX(4px);
+}
+.admin-overview-stream {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+.admin-overview-stream-card {
+    padding: 1.15rem;
+    border-radius: 1.3rem;
+    background: linear-gradient(180deg, rgba(243, 249, 254, .9), rgba(236, 245, 252, .96));
+    border: 1px solid rgba(17, 136, 239, .08);
+}
+[data-bs-theme="dark"] .admin-quick-link,
+[data-bs-theme="dark"] .admin-overview-stream-card,
+[data-bs-theme="dark"] .admin-side-item {
+    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    border-color: rgba(255,255,255,.08);
+}
+[data-bs-theme="dark"] .admin-quick-link-body strong,
+[data-bs-theme="dark"] .admin-side-item-title {
+    color: #f8f9fa;
+}
+[data-bs-theme="dark"] .admin-quick-link-body span,
+[data-bs-theme="dark"] .admin-side-item-meta,
+[data-bs-theme="dark"] .admin-side-item-copy {
+    color: rgba(248, 249, 250, .64);
+}
+[data-bs-theme="dark"] .admin-quick-link:hover,
+[data-bs-theme="dark"] .admin-side-link:hover {
+    box-shadow: 0 18px 34px rgba(0, 174, 239, .12);
+    border-color: rgba(111, 213, 255, .18);
+}
 .admin-table-shell .table-responsive {
     border-radius: 1.25rem;
     overflow: hidden;
