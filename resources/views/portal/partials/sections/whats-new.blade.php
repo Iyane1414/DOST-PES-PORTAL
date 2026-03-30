@@ -1,10 +1,22 @@
 <section class="section-space" id="whats-new">
     <div class="container">
-        <div class="section-header d-flex align-items-end gap-3">
+        <div class="section-header d-flex justify-content-between align-items-end gap-3">
             <div>
                 <h2 class="section-title split-title">What's<br><span class="split-title-accent">New</span></h2>
                 <p class="section-copy">Stay updated with the latest from PES.</p>
             </div>
+            @if ($latestItems->count() > 1)
+                <button
+                    class="btn whats-new-next-btn rounded-pill"
+                    type="button"
+                    data-bs-target="#whatsNewCarousel"
+                    data-bs-slide="next"
+                    aria-label="Next What's New item"
+                >
+                    <span>Next</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            @endif
         </div>
         <div id="whatsNewCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">

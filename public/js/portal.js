@@ -191,6 +191,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const issuanceForm = document.querySelector('[data-issuance-form]');
+    const issuanceSearchInput = document.querySelector('[data-issuance-search]');
+    const issuanceCategorySelect = document.querySelector('[data-issuance-category]');
+    const issuanceApplyButton = document.querySelector('[data-issuance-apply]');
+    const issuanceRows = Array.from(document.querySelectorAll('[data-issuance-row]'));
+    const issuanceEmptyRow = document.querySelector('[data-issuance-empty-row]');
+
+    const filterIssuanceRows = () => {
+        if (!(issuanceSearchInput instanceof HTMLInputElement) || !(issuanceCategorySelect instanceof HTMLSelectElement)) {
+            return;
+        }
+
+        const query = issuanceSearchInput.value.trim().toLowerCase();
+        const selectedCategory = issuanceCategorySelect.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        issuanceRows.forEach((row) => {
+            if (!(row instanceof HTMLElement)) {
+                return;
+            }
+
+            const rowSearchText = (row.dataset.issuanceSearch || '').toLowerCase();
+            const rowCategory = (row.dataset.issuanceCategory || '').toLowerCase();
+            const matchesQuery = query === '' || rowSearchText.includes(query);
+            const matchesCategory = selectedCategory === '' || selectedCategory === 'all' || rowCategory === selectedCategory;
+            const visible = matchesQuery && matchesCategory;
+
+            row.hidden = !visible;
+
+            if (visible) {
+                visibleCount += 1;
+            }
+        });
+
+        if (issuanceEmptyRow instanceof HTMLElement) {
+            issuanceEmptyRow.hidden = visibleCount > 0;
+        }
+    };
+
+    issuanceForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        filterIssuanceRows();
+    });
+
+    issuanceSearchInput?.addEventListener('input', filterIssuanceRows);
+    issuanceSearchInput?.addEventListener('search', filterIssuanceRows);
+    issuanceCategorySelect?.addEventListener('change', filterIssuanceRows);
+    issuanceApplyButton?.addEventListener('click', filterIssuanceRows);
+
+    filterIssuanceRows();
+
     const assistantToggle = document.getElementById('assistant-toggle');
     const assistantPanel = document.getElementById('assistant-panel');
     const assistantClose = document.getElementById('assistant-close');

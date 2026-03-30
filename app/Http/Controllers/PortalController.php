@@ -34,6 +34,23 @@ class PortalController extends Controller
         $categoryFilter = $request->string('category')->toString();
         $materialSearch = $request->string('material_search')->toString();
         $materialTypeFilter = $request->string('material_type')->toString();
+        $normalizedIssuanceSearch = Str::lower(trim($search));
+        $normalizedCategoryFilter = trim($categoryFilter);
+
+        $filteredIssuances = $issuances->filter(function (Issuance $item) use ($normalizedIssuanceSearch, $normalizedCategoryFilter) {
+            $searchableText = Str::lower(implode(' ', array_filter([
+                $item->title,
+                $item->category,
+                $item->division,
+                optional($item->date)->format('F d, Y'),
+                optional($item->date)->format('Y-m-d'),
+            ])));
+
+            $matchesSearch = $normalizedIssuanceSearch === '' || str_contains($searchableText, $normalizedIssuanceSearch);
+            $matchesCategory = $normalizedCategoryFilter === '' || $normalizedCategoryFilter === 'All' || $item->category === $normalizedCategoryFilter;
+
+            return $matchesSearch && $matchesCategory;
+        })->values();
 
         $latestItems = $issuances
             ->map(fn (Issuance $item) => [
@@ -188,6 +205,7 @@ class PortalController extends Controller
             'analytics' => $analytics,
             'issuanceCount' => $issuances->count(),
             'materialCount' => $materials->count(),
+            'filteredIssuances' => $filteredIssuances,
             'search' => $search,
             'categoryFilter' => $categoryFilter,
             'materialSearch' => $materialSearch,

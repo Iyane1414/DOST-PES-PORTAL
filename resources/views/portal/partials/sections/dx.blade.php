@@ -211,6 +211,7 @@
                     <strong class="dx-metric-number" data-target="20">0</strong>
                     <span>Project Done</span>
                 </article>
+                <div class="dx-metric-void dx-metric-void-left" aria-hidden="true"></div>
                 <article class="dx-metric-card dx-metric-card-secondary dx-metric-card-ongoing">
                     <strong class="dx-metric-number" data-target="0">0</strong>
                     <span>Ongoing Project</span>

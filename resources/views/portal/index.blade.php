@@ -1,9 +1,7 @@
 @extends('layouts.app', ['title' => 'DOST PES Portal'])
 
 @php
-    $issuanceSearch = strtolower($search);
     $materialSearchTerm = strtolower($materialSearch);
-    $filteredIssuances = $issuances->filter(fn ($item) => ($issuanceSearch === '' || str_contains(strtolower($item->title.' '.$item->division), $issuanceSearch)) && ($categoryFilter === '' || $categoryFilter === 'All' || $item->category === $categoryFilter));
     $filteredMaterials = $materials->filter(fn ($item) => ($materialSearchTerm === '' || str_contains(strtolower($item->title.' '.$item->type.' '.$item->division), $materialSearchTerm)) && ($materialTypeFilter === '' || $materialTypeFilter === 'All' || $item->type === $materialTypeFilter));
     $maxAnalytics = max(1, $analytics->max(fn ($item) => max($item['issuances'], $item['materials'])));
 @endphp
@@ -22,7 +20,6 @@
         @include('portal.partials.sections.materials')
         @include('portal.partials.sections.dx')
         @include('portal.partials.sections.contact')
-        @include('portal.partials.sections.subscribe')
     </main>
 
     @include('portal.partials.footer')

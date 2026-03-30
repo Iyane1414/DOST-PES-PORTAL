@@ -121,12 +121,11 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content issuance-modal about-division-modal">
                 <div class="modal-body p-4 p-lg-5">
-                    <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+                    <div class="mb-4">
                         <div>
                             <div class="about-division-modal-eyebrow">{{ $division->abbr }}</div>
                             <h3 class="h2 mb-1">{{ $division->name }}</h3>
                         </div>
-                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     <div class="issuance-modal-card">
