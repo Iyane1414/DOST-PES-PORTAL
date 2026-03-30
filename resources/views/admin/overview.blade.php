@@ -9,6 +9,7 @@
         'divisions' => ['icon' => 'bi-diagram-3'],
         'dx' => ['icon' => 'bi-cpu'],
         'categories' => ['icon' => 'bi-tags'],
+        'ai' => ['icon' => 'bi-robot'],
     ];
 @endphp
 
