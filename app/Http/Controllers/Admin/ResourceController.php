@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AiSetting;
 use App\Models\Division;
 use App\Models\DxItem;
 use App\Models\Issuance;
@@ -120,6 +121,22 @@ class ResourceController extends Controller
         IssuanceCategory::query()->create($data);
 
         return $this->redirectWithTab('categories', 'Category added.');
+    }
+
+    public function storeAiSettings(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'system_prompt' => ['required', 'string', 'max:5000'],
+            'scope_prompt' => ['required', 'string', 'max:3000'],
+            'refusal_message' => ['required', 'string', 'max:500'],
+        ]);
+
+        AiSetting::query()->updateOrCreate(
+            ['id' => 1],
+            $data
+        );
+
+        return $this->redirectWithTab('ai', 'AI settings updated.');
     }
 
     public function destroyCategory(IssuanceCategory $issuanceCategory): RedirectResponse

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AiSetting;
 use App\Models\ContactMessage;
 use App\Models\DxItem;
 use App\Models\Issuance;
@@ -389,34 +390,186 @@ class PortalController extends Controller
             'message' => ['required', 'string', 'max:1000'],
         ]);
 
-        $message = Str::lower($data['message']);
-        $fallback = $this->buildFallbackResponse($message);
+        $message = trim($data['message']);
+        $normalizedMessage = Str::lower($message);
+        $fallback = $this->buildFallbackResponse($normalizedMessage);
+        $openAiKey = config('services.openai.key');
+        $openAiModel = config('services.openai.model', 'gpt-4o-mini');
+        $aiSetting = AiSetting::query()->first();
+        $sources = $this->assistantSourcesForMessage($message);
+        $refusalMessage = $aiSetting?->refusal_message ?: 'I can only help with PES-related information available in this portal, such as mandates, divisions, issuances, materials, contact details, and DOST DX content.';
 
-        if (! config('services.gemini.key')) {
+        if (! $openAiKey) {
             return response()->json(['reply' => $fallback]);
         }
 
+        if ($this->isOutsidePesScope($normalizedMessage, $sources)) {
+            return response()->json(['reply' => $refusalMessage]);
+        }
+
         try {
-            $response = Http::timeout(15)
-                ->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='.config('services.gemini.key'), [
-                    'system_instruction' => [
-                        'parts' => [[
-                            'text' => 'You are the PES AI Assistant for the DOST Planning and Evaluation Service. Be concise, factual, and focus on PES mandates, divisions, issuances, materials, and DOST DX.',
-                        ]],
-                    ],
-                    'contents' => [[
-                        'parts' => [[
-                            'text' => $data['message'],
-                        ]],
-                    ]],
+            $assistantContext = $this->buildAssistantContext($sources);
+            $systemPrompt = $aiSetting?->system_prompt ?: 'You are the PES AI Assistant for the DOST Planning and Evaluation Service. Answer only with PES-related information found in the provided portal context. Be concise, factual, and helpful. Use citation-style references from the supplied source list when possible.';
+            $scopePrompt = $aiSetting?->scope_prompt ?: 'Only answer questions about PES mandates, divisions, issuances, materials, contact details, DOST DX, and information clearly present in the portal database context. If a question is outside PES scope, refuse briefly.';
+            $response = Http::timeout(20)
+                ->withToken($openAiKey)
+                ->acceptJson()
+                ->post('https://api.openai.com/v1/responses', [
+                    'model' => $openAiModel,
+                    'instructions' => $systemPrompt."\n\n".$scopePrompt."\n\n".'If you answer, cite matching portal sources inline using the exact citation labels provided in the context, for example [Source: Issuance - Sample Title]. If there is not enough support in the provided context, say so briefly and do not invent details.'."\n\n".$assistantContext,
+                    'input' => $message,
                 ]);
 
-            $text = data_get($response->json(), 'candidates.0.content.parts.0.text');
+            if ($response->failed()) {
+                throw new \RuntimeException('OpenAI request failed.');
+            }
+
+            $payload = $response->json();
+            $outputTextChunk = collect(data_get($payload, 'output', []))
+                ->flatMap(fn ($item) => data_get($item, 'content', []))
+                ->firstWhere('type', 'output_text');
+            $text = data_get($payload, 'output_text') ?: data_get($outputTextChunk, 'text');
 
             return response()->json(['reply' => $text ?: $fallback]);
         } catch (\Throwable) {
             return response()->json(['reply' => $fallback]);
         }
+    }
+
+    private function buildAssistantContext(array $sources = []): string
+    {
+        $divisionSummary = $this->organizationDivisions()
+            ->map(fn ($division) => '[Source: Division - '.$division->name.'] '.$division->abbr.': '.$division->name)
+            ->implode('; ');
+
+        $dxDomains = DxItem::query()
+            ->where('category', 'domain')
+            ->pluck('title')
+            ->implode(', ');
+
+        $dxPrograms = DxItem::query()
+            ->where('category', 'program')
+            ->take(6)
+            ->pluck('title')
+            ->implode(', ');
+
+        $sourceLines = collect($sources)
+            ->map(function (array $source) {
+                return $source['citation'].' '.$source['summary'];
+            })
+            ->implode("\n");
+
+        return implode("\n", array_filter([
+            'PES mandate: PES leads strategic planning and evaluation for DOST, aligning programs with national priorities and impact assessment frameworks.',
+            $divisionSummary !== '' ? 'Current PES divisions: '.$divisionSummary.'.' : null,
+            $dxDomains !== '' ? 'DOST DX core domains: '.$dxDomains.'.' : null,
+            $dxPrograms !== '' ? 'DOST DX sub-programs: '.$dxPrograms.'.' : null,
+            'Official contact details: DOST Complex, Gen Santos Ave., Bicutan, Taguig City, Philippines; phone +63 (2) 8837-2071 to 82; email pes@dost.gov.ph; office hours Monday to Thursday, 8:00AM to 5:00PM.',
+            $sourceLines !== '' ? "Matched portal sources:\n".$sourceLines : 'Matched portal sources: none strongly matched for this question.',
+        ]));
+    }
+
+    private function assistantSourcesForMessage(string $message): array
+    {
+        $needle = Str::lower($message);
+        $terms = collect(preg_split('/\s+/', $needle) ?: [])
+            ->map(fn ($term) => preg_replace('/[^a-z0-9&-]/', '', $term ?? ''))
+            ->filter(fn ($term) => filled($term) && strlen($term) >= 2)
+            ->values();
+
+        $scoreText = function (string $text) use ($needle, $terms): int {
+            $haystack = Str::lower($text);
+            $score = $needle !== '' && str_contains($haystack, $needle) ? 12 : 0;
+
+            foreach ($terms as $term) {
+                if (str_contains($haystack, $term)) {
+                    $score += 3;
+                }
+            }
+
+            return $score;
+        };
+
+        $issuanceSources = Issuance::query()->latest('date')->get()->map(function (Issuance $issuance) use ($scoreText) {
+            $summary = $issuance->title.' | category: '.($issuance->category ?: 'Uncategorized').' | division: '.($issuance->division ?: 'PES').' | date: '.(optional($issuance->date)->format('F d, Y') ?: 'No date');
+
+            return [
+                'score' => $scoreText($summary),
+                'citation' => '[Source: Issuance - '.$issuance->title.']',
+                'summary' => $summary,
+            ];
+        });
+
+        $materialSources = Material::query()->latest('date')->get()->map(function (Material $material) use ($scoreText) {
+            $summary = $material->title.' | type: '.($material->type ?: 'Material').' | division: '.($material->division ?: 'PES').' | date: '.(optional($material->date)->format('F d, Y') ?: 'No date');
+
+            return [
+                'score' => $scoreText($summary),
+                'citation' => '[Source: Material - '.$material->title.']',
+                'summary' => $summary,
+            ];
+        });
+
+        $divisionSources = $this->organizationDivisions()->map(function ($division) use ($scoreText) {
+            $summary = $division->name.' | abbreviation: '.$division->abbr.' | '.$division->description;
+
+            return [
+                'score' => $scoreText($summary),
+                'citation' => '[Source: Division - '.$division->name.']',
+                'summary' => $summary,
+            ];
+        });
+
+        $dxSources = DxItem::query()->orderBy('category')->orderBy('title')->get()->map(function (DxItem $item) use ($scoreText) {
+            $summary = $item->title.' | category: '.$item->category.' | '.$item->description;
+
+            return [
+                'score' => $scoreText($summary),
+                'citation' => '[Source: DOST DX - '.$item->title.']',
+                'summary' => $summary,
+            ];
+        });
+
+        $staticSources = collect([
+            [
+                'score' => $scoreText('PES mandate planning evaluation service DOST mandate strategic planning evaluation national priorities impact assessment'),
+                'citation' => '[Source: PES Mandate]',
+                'summary' => 'PES leads strategic planning and evaluation for DOST, aligning programs with national priorities and impact assessment frameworks.',
+            ],
+            [
+                'score' => $scoreText('PES contact office address DOST Complex Gen Santos Ave Bicutan Taguig City phone +63 (2) 8837-2071 to 82 email pes@dost.gov.ph office hours Monday to Thursday 8:00AM to 5:00PM'),
+                'citation' => '[Source: PES Contact Information]',
+                'summary' => 'Office address: DOST Complex, Gen Santos Ave., Bicutan, Taguig City, Philippines. Phone: +63 (2) 8837-2071 to 82. Email: pes@dost.gov.ph. Office hours: Monday to Thursday, 8:00AM to 5:00PM.',
+            ],
+        ]);
+
+        return $issuanceSources
+            ->concat($materialSources)
+            ->concat($divisionSources)
+            ->concat($dxSources)
+            ->concat($staticSources)
+            ->filter(fn (array $source) => $source['score'] > 0)
+            ->sortByDesc('score')
+            ->take(8)
+            ->values()
+            ->all();
+    }
+
+    private function isOutsidePesScope(string $message, array $sources): bool
+    {
+        if ($message === '') {
+            return false;
+        }
+
+        $scopeKeywords = [
+            'pes', 'planning', 'evaluation', 'mandate', 'division', 'issuance', 'material',
+            'policy', 'report', 'survey', 'presentation', 'dx', 'digital', 'contact',
+            'office', 'taguig', 'dost', 'pcmd', 'pdpd', 'stred', 'itd',
+        ];
+
+        $hasScopeKeyword = collect($scopeKeywords)->contains(fn ($keyword) => str_contains($message, $keyword));
+
+        return ! $hasScopeKeyword && count($sources) === 0;
     }
 
     private function buildFallbackResponse(string $message): string

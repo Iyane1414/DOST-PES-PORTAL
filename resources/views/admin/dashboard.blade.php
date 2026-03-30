@@ -34,6 +34,12 @@
             'section_copy' => 'Maintain content taxonomies for better publication and search structure.',
             'icon' => 'bi-tags',
         ],
+        'ai' => [
+            'label' => 'AI Agent',
+            'section_title' => 'Manage AI Assistant',
+            'section_copy' => 'Control the assistant prompt, topic boundaries, and refusal behavior from the admin workspace.',
+            'icon' => 'bi-robot',
+        ],
     ];
 
     $activeMeta = $tabMeta[$activeTab] ?? $tabMeta['issuances'];
@@ -117,6 +123,26 @@
                                 <div class="col-md-4"><button class="btn btn-accent rounded-pill px-4 w-100" type="submit">Add Category</button></div>
                             </form>
                         @endif
+
+                        @if ($activeTab === 'ai')
+                            <form method="POST" action="{{ route('admin.ai-settings.store') }}" class="row g-3">@csrf
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">System Prompt</label>
+                                    <textarea class="form-control" name="system_prompt" rows="6" required>{{ old('system_prompt', $aiSetting?->system_prompt ?? 'You are the PES AI Assistant for the DOST Planning and Evaluation Service. Answer only with PES-related information found in the provided portal context. Be concise, factual, and helpful. Use citation-style references from the supplied source list when possible.') }}</textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Scope Prompt</label>
+                                    <textarea class="form-control" name="scope_prompt" rows="4" required>{{ old('scope_prompt', $aiSetting?->scope_prompt ?? 'Only answer questions about PES mandates, divisions, issuances, materials, contact details, DOST DX, and information clearly present in the portal database context. If a question is outside PES scope, refuse briefly.') }}</textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Refusal Message</label>
+                                    <input class="form-control" type="text" name="refusal_message" value="{{ old('refusal_message', $aiSetting?->refusal_message ?? 'I can only help with PES-related information available in this portal, such as mandates, divisions, issuances, materials, contact details, and DOST DX content.') }}" required>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-accent rounded-pill px-4" type="submit">Save AI Settings</button>
+                                </div>
+                            </form>
+                        @endif
                     </div>
 
                     <div class="admin-card admin-table-shell">
@@ -145,6 +171,15 @@
 
                         @if ($activeTab === 'categories')
                             @include('admin.partials.table-categories')
+                        @endif
+
+                        @if ($activeTab === 'ai')
+                            <div class="admin-side-list">
+                                <div class="admin-side-item">
+                                    <div class="admin-side-item-title">How This Works</div>
+                                    <div class="admin-side-item-copy">The assistant uses your OpenAI key, your admin-managed prompts, and portal records from issuances, materials, divisions, DOST DX, and contact details. It now prefers PES-only answers and adds source-style citations based on matched records.</div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>

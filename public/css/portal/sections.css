@@ -503,25 +503,25 @@
 .contact-panel-top,
 .contact-form-head {
     display: grid;
-    gap: .8rem;
-    margin-bottom: 1.5rem;
+    gap: .65rem;
+    margin-bottom: 1.25rem;
 }
 .contact-panel-chip {
     display: inline-flex;
     align-self: flex-start;
-    padding: .48rem .82rem;
+    padding: .38rem .72rem;
     border-radius: 999px;
     background: rgba(0, 174, 239, .1);
     border: 1px solid rgba(0, 174, 239, .14);
     color: #0b4f88;
     text-transform: uppercase;
-    letter-spacing: .16em;
-    font-size: .72rem;
+    letter-spacing: .14em;
+    font-size: .66rem;
     font-weight: 700;
 }
 .contact-panel-title {
     margin: 0;
-    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-size: clamp(1.35rem, 2.1vw, 1.8rem);
     font-weight: 800;
     letter-spacing: -.03em;
 }
@@ -620,6 +620,11 @@
     resize: vertical;
 }
 .contact-submit-btn {
+    min-width: 10.5rem;
+    min-height: 3.35rem;
+    padding-inline: 1.5rem !important;
+    font-size: 1rem;
+    line-height: 1.15;
     box-shadow: 0 16px 34px rgba(0, 174, 239, .22);
     transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
 }

@@ -37,5 +37,7 @@ Route::prefix('admin')->group(function (): void {
 
         Route::post('/categories', [ResourceController::class, 'storeCategory'])->name('admin.categories.store');
         Route::delete('/categories/{issuanceCategory}', [ResourceController::class, 'destroyCategory'])->name('admin.categories.destroy');
+
+        Route::post('/ai-settings', [ResourceController::class, 'storeAiSettings'])->name('admin.ai-settings.store');
     });
 });

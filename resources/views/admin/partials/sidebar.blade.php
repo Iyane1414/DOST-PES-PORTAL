@@ -31,7 +31,7 @@
     <div class="admin-nav-group">
         <div class="admin-nav-label">Workspace</div>
         <div class="nav flex-column nav-pills gap-2">
-            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'divisions' => 'Divisions', 'dx' => 'DOST DX', 'categories' => 'Categories'] as $tab => $label)
+            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'divisions' => 'Divisions', 'dx' => 'DOST DX', 'categories' => 'Categories', 'ai' => 'AI Agent'] as $tab => $label)
                 <a href="{{ route('admin.workspace', ['tab' => $tab]) }}" class="nav-link admin-nav-link @if (($activeTab ?? null) === $tab) active @endif">
                     <span class="admin-nav-link-main">
                         <span class="admin-nav-link-icon">

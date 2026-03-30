@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AiSetting;
 use App\Models\ContactMessage;
 use App\Models\Division;
 use App\Models\DxItem;
@@ -56,7 +57,7 @@ class DashboardController extends Controller
     public function workspace(Request $request, ?string $tab = null): View
     {
         $data = $this->dashboardData();
-        $allowedTabs = ['issuances', 'materials', 'divisions', 'dx', 'categories'];
+        $allowedTabs = ['issuances', 'materials', 'divisions', 'dx', 'categories', 'ai'];
         $requestedTab = $tab ?: $request->string('tab')->toString() ?: 'issuances';
         $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'issuances';
 
@@ -77,6 +78,7 @@ class DashboardController extends Controller
         $messages = ContactMessage::query()->latest()->take(10)->get();
         $dxPrograms = $dxItems->where('category', 'program')->values();
         $dxDomains = $dxItems->where('category', 'domain')->values();
+        $aiSetting = AiSetting::query()->first();
 
         return [
             'issuances' => $issuances,
@@ -87,6 +89,7 @@ class DashboardController extends Controller
             'dxDomains' => $dxDomains,
             'categories' => $categories,
             'messages' => $messages,
+            'aiSetting' => $aiSetting,
             'stats' => [
                 'issuances' => $issuances->count(),
                 'materials' => $materials->count(),
