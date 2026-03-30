@@ -154,6 +154,10 @@
     .admin-overview-shell {
         padding: 1rem;
     }
+    .admin-project-widget-chart {
+        width: 13rem;
+        height: 13rem;
+    }
     .admin-quick-link,
     .admin-overview-stream {
         grid-template-columns: 1fr;

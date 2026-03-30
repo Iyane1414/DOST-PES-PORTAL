@@ -10,6 +10,7 @@ use App\Models\DxItem;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -79,6 +80,7 @@ class DashboardController extends Controller
         $dxPrograms = $dxItems->where('category', 'program')->values();
         $dxDomains = $dxItems->where('category', 'domain')->values();
         $aiSetting = AiSetting::query()->first();
+        $projectAnalytics = $this->projectAnalytics($dxPrograms);
 
         return [
             'issuances' => $issuances,
@@ -90,11 +92,44 @@ class DashboardController extends Controller
             'categories' => $categories,
             'messages' => $messages,
             'aiSetting' => $aiSetting,
+            'projectAnalytics' => $projectAnalytics,
             'stats' => [
                 'issuances' => $issuances->count(),
                 'materials' => $materials->count(),
                 'dx_programs' => $dxPrograms->count(),
                 'messages' => ContactMessage::query()->count(),
+            ],
+        ];
+    }
+
+    private function projectAnalytics($dxPrograms): array
+    {
+        $doneKeywords = ['done', 'completed', 'complete', 'launched', 'released', 'implemented', 'deployed', 'operational'];
+        $newProjects = $dxPrograms->filter(fn (DxItem $item) => optional($item->created_at)?->greaterThanOrEqualTo(now()->subDays(30)))->count();
+        $doneProjects = $dxPrograms->filter(function (DxItem $item) use ($doneKeywords) {
+            $text = Str::lower($item->title.' '.$item->description);
+
+            return collect($doneKeywords)->contains(fn ($keyword) => str_contains($text, $keyword));
+        })->count();
+
+        $pendingProjects = max($dxPrograms->count() - $doneProjects - $newProjects, 0);
+        $total = max($pendingProjects + $doneProjects + $newProjects, 1);
+
+        return [
+            'pending' => [
+                'count' => $pendingProjects,
+                'percent' => round(($pendingProjects / $total) * 100, 1),
+                'color' => '#ff8a3d',
+            ],
+            'done' => [
+                'count' => $doneProjects,
+                'percent' => round(($doneProjects / $total) * 100, 1),
+                'color' => '#a94dff',
+            ],
+            'new' => [
+                'count' => $newProjects,
+                'percent' => round(($newProjects / $total) * 100, 1),
+                'color' => '#1fb6ff',
             ],
         ];
     }

@@ -242,6 +242,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filterIssuanceRows();
 
+    document.querySelectorAll('[data-project-chart]').forEach((chart) => {
+        if (!(chart instanceof HTMLElement)) return;
+
+        const centerValue = chart.querySelector('[data-project-center-value]');
+        const centerLabel = chart.querySelector('[data-project-center-label]');
+        const centerPercent = chart.querySelector('[data-project-center-percent]');
+        const tooltip = chart.querySelector('[data-project-tooltip]');
+        const tooltipValue = chart.querySelector('[data-project-tooltip-value]');
+        const tooltipLabel = chart.querySelector('[data-project-tooltip-label]');
+        const segments = Array.from(chart.querySelectorAll('[data-project-segment]'));
+        const triggers = Array.from(chart.querySelectorAll('[data-project-trigger]'));
+
+        const activateProjectState = (source) => {
+            if (!(source instanceof HTMLElement)) return;
+
+            const value = source.dataset.projectValue || '';
+            const label = source.dataset.projectLabel || '';
+            const percent = source.dataset.projectPercent || '';
+            const color = source.getAttribute('stroke') || source.style.getPropertyValue('--legend-color') || '#1fb6ff';
+
+            if (centerValue instanceof HTMLElement) centerValue.textContent = value;
+            if (centerLabel instanceof HTMLElement) centerLabel.textContent = label;
+            if (centerPercent instanceof HTMLElement) centerPercent.textContent = percent;
+            if (tooltipValue instanceof HTMLElement) tooltipValue.textContent = value;
+            if (tooltipLabel instanceof HTMLElement) tooltipLabel.textContent = label;
+            if (tooltip instanceof HTMLElement) {
+                tooltip.style.background = `linear-gradient(135deg, ${color}, ${color}dd)`;
+            }
+
+            segments.forEach((segment) => segment.classList.toggle('is-active', segment === source));
+            triggers.forEach((trigger) => {
+                trigger.classList.toggle(
+                    'is-active',
+                    trigger.dataset.projectLabel === label && trigger.dataset.projectValue === value
+                );
+            });
+        };
+
+        segments.forEach((segment) => {
+            segment.addEventListener('mouseenter', () => activateProjectState(segment));
+            segment.addEventListener('focus', () => activateProjectState(segment));
+        });
+
+        triggers.forEach((trigger) => {
+            trigger.addEventListener('mouseenter', () => activateProjectState(trigger));
+            trigger.addEventListener('focus', () => activateProjectState(trigger));
+        });
+
+        if (segments[0] instanceof HTMLElement) {
+            activateProjectState(segments[0]);
+        }
+    });
+
     const assistantToggle = document.getElementById('assistant-toggle');
     const assistantPanel = document.getElementById('assistant-panel');
     const assistantClose = document.getElementById('assistant-close');
