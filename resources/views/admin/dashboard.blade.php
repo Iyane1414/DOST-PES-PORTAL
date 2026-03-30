@@ -34,6 +34,12 @@
             'section_copy' => 'Maintain content taxonomies for better publication and search structure.',
             'icon' => 'bi-tags',
         ],
+        'messages' => [
+            'label' => 'Messages',
+            'section_title' => 'Messages Inbox',
+            'section_copy' => 'Review incoming portal concerns, browse sender details, and keep communication monitoring in one themed workspace.',
+            'icon' => 'bi-chat-left-text',
+        ],
         'ai' => [
             'label' => 'AI Agent',
             'section_title' => 'Manage AI Assistant',
@@ -76,6 +82,27 @@
                                 <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
                             </div>
                         </div>
+
+                        @if ($activeTab === 'messages')
+                            <form method="GET" action="{{ route('admin.workspace', ['tab' => 'messages']) }}" class="admin-message-toolbar">
+                                <div class="admin-message-toolbar-main">
+                                    <div class="admin-message-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input class="form-control" type="search" name="message_search" value="{{ $messageSearch }}" placeholder="Search sender, email, subject, or message...">
+                                    </div>
+                                    <div class="admin-message-sort-wrap">
+                                        <select class="form-select" name="message_sort">
+                                            <option value="newest" @selected($messageSort === 'newest')>Newest</option>
+                                            <option value="oldest" @selected($messageSort === 'oldest')>Oldest</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="admin-message-toolbar-side">
+                                    <span class="admin-message-count">Showing {{ $workspaceMessages->count() }} {{ \Illuminate\Support\Str::plural('message', $workspaceMessages->count()) }}</span>
+                                    <button class="btn btn-accent rounded-pill px-4" type="submit">Apply</button>
+                                </div>
+                            </form>
+                        @endif
 
                         @if ($activeTab === 'issuances')
                             <form method="POST" action="{{ route('admin.issuances.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
@@ -122,6 +149,21 @@
                                 <div class="col-md-8"><input class="form-control" type="text" name="name" placeholder="Category Name" required></div>
                                 <div class="col-md-4"><button class="btn btn-accent rounded-pill px-4 w-100" type="submit">Add Category</button></div>
                             </form>
+                        @endif
+
+                        @if ($activeTab === 'messages')
+                            <div class="admin-message-intro-grid">
+                                <div class="admin-message-intro-card">
+                                    <div class="admin-message-intro-label">Inbox Status</div>
+                                    <strong>{{ $messages->count() }}</strong>
+                                    <span>Total captured contact messages from the public portal.</span>
+                                </div>
+                                <div class="admin-message-intro-card">
+                                    <div class="admin-message-intro-label">Latest Sender</div>
+                                    <strong>{{ optional($messages->first())->name ?? 'No messages yet' }}</strong>
+                                    <span>{{ optional($messages->first())->email ?? 'Waiting for new inbox activity.' }}</span>
+                                </div>
+                            </div>
                         @endif
 
                         @if ($activeTab === 'ai')
@@ -173,6 +215,10 @@
                             @include('admin.partials.table-categories')
                         @endif
 
+                        @if ($activeTab === 'messages')
+                            @include('admin.partials.table-messages')
+                        @endif
+
                         @if ($activeTab === 'ai')
                             <div class="admin-side-list">
                                 <div class="admin-side-item">
@@ -199,6 +245,10 @@
                             <a href="{{ route('admin.workspace', ['tab' => 'dx']) }}" class="admin-side-item admin-side-link">
                                 <div class="admin-side-item-title">Go To DOST DX</div>
                                 <div class="admin-side-item-meta">Maintain domains and digital transformation sub-programs.</div>
+                            </a>
+                            <a href="{{ route('admin.workspace', ['tab' => 'messages']) }}" class="admin-side-item admin-side-link">
+                                <div class="admin-side-item-title">Go To Messages</div>
+                                <div class="admin-side-item-meta">Review contact senders and open the message inbox.</div>
                             </a>
                         </div>
                     </div>

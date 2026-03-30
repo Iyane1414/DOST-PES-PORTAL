@@ -9,6 +9,7 @@ use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
 use App\Models\Subscription;
+use App\Models\WebsiteVisit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,6 +21,8 @@ class PortalController extends Controller
 {
     public function index(Request $request): View
     {
+        $this->recordWebsiteVisit($request);
+
         $issuances = Issuance::query()->latest('date')->get();
         $materials = Material::query()->latest('date')->get();
         $materialTypes = $materials
@@ -603,5 +606,24 @@ class PortalController extends Controller
         }
 
         return 'I can help with PES mandates, divisions, issuances, materials, and DOST DX updates.';
+    }
+
+    private function recordWebsiteVisit(Request $request): void
+    {
+        $sessionKey = 'portal_home_visit_recorded';
+
+        if ($request->session()->get($sessionKey)) {
+            return;
+        }
+
+        WebsiteVisit::query()->create([
+            'page' => 'home',
+            'session_id' => $request->session()->getId(),
+            'ip_address' => $request->ip(),
+            'user_agent' => Str::limit((string) $request->userAgent(), 1000, ''),
+            'visited_at' => now(),
+        ]);
+
+        $request->session()->put($sessionKey, true);
     }
 }

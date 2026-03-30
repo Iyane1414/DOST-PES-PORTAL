@@ -154,6 +154,28 @@
     .admin-overview-shell {
         padding: 1rem;
     }
+    .admin-project-widget-layout {
+        grid-template-columns: 1fr;
+    }
+    .admin-message-toolbar,
+    .admin-message-toolbar-main,
+    .admin-message-card-top {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+    .admin-message-toolbar-side {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .admin-message-sort-wrap {
+        width: 100%;
+    }
+    .admin-message-sort-wrap .form-select {
+        width: 100%;
+    }
+    .admin-message-intro-grid {
+        grid-template-columns: 1fr;
+    }
     .admin-project-widget-chart {
         width: 13rem;
         height: 13rem;

@@ -10,6 +10,7 @@ use App\Models\DxItem;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
+use App\Models\WebsiteVisit;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -25,6 +26,7 @@ class DashboardController extends Controller
             'activeSection' => 'overview',
             'recentIssuances' => $data['issuances']->take(5),
             'recentMaterials' => $data['materials']->take(5),
+            'recentMessages' => $data['messages']->take(4),
             'latestDxPrograms' => $data['dxPrograms']->take(6),
             'quickLinks' => [
                 [
@@ -58,14 +60,42 @@ class DashboardController extends Controller
     public function workspace(Request $request, ?string $tab = null): View
     {
         $data = $this->dashboardData();
-        $allowedTabs = ['issuances', 'materials', 'divisions', 'dx', 'categories', 'ai'];
+        $allowedTabs = ['issuances', 'materials', 'divisions', 'dx', 'categories', 'messages', 'ai'];
         $requestedTab = $tab ?: $request->string('tab')->toString() ?: 'issuances';
         $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'issuances';
+        $messageSearch = trim($request->string('message_search')->toString());
+        $messageSort = $request->string('message_sort')->toString() ?: 'newest';
+        $messages = $data['messages'];
+
+        if ($messageSearch !== '') {
+            $needle = Str::lower($messageSearch);
+            $messages = $messages->filter(function (ContactMessage $message) use ($needle) {
+                $searchable = Str::lower(implode(' ', [
+                    $message->subject,
+                    $message->name,
+                    $message->email,
+                    $message->message,
+                ]));
+
+                return str_contains($searchable, $needle);
+            })->values();
+        }
+
+        if ($messageSort === 'oldest') {
+            $messages = $messages->sortBy('created_at')->values();
+        } else {
+            $messageSort = 'newest';
+            $messages = $messages->sortByDesc('created_at')->values();
+        }
 
         return view('admin.dashboard', [
             ...$data,
             'activeSection' => 'workspace',
             'activeTab' => $activeTab,
+            'workspaceMessages' => $messages,
+            'messageSearch' => $messageSearch,
+            'messageSort' => $messageSort,
+            'selectedMessageId' => $request->integer('message'),
         ]);
     }
 
@@ -76,28 +106,30 @@ class DashboardController extends Controller
         $divisions = Division::query()->orderBy('name')->get();
         $dxItems = DxItem::query()->orderBy('category')->orderBy('title')->get();
         $categories = IssuanceCategory::query()->orderBy('name')->get();
-        $messages = ContactMessage::query()->latest()->take(10)->get();
+        $messages = ContactMessage::query()->latest()->get();
         $dxPrograms = $dxItems->where('category', 'program')->values();
         $dxDomains = $dxItems->where('category', 'domain')->values();
         $aiSetting = AiSetting::query()->first();
         $projectAnalytics = $this->projectAnalytics($dxPrograms);
+        $viewStats = $this->websiteViewStats();
 
         return [
             'issuances' => $issuances,
             'materials' => $materials,
             'divisions' => $divisions,
+            'messages' => $messages,
             'dxItems' => $dxItems,
             'dxPrograms' => $dxPrograms,
             'dxDomains' => $dxDomains,
             'categories' => $categories,
-            'messages' => $messages,
             'aiSetting' => $aiSetting,
             'projectAnalytics' => $projectAnalytics,
+            'viewStats' => $viewStats,
             'stats' => [
                 'issuances' => $issuances->count(),
                 'materials' => $materials->count(),
                 'dx_programs' => $dxPrograms->count(),
-                'messages' => ContactMessage::query()->count(),
+                'website_views' => $viewStats['total'],
             ],
         ];
     }
@@ -131,6 +163,20 @@ class DashboardController extends Controller
                 'percent' => round(($newProjects / $total) * 100, 1),
                 'color' => '#1fb6ff',
             ],
+        ];
+    }
+
+    private function websiteViewStats(): array
+    {
+        $today = today();
+        $weekStart = now()->subDays(6)->startOfDay();
+        $monthStart = now()->startOfMonth();
+
+        return [
+            'total' => WebsiteVisit::query()->count(),
+            'today' => WebsiteVisit::query()->whereDate('visited_at', $today)->count(),
+            'week' => WebsiteVisit::query()->where('visited_at', '>=', $weekStart)->count(),
+            'month' => WebsiteVisit::query()->where('visited_at', '>=', $monthStart)->count(),
         ];
     }
 }
