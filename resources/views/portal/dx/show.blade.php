@@ -51,10 +51,9 @@
 
                 <div class="dx-program-page-results">
                     @foreach ($dxProjects as $project)
-                        <a
+                        <article
                             class="dx-program-page-item"
                             id="project-{{ $project['slug'] }}"
-                            href="#project-{{ $project['slug'] }}"
                             data-dx-project-item
                             data-project-code="{{ strtolower($project['code']) }}"
                             data-project-title="{{ strtolower($project['title']) }}"
@@ -65,13 +64,17 @@
                                     <span class="badge-soft">{{ $dxDomain['title'] }}</span>
                                 </div>
                                 <h2>{{ $project['title'] }}</h2>
-                                <p>{{ $dxSubProgram['title'] }} project under the {{ $dxDomain['title'] }} domain.</p>
+                                <p>{{ $project['description'] ?: ($dxSubProgram['title'].' project under the '.$dxDomain['title'].' domain.') }}</p>
                             </div>
                             <div class="dx-program-page-item-action">
-                                <span>Project Detail</span>
-                                <i class="bi bi-arrow-up-right"></i>
+                                @if (! empty($project['file_url']))
+                                    <a class="btn btn-accent rounded-pill px-4" href="{{ $project['file_url'] }}" target="_blank" rel="noreferrer">Open File</a>
+                                @else
+                                    <span>Project Detail</span>
+                                    <i class="bi bi-arrow-up-right"></i>
+                                @endif
                             </div>
-                        </a>
+                        </article>
                     @endforeach
 
                     <div class="dx-program-page-empty" data-dx-project-empty @if ($dxProjectCount > 0) hidden @endif>

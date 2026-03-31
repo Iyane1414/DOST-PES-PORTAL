@@ -253,10 +253,59 @@
                             @endif
 
                             @if ($activeTab === 'dx')
-                                <form method="POST" action="{{ route('admin.dx-items.store') }}" class="row g-3">@csrf
-                                    <div class="col-md-4"><select class="form-select" name="category" required><option value="domain">Domain</option><option value="program">Sub-Program</option></select></div>
-                                    <div class="col-md-8"><input class="form-control" type="text" name="title" placeholder="Title" required></div>
-                                    <div class="col-12"><textarea class="form-control" name="description" rows="4" placeholder="Description" required></textarea></div>
+                                <form method="POST" action="{{ route('admin.dx-items.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Record Type</label>
+                                        <select class="form-select" name="category" required>
+                                            <option value="domain">Domain</option>
+                                            <option value="program">Sub-Program</option>
+                                            <option value="project">Project</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Core Domain</label>
+                                        <select class="form-select" name="domain_key" required>
+                                            <option value="people">People</option>
+                                            <option value="process">Process</option>
+                                            <option value="technology">Technology</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Sort Order</label>
+                                        <input class="form-control" type="number" name="sort_order" min="0" value="0">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Parent Domain / Sub-program</label>
+                                        <select class="form-select" name="parent_id">
+                                            <option value="">None</option>
+                                            @foreach ($dxDomains as $domain)
+                                                <option value="{{ $domain->id }}">Domain: {{ $domain->title }}</option>
+                                            @endforeach
+                                            @foreach ($dxPrograms as $program)
+                                                <option value="{{ $program->id }}">Sub-program: {{ $program->title }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">Project Code</label>
+                                        <input class="form-control" type="text" name="code" placeholder="Example: SRZ, CSP, GOV">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <label class="form-label fw-semibold">Title</label>
+                                        <input class="form-control" type="text" name="title" placeholder="Title" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Domain Image</label>
+                                        <input class="form-control" type="file" name="image" accept=".jpg,.jpeg,.png,.webp">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Description</label>
+                                        <textarea class="form-control" name="description" rows="4" placeholder="Description" required></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">Project Attachment</label>
+                                        <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png">
+                                    </div>
                                     <div class="col-12"><button class="btn btn-accent rounded-pill px-4" type="submit">Save DX Content</button></div>
                                 </form>
                             @endif

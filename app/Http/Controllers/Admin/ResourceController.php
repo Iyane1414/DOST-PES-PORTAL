@@ -12,6 +12,7 @@ use App\Models\Material;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class ResourceController extends Controller
@@ -114,19 +115,52 @@ class ResourceController extends Controller
     public function storeDxItem(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'category' => ['required', Rule::in(['domain', 'program'])],
+            'category' => ['required', Rule::in(['domain', 'program', 'project'])],
+            'domain_key' => ['required', Rule::in(['people', 'process', 'technology'])],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:2000'],
+            'parent_id' => ['nullable', 'integer', 'exists:dx_items,id'],
+            'code' => ['nullable', 'string', 'max:50'],
+            'icon' => ['nullable', 'string', 'max:100'],
+            'image' => ['nullable', 'image', 'max:5120'],
+            'document' => ['nullable', 'file', 'extensions:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:102400'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
-        DxItem::query()->create($data);
+        $parentId = $this->resolveDxParentId($data['category'], $data['parent_id'] ?? null);
+        $slug = $this->makeUniqueDxSlug($data['title']);
+        $imagePath = null;
+        $fileUrl = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = Storage::disk('public')->url($request->file('image')->store('dx/images', 'public'));
+        }
+
+        if ($request->hasFile('document')) {
+            $fileUrl = Storage::disk('public')->url($request->file('document')->store('dx/files', 'public'));
+        }
+
+        DxItem::query()->create([
+            'category' => $data['category'],
+            'slug' => $slug,
+            'parent_id' => $parentId,
+            'domain_key' => $data['domain_key'],
+            'code' => $data['category'] === 'project' ? ($data['code'] ?: null) : null,
+            'icon' => $data['category'] === 'domain' ? ($data['icon'] ?: $this->defaultDxDomainIcon($data['domain_key'])) : null,
+            'image_path' => $data['category'] === 'domain' ? ($imagePath ?: $this->defaultDxDomainImage($data['domain_key'])) : null,
+            'file_url' => $data['category'] === 'project' ? $fileUrl : null,
+            'sort_order' => $data['sort_order'] ?? 0,
+            'is_active' => true,
+            'title' => $data['title'],
+            'description' => $data['description'],
+        ]);
 
         return $this->redirectWithTab('dx', 'DX content saved.');
     }
 
     public function destroyDxItem(DxItem $dxItem): RedirectResponse
     {
-        $dxItem->delete();
+        $this->deleteDxItemTree($dxItem);
 
         return $this->redirectWithTab('dx', 'DX content deleted.');
     }
@@ -189,6 +223,25 @@ class ResourceController extends Controller
         return 'Presentation';
     }
 
+    private function deleteDxItemTree(DxItem $dxItem): void
+    {
+        $dxItem->load('children');
+
+        foreach ($dxItem->children as $child) {
+            $this->deleteDxItemTree($child);
+        }
+
+        if ($dxItem->image_path && str_starts_with($dxItem->image_path, '/storage/')) {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $dxItem->image_path));
+        }
+
+        if ($dxItem->file_url && str_starts_with($dxItem->file_url, '/storage/')) {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $dxItem->file_url));
+        }
+
+        $dxItem->delete();
+    }
+
     private function uploadValidationMessages(string $field, int $maxMb): array
     {
         return [
@@ -197,5 +250,46 @@ class ResourceController extends Controller
             "{$field}.extensions" => 'The selected file type is not allowed for this upload.',
             "{$field}.max" => "The selected file is too large. Maximum allowed size is {$maxMb} MB.",
         ];
+    }
+
+    private function resolveDxParentId(string $category, ?int $parentId): ?int
+    {
+        if ($category === 'domain') {
+            return null;
+        }
+
+        return $parentId;
+    }
+
+    private function makeUniqueDxSlug(string $title): string
+    {
+        $base = Str::slug($title);
+        $slug = $base !== '' ? $base : 'dx-item';
+        $counter = 2;
+
+        while (DxItem::query()->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$counter;
+            $counter += 1;
+        }
+
+        return $slug;
+    }
+
+    private function defaultDxDomainIcon(string $domainKey): string
+    {
+        return match ($domainKey) {
+            'people' => 'bi-person',
+            'process' => 'bi-activity',
+            default => 'bi-pc-display',
+        };
+    }
+
+    private function defaultDxDomainImage(string $domainKey): string
+    {
+        return match ($domainKey) {
+            'people' => 'images/people.png',
+            'process' => 'images/process.png',
+            default => 'images/technology.png',
+        };
     }
 }

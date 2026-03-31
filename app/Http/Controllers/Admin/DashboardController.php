@@ -114,7 +114,13 @@ class DashboardController extends Controller
         $issuances = Issuance::query()->latest('date')->get();
         $materials = Material::query()->latest('date')->get();
         $divisions = Division::query()->orderBy('name')->get();
-        $dxItems = DxItem::query()->orderBy('category')->orderBy('title')->get();
+        $dxItems = DxItem::query()
+            ->with('parent')
+            ->whereNotNull('slug')
+            ->orderBy('category')
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get();
         $categories = IssuanceCategory::query()->orderBy('name')->get();
         if ($categories->isEmpty()) {
             $categories = collect($this->defaultIssuanceCategories())->map(fn (string $name) => (object) ['name' => $name]);
@@ -185,7 +191,7 @@ class DashboardController extends Controller
 
     private function defaultIssuanceCategories(): array
     {
-        return ['Circular', 'Letter', 'Memorandum', 'Notice', 'Order'];
+        return ['Guidelines', 'Letter', 'Memorandum', 'Notice', 'Order'];
     }
 
     private function projectAnalytics($dxPrograms): array
