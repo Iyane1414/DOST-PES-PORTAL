@@ -97,6 +97,38 @@
             </div>
         </div>
 
+        <section class="dx-video-slot" aria-labelledby="dx-video-slot-title">
+            <div class="dx-video-slot-header">
+                <div>
+                    <span class="eyebrow text-accent">Featured Video</span>
+                    <h3 class="section-title split-title text-white mb-3" id="dx-video-slot-title">DOST DX<br><span class="split-title-accent">Video Overview</span></h3>
+                    <p class="section-copy text-white-50 mb-0">A reserved space for the upcoming DOST DX video presentation. This can be replaced with the actual video once it is ready.</p>
+                </div>
+            </div>
+            <div class="dx-video-frame" role="img" aria-label="Placeholder for upcoming DOST DX video">
+                <div class="dx-video-screen">
+                    <div class="dx-video-badge">Video Coming Soon</div>
+                    <div class="dx-video-center-copy">
+                        <span class="dx-video-kicker">Reserved Media Area</span>
+                        <strong class="dx-video-title">DOST DX Overview Video</strong>
+                        <span class="dx-video-caption">Replace this placeholder with the final embedded or uploaded video.</span>
+                    </div>
+                    <div class="dx-video-controls" aria-hidden="true">
+                        <div class="dx-video-controls-left">
+                            <span class="dx-video-play"><i class="bi bi-play-fill"></i></span>
+                            <span class="dx-video-time">0:00</span>
+                        </div>
+                        <div class="dx-video-progress"><span></span></div>
+                        <div class="dx-video-controls-right">
+                            <i class="bi bi-volume-up"></i>
+                            <i class="bi bi-fullscreen"></i>
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="dx-roadmap" id="dx-roadmap">
             <div class="dx-roadmap-header">
                 <div>

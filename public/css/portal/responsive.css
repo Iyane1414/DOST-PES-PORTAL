@@ -73,6 +73,16 @@
     .pes-action-modal .modal-body { grid-template-columns: 1fr; }
     .pes-action-modal-media { min-height: 16rem; }
     .pes-action-modal-content { padding: 1.5rem; }
+    .materials-header-shell {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+    }
+    .materials-title {
+        font-size: clamp(2.8rem, 12vw, 4.2rem);
+    }
+    .materials-copy {
+        font-size: 1rem;
+    }
     .materials-home-grid { grid-template-columns: 1fr; }
     .materials-resource-grid { grid-template-columns: 1fr; }
     .materials-directory-spotlight { max-width: none; }
@@ -109,6 +119,39 @@
         min-width: 0;
         width: 100%;
         min-height: 4rem;
+    }
+    .dx-video-frame {
+        border-radius: 1.5rem;
+    }
+    .dx-video-screen {
+        min-height: 16rem;
+        border-radius: calc(1.5rem - 1px);
+    }
+    .dx-video-badge {
+        top: 1rem;
+        right: 1rem;
+        padding: .55rem .85rem;
+        font-size: .72rem;
+    }
+    .dx-video-center-copy {
+        padding: 1.5rem;
+    }
+    .dx-video-caption {
+        font-size: .92rem;
+    }
+    .dx-video-controls {
+        left: .9rem;
+        right: .9rem;
+        bottom: .85rem;
+        gap: .5rem;
+        grid-template-columns: 1fr;
+    }
+    .dx-video-controls-left,
+    .dx-video-controls-right {
+        gap: .75rem;
+    }
+    .dx-video-controls-right {
+        justify-content: flex-end;
     }
     .dx-roadmap-track {
         grid-template-columns: 1fr;

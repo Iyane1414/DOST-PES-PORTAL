@@ -4,9 +4,12 @@
             <div class="container">
                 <div class="materials-home-shell">
                     <div class="section-header position-relative">
-                        <div>
-                            <h2 class="section-title materials-title split-title">PES <span class="split-title-accent">Materials</span></h2>
-                            <p class="section-copy materials-copy">Policies, reports, surveys, and presentations.</p>
+                        <div class="materials-header-shell">
+                            <div class="materials-header-copy">
+                                <span class="materials-kicker">Knowledge Library</span>
+                                <h2 class="section-title materials-title split-title">PES <span class="split-title-accent">Materials</span></h2>
+                                <p class="section-copy materials-copy">Policies, reports, surveys, and presentations organized in one refined browsing space for PES references.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -29,8 +32,11 @@
                                 </div>
 
                                 <div class="materials-home-body">
-                                    <div class="materials-home-icon">
-                                        <i class="bi {{ $collection['icon'] }}"></i>
+                                    <div class="materials-home-meta">
+                                        <div class="materials-home-icon">
+                                            <i class="bi {{ $collection['icon'] }}"></i>
+                                        </div>
+                                        <div class="materials-home-count">{{ str_pad((string) $collection['count'], 2, '0', STR_PAD_LEFT) }}</div>
                                     </div>
                                     <div class="materials-home-eyebrow">{{ $collection['eyebrow'] }}</div>
                                     <h3>{{ $collection['label'] }}</h3>
