@@ -690,6 +690,41 @@ textarea.form-control { min-height: auto; }
     border-color: rgba(17, 83, 150, .14);
     box-shadow: 0 24px 56px rgba(14, 48, 88, .1), 0 3px 0 rgba(26, 94, 166, .1);
 }
+.admin-issuance-library-panel .admin-section-head,
+.admin-issuance-library-panel .admin-kicker,
+.admin-issuance-library-panel h2,
+.admin-issuance-library-panel p,
+.admin-issuance-library-panel label {
+    color: #10233b !important;
+}
+.admin-issuance-library-panel .text-secondary-soft {
+    color: rgba(16, 35, 59, .7) !important;
+}
+.admin-issuance-library-panel .admin-section-icon {
+    background: linear-gradient(135deg, rgba(17, 136, 239, .12), rgba(61, 194, 255, .18));
+    color: #0b84ef;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+}
+.admin-issuance-library-panel .admin-issuance-field .form-label {
+    color: rgba(16, 35, 59, .74) !important;
+}
+.admin-issuance-library-panel .form-control,
+.admin-issuance-library-panel .form-select {
+    color: #10233b;
+}
+[data-bs-theme="dark"] .admin-issuance-library-panel .admin-section-head,
+[data-bs-theme="dark"] .admin-issuance-library-panel .admin-kicker,
+[data-bs-theme="dark"] .admin-issuance-library-panel h2,
+[data-bs-theme="dark"] .admin-issuance-library-panel p,
+[data-bs-theme="dark"] .admin-issuance-library-panel label {
+    color: #f5fbff !important;
+}
+[data-bs-theme="dark"] .admin-issuance-library-panel .text-secondary-soft {
+    color: rgba(223, 236, 248, .76) !important;
+}
+[data-bs-theme="dark"] .admin-issuance-library-panel .admin-issuance-field .form-label {
+    color: rgba(223, 236, 248, .72) !important;
+}
 .admin-issuance-panel-head {
     position: relative;
     z-index: 1;
