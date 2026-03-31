@@ -24,52 +24,155 @@
             ],
         ]);
 
-        $programDomain = function ($item) {
-            $haystack = strtolower(trim(($item->title ?? '').' '.($item->description ?? '')));
-
-            if (str_contains($haystack, 'people') || str_contains($haystack, 'capability') || str_contains($haystack, 'training') || str_contains($haystack, 'culture') || str_contains($haystack, 'skills') || str_contains($haystack, 'change management')) {
-                return 'people';
-            }
-
-            if (str_contains($haystack, 'process') || str_contains($haystack, 'workflow') || str_contains($haystack, 'governance') || str_contains($haystack, 'policy') || str_contains($haystack, 'service') || str_contains($haystack, 'operations')) {
-                return 'process';
-            }
-
-            return 'technology';
-        };
-
         $subProgramCards = collect([
             [
-                'title' => 'Digital Literacy & Upskilling',
-                'description' => 'Building digital competencies across all levels of the organization through targeted training programs.',
                 'domain' => 'people',
+                'domain_label' => 'People',
+                'title' => 'Structure Rationalization',
+                'code_theme' => 'amber',
+                'items' => [
+                    ['code' => 'SRZ', 'label' => 'Structure & Organization'],
+                    ['code' => 'SRZ', 'label' => 'Structure Optimization'],
+                    ['code' => 'SRZ', 'label' => 'New Units'],
+                    ['code' => 'SRZ', 'label' => 'ePMO Establishment'],
+                    ['code' => 'SRZ', 'label' => 'Foresight Unit Creation'],
+                    ['code' => 'SRZ', 'label' => 'NT (New Technology) Unit Creation'],
+                    ['code' => 'PMT', 'label' => 'Core Team Creation & Chartering'],
+                    ['code' => 'PMT', 'label' => 'DX Organization Chartering'],
+                    ['code' => 'PES', 'label' => 'Planning'],
+                    ['code' => 'PES', 'label' => 'Budgeting'],
+                    ['code' => 'PES', 'label' => 'MERC'],
+                    ['code' => 'PES', 'label' => 'Impact Assessment'],
+                ],
             ],
             [
-                'title' => 'Change Management',
-                'description' => 'Guiding the organization through cultural and structural shifts needed for digital transformation.',
-                'domain' => 'people',
-            ],
-            [
-                'title' => 'Business Process Re-engineering',
-                'description' => 'Redesigning core workflows to eliminate redundancy and improve efficiency through digitization.',
-                'domain' => 'process',
-            ],
-            [
-                'title' => 'Service Automation',
-                'description' => 'Deploying intelligent automation tools to streamline repetitive tasks and citizen-facing services.',
-                'domain' => 'process',
-            ],
-            [
-                'title' => 'Data Governance',
-                'description' => 'Establishing standards and frameworks for data collection, management, and utilization across DOST.',
                 'domain' => 'technology',
+                'domain_label' => 'Technology',
+                'title' => 'Cybersecurity',
+                'code_theme' => 'cyan',
+                'items' => [
+                    ['code' => 'CSP', 'label' => 'Cybersecurity 101'],
+                    ['code' => 'CSP', 'label' => 'Information Radiators'],
+                    ['code' => 'CSP', 'label' => 'Use of VPN'],
+                    ['code' => 'CSP', 'label' => 'Zero-trust'],
+                    ['code' => 'CSP', 'label' => '2-Factor Authentication'],
+                    ['code' => 'CSP', 'label' => 'Admin Privileges'],
+                    ['code' => 'CSP', 'label' => 'USB Disabled'],
+                    ['code' => 'CSP', 'label' => 'CISO'],
+                    ['code' => 'CSP', 'label' => 'Ethical Hacking'],
+                    ['code' => 'CSP', 'label' => 'Versim'],
+                    ['code' => 'CSP', 'label' => 'SCF'],
+                    ['code' => 'CSP', 'label' => 'ISO 27001'],
+                    ['code' => 'CSP', 'label' => 'NSOC'],
+                    ['code' => 'CSP', 'label' => 'Reporting'],
+                    ['code' => 'CSP', 'label' => '321 Back-up'],
+                    ['code' => 'CSP', 'label' => 'Email Hosting'],
+                    ['code' => 'CSP', 'label' => 'DOST IM'],
+                    ['code' => 'CSP', 'label' => 'DOST Encryption Code'],
+                    ['code' => 'CSP', 'label' => 'Digital Signature'],
+                    ['code' => 'CSP', 'label' => 'VPN Implementation'],
+                    ['code' => 'CSP', 'label' => 'AD Implementation'],
+                    ['code' => 'CSP', 'label' => 'SSO Implementation'],
+                    ['code' => 'CSP', 'label' => 'InfoSec'],
+                    ['code' => 'CSP', 'label' => 'ICT Policies'],
+                    ['code' => 'CSP', 'label' => 'Data Privacy'],
+                    ['code' => 'CSP', 'label' => 'Password Policy'],
+                    ['code' => 'CSP', 'label' => 'ICT Usage'],
+                    ['code' => 'CSP', 'label' => 'Identity and Access Management'],
+                    ['code' => 'PMT', 'label' => 'Communications Plan'],
+                ],
             ],
             [
-                'title' => 'ICT Infrastructure',
-                'description' => 'Modernizing the technology backbone to support scalable, secure, and resilient digital operations.',
                 'domain' => 'technology',
+                'domain_label' => 'Technology',
+                'title' => 'IS Harmonization',
+                'code_theme' => 'green',
+                'items' => [
+                    ['code' => 'ISH', 'label' => 'DEPMIS'],
+                    ['code' => 'ISH', 'label' => 'Integrations'],
+                    ['code' => 'ISH', 'label' => 'IS Harmonization'],
+                    ['code' => 'ISH', 'label' => 'In-depth Analysis'],
+                    ['code' => 'ISH', 'label' => 'IS Ranking'],
+                    ['code' => 'ISH', 'label' => 'Phase 1 Harmonization'],
+                    ['code' => 'ISH', 'label' => 'Phase 2 Integrated IS Development'],
+                    ['code' => 'ISH', 'label' => 'Harmonized iHRMIS'],
+                    ['code' => 'ISH', 'label' => 'Integrated eULIMS (now iLab)'],
+                    ['code' => 'ISH', 'label' => 'KM Portal'],
+                    ['code' => 'ISH', 'label' => 'DOST Portal'],
+                    ['code' => 'ISH', 'label' => 'Monitoring and Analytics Standard Tools'],
+                    ['code' => 'ISH', 'label' => 'DaaS'],
+                    ['code' => 'ISH', 'label' => 'Executive Information System (EIS)'],
+                ],
+            ],
+            [
+                'domain' => 'technology',
+                'domain_label' => 'Technology',
+                'title' => 'Infra Harmonization',
+                'code_theme' => 'blue',
+                'items' => [
+                    ['code' => 'INH', 'label' => 'DOST Primary Connectivity'],
+                    ['code' => 'INH', 'label' => 'DOST Integrated Cloud'],
+                    ['code' => 'INH', 'label' => 'Smart Workplace'],
+                    ['code' => 'INH', 'label' => 'Central Repository'],
+                    ['code' => 'INH', 'label' => 'DOST Cloud Production'],
+                    ['code' => 'INH', 'label' => 'DOST DC1'],
+                    ['code' => 'INH', 'label' => 'DOST DC2'],
+                    ['code' => 'INH', 'label' => 'Tools Standardization'],
+                    ['code' => 'ISS', 'label' => 'OneISSP'],
+                ],
+            ],
+            [
+                'domain' => 'technology',
+                'domain_label' => 'Technology',
+                'title' => 'I.T. Governance',
+                'code_theme' => 'ice',
+                'items' => [
+                    ['code' => 'GOV', 'label' => 'OPM3'],
+                    ['code' => 'GOV', 'label' => 'Global PM Training'],
+                    ['code' => 'GOV', 'label' => 'Prioritization Model'],
+                    ['code' => 'GOV', 'label' => 'Agency & Regional Offices Engagement'],
+                    ['code' => 'GOV', 'label' => 'SecSta'],
+                    ['code' => 'GOV', 'label' => 'LnD Planning System'],
+                    ['code' => 'GOV', 'label' => 'DOST Software Development Pack'],
+                    ['code' => 'GOV', 'label' => 'PSCM'],
+                    ['code' => 'GOV', 'label' => 'ITSM'],
+                    ['code' => 'GOV', 'label' => 'Productivity Analysis'],
+                    ['code' => 'GOV', 'label' => 'Knowledge Management'],
+                    ['code' => 'PES', 'label' => 'SPMS'],
+                    ['code' => 'PES', 'label' => 'NSTIP Development'],
+                    ['code' => 'PES', 'label' => 'Planning Officers Capacity Building'],
+                    ['code' => 'PES', 'label' => 'Organizational Development Plan'],
+                ],
+            ],
+            [
+                'domain' => 'process',
+                'domain_label' => 'Process',
+                'title' => 'Process Harmonization',
+                'code_theme' => 'violet',
+                'items' => [
+                    ['code' => 'PRH', 'label' => 'Enhanced Proposal Process'],
+                    ['code' => 'PRH', 'label' => 'Project Management Process'],
+                    ['code' => 'PRH', 'label' => 'Project Change Management'],
+                    ['code' => 'PRH', 'label' => 'Tech Transfer Framework'],
+                    ['code' => 'PRH', 'label' => 'Process Mapping'],
+                    ['code' => 'PRH', 'label' => 'Configuration Management'],
+                    ['code' => 'PRH', 'label' => 'Change Management'],
+                    ['code' => 'PRH', 'label' => 'Resource Management'],
+                    ['code' => 'PRH', 'label' => 'Capacity Management'],
+                    ['code' => 'PRH', 'label' => 'Asset Lifecycle Management'],
+                    ['code' => 'PRH', 'label' => 'Foresight Framework Development'],
+                    ['code' => 'PRH', 'label' => 'TOGAF'],
+                    ['code' => 'PRH', 'label' => 'Enterprise Architecture Development'],
+                    ['code' => 'PRH', 'label' => 'DOST PMM'],
+                    ['code' => 'PRH', 'label' => 'QMS'],
+                    ['code' => 'PRH', 'label' => 'PQA'],
+                    ['code' => 'PRH', 'label' => 'CMMI'],
+                    ['code' => 'PRH', 'label' => 'Curriculum Based Learning'],
+                    ['code' => 'PRH', 'label' => 'Competency Based Development'],
+                ],
             ],
         ]);
+        $subProgramItemCount = $subProgramCards->sum(fn ($group) => count($group['items']));
     @endphp
 
     <div class="container">
@@ -191,11 +294,17 @@
             <div class="dx-panel" data-dx-panel="programs" hidden>
                 <div class="dx-program-grid">
                     @forelse ($subProgramCards as $item)
-                        <article class="dx-sub-card" data-domain="{{ $item['domain'] }}">
-                            <div class="program-index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+                        <article class="dx-sub-card dx-sub-card-group" data-domain="{{ $item['domain'] }}" data-theme="{{ $item['code_theme'] }}">
+                            <div class="dx-program-domain-group">{{ strtoupper($item['domain_label']) }}</div>
                             <h3 class="dx-program-title">{{ $item['title'] }}</h3>
-                            <p class="text-white-50 mb-0">{{ $item['description'] }}</p>
-                            <span class="dx-program-domain">{{ strtoupper($item['domain']) }}</span>
+                            <ul class="dx-program-list">
+                                @foreach ($item['items'] as $program)
+                                    <li class="dx-program-list-item">
+                                        <span class="dx-program-code">{{ $program['code'] }}</span>
+                                        <span class="dx-program-text">{{ $program['label'] }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
                         </article>
                     @empty
                         <div class="dx-empty-state">No sub-programs available yet.</div>
@@ -209,7 +318,7 @@
                     <span>Core Domains</span>
                 </article>
                 <article class="dx-metric-card">
-                    <strong class="dx-metric-number" data-target="{{ $subProgramCards->count() }}">0</strong>
+                    <strong class="dx-metric-number" data-target="{{ $subProgramItemCount }}">0</strong>
                     <span>Sub-programs</span>
                 </article>
                 <article class="dx-metric-card">

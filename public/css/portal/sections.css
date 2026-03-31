@@ -2376,43 +2376,36 @@
 }
 .dx-program-grid {
     margin-top: 1rem;
-    max-width: 52rem;
+    width: 100%;
+    max-width: 100%;
     margin-inline: auto;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: start;
 }
 .dx-sub-card {
-    min-height: 12.25rem;
-    padding: 1.15rem 1.1rem 1rem;
+    min-height: 100%;
+    padding: 1rem .95rem 1rem;
     border-radius: 1.2rem;
     border: 1px solid rgba(255,255,255,.08);
     background: linear-gradient(180deg, rgba(12, 16, 22, .96), rgba(11, 14, 20, .98));
     transition: transform .25s ease, opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
+.dx-sub-card-group {
+    display: grid;
+    align-content: start;
+    gap: .8rem;
+}
 .dx-program-title {
     color: #fff;
-    font-size: 1.18rem;
+    font-size: 1.08rem;
     line-height: 1.15;
     letter-spacing: -.03em;
-    margin-bottom: .55rem;
+    margin-bottom: 0;
     font-weight: 700;
 }
-.dx-sub-card .text-white-50 {
-    color: rgba(255,255,255,.56) !important;
-    font-size: .92rem;
-    line-height: 1.55;
-}
-.program-index {
-    display: inline-flex;
-    margin-bottom: .65rem;
-    color: rgba(0, 174, 239, .28);
-    font-size: 2.3rem;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -.04em;
-}
-.dx-program-domain {
+.dx-program-domain-group {
     display: inline-flex;
     align-self: flex-start;
-    margin-top: .9rem;
     padding: .22rem .58rem;
     border-radius: 999px;
     background: rgba(0, 174, 239, .12);
@@ -2422,6 +2415,57 @@
     font-weight: 700;
     letter-spacing: .09em;
     text-transform: uppercase;
+}
+.dx-program-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: .42rem;
+}
+.dx-program-list-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .45rem;
+    align-items: start;
+    font-size: .84rem;
+    color: rgba(255,255,255,.84);
+    line-height: 1.35;
+}
+.dx-program-code {
+    min-width: 3rem;
+    padding: .18rem .45rem;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+.dx-program-text {
+    padding-top: .08rem;
+}
+[data-theme="amber"] .dx-program-code {
+    background: linear-gradient(90deg, #925205, #bc7413);
+}
+[data-theme="cyan"] .dx-program-code {
+    background: linear-gradient(90deg, #1b607b, #277f9a);
+}
+[data-theme="green"] .dx-program-code {
+    background: linear-gradient(90deg, #117048, #169663);
+}
+[data-theme="blue"] .dx-program-code {
+    background: linear-gradient(90deg, #105db3, #1e76d4);
+}
+[data-theme="ice"] .dx-program-code {
+    background: linear-gradient(90deg, #aab7c6, #d8e1ec);
+    color: #1a2430;
+}
+[data-theme="violet"] .dx-program-code {
+    background: linear-gradient(90deg, #6c3aa4, #854bc9);
 }
 .dx-sub-card.highlighted {
     transform: translateY(-6px);
@@ -2643,12 +2687,14 @@
     background: linear-gradient(180deg, rgba(12, 16, 22, .96), rgba(11, 14, 20, .98));
     border-color: rgba(255,255,255,.08);
 }
-[data-bs-theme="light"] .dx-sub-card .text-white-50,
 [data-bs-theme="light"] .dx-metric-card span {
     color: rgba(255,255,255,.62) !important;
 }
 [data-bs-theme="light"] .dx-program-title {
     color: #fff;
+}
+[data-bs-theme="light"] .dx-program-list-item {
+    color: rgba(255,255,255,.84);
 }
 [data-bs-theme="light"] .dx-metrics-board {
     border-color: rgba(255,255,255,.08);
@@ -2703,8 +2749,10 @@
 
 @media (max-width: 991.98px) {
     .dx-domain-grid,
-    .dx-program-grid,
     .dx-metrics-board {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .dx-program-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .dx-metrics-board {
@@ -2723,10 +2771,12 @@
 
 @media (max-width: 767.98px) {
     .dx-domain-grid,
-    .dx-program-grid,
     .dx-metrics-board {
         grid-template-columns: 1fr;
         grid-template-rows: auto;
+    }
+    .dx-program-grid {
+        grid-template-columns: 1fr;
     }
     .dx-domain-card {
         min-height: 22rem;
