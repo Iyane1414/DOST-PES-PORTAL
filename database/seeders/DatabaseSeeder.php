@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach (['Memorandum', 'Order', 'Letter', 'Circular', 'Notice'] as $category) {
+        foreach (['Guidelines', 'Plans', 'Order', 'Memorandum'] as $category) {
             IssuanceCategory::query()->firstOrCreate(['name' => $category]);
         }
 
