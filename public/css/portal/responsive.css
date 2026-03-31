@@ -127,6 +127,10 @@
         min-height: 16rem;
         border-radius: calc(1.5rem - 1px);
     }
+    .dx-video-element {
+        min-height: 16rem;
+        border-radius: calc(1.5rem - 1px);
+    }
     .dx-video-badge {
         top: 1rem;
         right: 1rem;
