@@ -49,6 +49,9 @@
     ];
 
     $activeMeta = $tabMeta[$activeTab] ?? $tabMeta['issuances'];
+    $isEditingIssuance = isset($selectedIssuance) && $selectedIssuance;
+    $isEditingMaterial = isset($selectedMaterial) && $selectedMaterial;
+    $isEditingDx = isset($selectedDxItem) && $selectedDxItem;
 @endphp
 
 @section('content')
@@ -84,44 +87,50 @@
                                     <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
                                     <div>
                                         <div class="admin-kicker mb-2">Publishing Desk</div>
-                                        <h2 class="h3 fw-bold mb-1">{{ $activeMeta['section_title'] }}</h2>
+                                        <h2 class="h3 fw-bold mb-1">{{ $isEditingIssuance ? 'Edit Issuance' : $activeMeta['section_title'] }}</h2>
                                         <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
                                     </div>
                                 </div>
 
-                                <form method="POST" action="{{ route('admin.issuances.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                <form method="POST" action="{{ $isEditingIssuance ? route('admin.issuances.update', $selectedIssuance) : route('admin.issuances.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    @if ($isEditingIssuance)
+                                        @method('PUT')
+                                    @endif
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Issuance Title</label>
-                                            <input class="form-control" type="text" name="title" placeholder="Enter issuance title" required>
+                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedIssuance->title ?? '') }}" placeholder="Enter issuance title" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Category</label>
-                                            <select class="form-select" name="category" required>@foreach ($categories as $category)<option value="{{ $category->name }}">{{ $category->name }}</option>@endforeach</select>
+                                            <select class="form-select" name="category" required>@foreach ($categories as $category)<option value="{{ $category->name }}" @selected(old('category', $selectedIssuance->category ?? '') === $category->name)>{{ $category->name }}</option>@endforeach</select>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Date Issued</label>
-                                            <input class="form-control" type="date" name="date" required>
+                                            <input class="form-control" type="date" name="date" value="{{ old('date', isset($selectedIssuance) && $selectedIssuance?->date ? $selectedIssuance->date->format('Y-m-d') : '') }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Division</label>
-                                            <input class="form-control" type="text" name="division" placeholder="Enter division name" required>
+                                            <input class="form-control" type="text" name="division" value="{{ old('division', $selectedIssuance->division ?? '') }}" placeholder="Enter division name" required>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="admin-issuance-field admin-issuance-file-field">
-                                            <label class="form-label">Attachment</label>
-                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" required>
+                                            <label class="form-label">Attachment{{ $isEditingIssuance ? ' (optional replacement)' : '' }}</label>
+                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" {{ $isEditingIssuance ? '' : 'required' }}>
                                         </div>
                                     </div>
                                     <div class="col-12 admin-issuance-form-actions">
-                                        <button class="btn btn-accent rounded-pill px-4" type="submit">Publish Issuance</button>
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingIssuance ? 'Update Issuance' : 'Publish Issuance' }}</button>
+                                        @if ($isEditingIssuance)
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'issuances']) }}">Cancel Edit</a>
+                                        @endif
                                     </div>
                                 </form>
                             </div>
@@ -153,49 +162,55 @@
                                     <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
                                     <div>
                                         <div class="admin-kicker mb-2">Publishing Desk</div>
-                                        <h2 class="h3 fw-bold mb-1">{{ $activeMeta['section_title'] }}</h2>
+                                        <h2 class="h3 fw-bold mb-1">{{ $isEditingMaterial ? 'Edit Material' : $activeMeta['section_title'] }}</h2>
                                         <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
                                     </div>
                                 </div>
 
-                                <form method="POST" action="{{ route('admin.materials.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                <form method="POST" action="{{ $isEditingMaterial ? route('admin.materials.update', $selectedMaterial) : route('admin.materials.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    @if ($isEditingMaterial)
+                                        @method('PUT')
+                                    @endif
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Material Title</label>
-                                            <input class="form-control" type="text" name="title" placeholder="Enter material title" required>
+                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedMaterial->title ?? '') }}" placeholder="Enter material title" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Material Type</label>
                                             <select class="form-select" name="type" required>
-                                                <option value="Policy">Policy</option>
-                                                <option value="Annual Report">Annual Report</option>
-                                                <option value="R&D Survey">R&amp;D Survey</option>
-                                                <option value="Presentation">Presentation</option>
+                                                <option value="Policy" @selected(old('type', $selectedMaterial->type ?? '') === 'Policy')>Policy</option>
+                                                <option value="Annual Report" @selected(old('type', $selectedMaterial->type ?? '') === 'Annual Report')>Annual Report</option>
+                                                <option value="R&D Survey" @selected(old('type', $selectedMaterial->type ?? '') === 'R&D Survey')>R&amp;D Survey</option>
+                                                <option value="Presentation" @selected(old('type', $selectedMaterial->type ?? '') === 'Presentation')>Presentation</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Date Published</label>
-                                            <input class="form-control" type="date" name="date" required>
+                                            <input class="form-control" type="date" name="date" value="{{ old('date', isset($selectedMaterial) && $selectedMaterial?->date ? $selectedMaterial->date->format('Y-m-d') : '') }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Division</label>
-                                            <input class="form-control" type="text" name="division" placeholder="Enter division name" required>
+                                            <input class="form-control" type="text" name="division" value="{{ old('division', $selectedMaterial->division ?? '') }}" placeholder="Enter division name" required>
                                         </div>
                                     </div>
                                     <div class="col-12">
                                         <div class="admin-issuance-field admin-issuance-file-field">
-                                            <label class="form-label">Attachment</label>
-                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png" required>
+                                            <label class="form-label">Attachment{{ $isEditingMaterial ? ' (optional replacement)' : '' }}</label>
+                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png" {{ $isEditingMaterial ? '' : 'required' }}>
                                         </div>
                                     </div>
                                     <div class="col-12 admin-issuance-form-actions">
-                                        <button class="btn btn-accent rounded-pill px-4" type="submit">Save Material</button>
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingMaterial ? 'Update Material' : 'Save Material' }}</button>
+                                        @if ($isEditingMaterial)
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'materials']) }}">Cancel Edit</a>
+                                        @endif
                                     </div>
                                 </form>
                             </div>
@@ -214,13 +229,13 @@
                         </div>
                     @else
                         <div class="admin-card admin-workspace-card mb-4">
-                            <div class="admin-section-head">
-                                <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
-                                <div>
-                                    <h2 class="h3 fw-bold mb-1">{{ $activeMeta['section_title'] }}</h2>
-                                    <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
+                                <div class="admin-section-head">
+                                    <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
+                                    <div>
+                                        <h2 class="h3 fw-bold mb-1">{{ $activeTab === 'dx' && $isEditingDx ? 'Edit DX Content' : $activeMeta['section_title'] }}</h2>
+                                        <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
+                                    </div>
                                 </div>
-                            </div>
 
                             @if ($activeTab === 'messages')
                                 <form method="GET" action="{{ route('admin.workspace', ['tab' => 'messages']) }}" class="admin-message-toolbar">
@@ -253,46 +268,49 @@
                             @endif
 
                             @if ($activeTab === 'dx')
-                                <form method="POST" action="{{ route('admin.dx-items.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                <form method="POST" action="{{ $isEditingDx ? route('admin.dx-items.update', $selectedDxItem) : route('admin.dx-items.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    @if ($isEditingDx)
+                                        @method('PUT')
+                                    @endif
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold">Record Type</label>
                                         <select class="form-select" name="category" required>
-                                            <option value="domain">Domain</option>
-                                            <option value="program">Sub-Program</option>
-                                            <option value="project">Project</option>
+                                            <option value="domain" @selected(old('category', $selectedDxItem->category ?? 'domain') === 'domain')>Domain</option>
+                                            <option value="program" @selected(old('category', $selectedDxItem->category ?? '') === 'program')>Sub-Program</option>
+                                            <option value="project" @selected(old('category', $selectedDxItem->category ?? '') === 'project')>Project</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold">Core Domain</label>
                                         <select class="form-select" name="domain_key" required>
-                                            <option value="people">People</option>
-                                            <option value="process">Process</option>
-                                            <option value="technology">Technology</option>
+                                            <option value="people" @selected(old('domain_key', $selectedDxItem->domain_key ?? 'people') === 'people')>People</option>
+                                            <option value="process" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'process')>Process</option>
+                                            <option value="technology" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'technology')>Technology</option>
                                         </select>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold">Sort Order</label>
-                                        <input class="form-control" type="number" name="sort_order" min="0" value="0">
+                                        <input class="form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', $selectedDxItem->sort_order ?? 0) }}">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold">Parent Domain / Sub-program</label>
                                         <select class="form-select" name="parent_id">
-                                            <option value="">None</option>
+                                            <option value="" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === '')>None</option>
                                             @foreach ($dxDomains as $domain)
-                                                <option value="{{ $domain->id }}">Domain: {{ $domain->title }}</option>
+                                                <option value="{{ $domain->id }}" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === (string) $domain->id)>Domain: {{ $domain->title }}</option>
                                             @endforeach
                                             @foreach ($dxPrograms as $program)
-                                                <option value="{{ $program->id }}">Sub-program: {{ $program->title }}</option>
+                                                <option value="{{ $program->id }}" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === (string) $program->id)>Sub-program: {{ $program->title }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold">Project Code</label>
-                                        <input class="form-control" type="text" name="code" placeholder="Example: SRZ, CSP, GOV">
+                                        <input class="form-control" type="text" name="code" value="{{ old('code', $selectedDxItem->code ?? '') }}" placeholder="Example: SRZ, CSP, GOV">
                                     </div>
                                     <div class="col-md-8">
                                         <label class="form-label fw-semibold">Title</label>
-                                        <input class="form-control" type="text" name="title" placeholder="Title" required>
+                                        <input class="form-control" type="text" name="title" value="{{ old('title', $selectedDxItem->title ?? '') }}" placeholder="Title" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold">Domain Image</label>
@@ -300,13 +318,18 @@
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-semibold">Description</label>
-                                        <textarea class="form-control" name="description" rows="4" placeholder="Description" required></textarea>
+                                        <textarea class="form-control" name="description" rows="4" placeholder="Description" required>{{ old('description', $selectedDxItem->description ?? '') }}</textarea>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label fw-semibold">Project Attachment</label>
+                                        <label class="form-label fw-semibold">Project Attachment{{ $isEditingDx ? ' (optional replacement)' : '' }}</label>
                                         <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png">
                                     </div>
-                                    <div class="col-12"><button class="btn btn-accent rounded-pill px-4" type="submit">Save DX Content</button></div>
+                                    <div class="col-12 d-flex flex-wrap gap-2">
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingDx ? 'Update DX Content' : 'Save DX Content' }}</button>
+                                        @if ($isEditingDx)
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'dx']) }}">Cancel Edit</a>
+                                        @endif
+                                    </div>
                                 </form>
                             @endif
 

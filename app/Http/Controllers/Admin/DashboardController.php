@@ -68,6 +68,9 @@ class DashboardController extends Controller
         $messageSort = $request->string('message_sort')->toString() ?: 'newest';
         $issuances = $data['issuances'];
         $messages = $data['messages'];
+        $selectedIssuance = $activeTab === 'issuances' ? Issuance::query()->find($request->integer('edit_issuance')) : null;
+        $selectedMaterial = $activeTab === 'materials' ? Material::query()->find($request->integer('edit_material')) : null;
+        $selectedDxItem = $activeTab === 'dx' ? DxItem::query()->with('parent')->find($request->integer('edit_dx')) : null;
 
         if ($issuanceSearch !== '') {
             $issuances = $issuances->filter(function (Issuance $issuance) use ($issuanceSearch) {
@@ -106,6 +109,9 @@ class DashboardController extends Controller
             'messageSearch' => $messageSearch,
             'messageSort' => $messageSort,
             'selectedMessageId' => $request->integer('message'),
+            'selectedIssuance' => $selectedIssuance,
+            'selectedMaterial' => $selectedMaterial,
+            'selectedDxItem' => $selectedDxItem,
         ]);
     }
 

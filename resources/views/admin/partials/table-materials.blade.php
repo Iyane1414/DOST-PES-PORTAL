@@ -20,11 +20,14 @@
                     <td><span class="admin-issuance-chip">{{ $item->type }}</span></td>
                     <td>{{ optional($item->date)->format('M d, Y') }}</td>
                     <td class="text-end">
-                        <form method="POST" action="{{ route('admin.materials.destroy', $item) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger rounded-pill admin-issuance-delete-btn" type="submit">Delete</button>
-                        </form>
+                        <div class="admin-action-stack justify-content-end">
+                            <a class="btn btn-sm btn-outline-primary rounded-pill admin-issuance-edit-btn" href="{{ route('admin.workspace', ['tab' => 'materials', 'edit_material' => $item->id]) }}">Edit</a>
+                            <form method="POST" action="{{ route('admin.materials.destroy', $item) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger rounded-pill admin-issuance-delete-btn" type="submit">Delete</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             @empty

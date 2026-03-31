@@ -827,8 +827,120 @@ textarea.form-control { min-height: auto; }
     border-color: rgba(222, 58, 89, .42);
     background: rgba(255,255,255,.72);
 }
+.admin-issuance-edit-btn {
+    border-color: rgba(34, 140, 218, .3);
+    background: rgba(255,255,255,.78);
+    color: #1360a6;
+}
+.admin-issuance-edit-btn:hover {
+    background: rgba(52, 164, 255, .1);
+    color: #0e4f8b;
+}
 .admin-issuance-delete-btn:hover {
     background: rgba(255, 84, 112, .08);
+}
+.admin-action-stack {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .55rem;
+}
+.admin-dx-table-wrap {
+    border-radius: 1.35rem;
+    overflow: hidden;
+    border: 1px solid rgba(17, 136, 239, .1);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.86), rgba(244, 249, 255, .8)),
+        radial-gradient(circle at top right, rgba(70, 170, 255, .08), transparent 30%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+}
+.admin-dx-table tbody tr {
+    background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(247, 251, 255, .88));
+}
+.admin-dx-table tbody tr:hover {
+    background: linear-gradient(180deg, rgba(241, 248, 255, .98), rgba(232, 244, 255, .94));
+}
+.admin-dx-record {
+    display: grid;
+    gap: .2rem;
+}
+.admin-dx-record-title {
+    color: #183049;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+.admin-dx-record-meta {
+    color: rgba(24, 48, 73, .56);
+    font-size: .82rem;
+}
+.admin-dx-record-separator {
+    margin: 0 .35rem;
+    color: rgba(17, 136, 239, .46);
+}
+.admin-dx-record-code {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: .55rem;
+    padding: .28rem .58rem;
+    border-radius: 999px;
+    background: rgba(17, 136, 239, .1);
+    color: #0b66b4;
+    font-size: .73rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+.admin-dx-category-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 6.4rem;
+    padding: .44rem .82rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(10, 68, 118, .12), rgba(34, 140, 218, .18));
+    color: #124f86;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    border: 1px solid rgba(17, 136, 239, .14);
+}
+.admin-dx-domain-label,
+.admin-dx-parent-cell {
+    color: #294661;
+    font-weight: 600;
+}
+.admin-dx-file-link {
+    display: inline-flex;
+    align-items: center;
+    padding: .42rem .78rem;
+    border-radius: 999px;
+    border: 1px solid rgba(17, 136, 239, .18);
+    background: rgba(17, 136, 239, .08);
+    color: #0f67b4;
+    font-weight: 700;
+    text-decoration: none;
+}
+.admin-dx-file-link:hover {
+    background: rgba(17, 136, 239, .14);
+    color: #0a4d88;
+}
+.admin-dx-file-empty {
+    display: inline-flex;
+    align-items: center;
+    padding: .4rem .72rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, .04);
+    color: rgba(24, 48, 73, .54);
+    font-weight: 600;
+}
+.admin-dx-table td:last-child {
+    min-width: 11rem;
+}
+.admin-dx-table td:last-child .admin-action-stack {
+    flex-wrap: nowrap;
 }
 .admin-issuance-empty-state {
     display: grid;

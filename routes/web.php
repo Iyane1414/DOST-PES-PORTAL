@@ -25,15 +25,18 @@ Route::prefix('admin')->group(function (): void {
         Route::post('/logout', [AuthController::class, 'destroy'])->name('admin.logout');
 
         Route::post('/issuances', [ResourceController::class, 'storeIssuance'])->name('admin.issuances.store');
+        Route::put('/issuances/{issuance}', [ResourceController::class, 'updateIssuance'])->name('admin.issuances.update');
         Route::delete('/issuances/{issuance}', [ResourceController::class, 'destroyIssuance'])->name('admin.issuances.destroy');
 
         Route::post('/materials', [ResourceController::class, 'storeMaterial'])->name('admin.materials.store');
+        Route::put('/materials/{material}', [ResourceController::class, 'updateMaterial'])->name('admin.materials.update');
         Route::delete('/materials/{material}', [ResourceController::class, 'destroyMaterial'])->name('admin.materials.destroy');
 
         Route::post('/divisions', [ResourceController::class, 'storeDivision'])->name('admin.divisions.store');
         Route::delete('/divisions/{division}', [ResourceController::class, 'destroyDivision'])->name('admin.divisions.destroy');
 
         Route::post('/dx-items', [ResourceController::class, 'storeDxItem'])->name('admin.dx-items.store');
+        Route::put('/dx-items/{dxItem}', [ResourceController::class, 'updateDxItem'])->name('admin.dx-items.update');
         Route::delete('/dx-items/{dxItem}', [ResourceController::class, 'destroyDxItem'])->name('admin.dx-items.destroy');
 
         Route::post('/categories', [ResourceController::class, 'storeCategory'])->name('admin.categories.store');
