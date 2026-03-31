@@ -139,6 +139,67 @@
                                 @include('admin.partials.table-issuances')
                             </div>
                         </div>
+                    @elseif ($activeTab === 'materials')
+                        <div class="admin-issuance-workspace-grid">
+                            <div class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-library-panel">
+                                <div class="admin-section-head admin-issuance-panel-head">
+                                    <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
+                                    <div>
+                                        <div class="admin-kicker mb-2">Publishing Desk</div>
+                                        <h2 class="h3 fw-bold mb-1">{{ $activeMeta['section_title'] }}</h2>
+                                        <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
+                                    </div>
+                                </div>
+
+                                <form method="POST" action="{{ route('admin.materials.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Material Title</label>
+                                            <input class="form-control" type="text" name="title" placeholder="Enter material title" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Material Type</label>
+                                            <input class="form-control" type="text" name="type" placeholder="Enter material type" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Date Published</label>
+                                            <input class="form-control" type="date" name="date" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Division</label>
+                                            <input class="form-control" type="text" name="division" placeholder="Enter division name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Resource URL</label>
+                                            <input class="form-control" type="url" name="url" placeholder="https://example.com/material">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 admin-issuance-form-actions">
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">Save Material</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="admin-card admin-table-shell admin-issuance-panel admin-issuance-form-panel">
+                                <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
+                                    <div>
+                                        <div class="admin-kicker mb-2">Record Center</div>
+                                        <h2 class="h4 fw-bold mb-1">{{ $activeMeta['label'] }} Library</h2>
+                                        <p class="text-secondary-soft mb-0">Review and maintain currently published records.</p>
+                                    </div>
+                                </div>
+
+                                @include('admin.partials.table-materials')
+                            </div>
+                        </div>
                     @else
                         <div class="admin-card admin-workspace-card mb-4">
                             <div class="admin-section-head">
@@ -167,17 +228,6 @@
                                         <span class="admin-message-count">Showing {{ $workspaceMessages->count() }} {{ \Illuminate\Support\Str::plural('message', $workspaceMessages->count()) }}</span>
                                         <button class="btn btn-accent rounded-pill px-4" type="submit">Apply</button>
                                     </div>
-                                </form>
-                            @endif
-
-                            @if ($activeTab === 'materials')
-                                <form method="POST" action="{{ route('admin.materials.store') }}" class="row g-3">@csrf
-                                    <div class="col-md-6"><input class="form-control" type="text" name="title" placeholder="Title" required></div>
-                                    <div class="col-md-6"><input class="form-control" type="text" name="type" placeholder="Type" required></div>
-                                    <div class="col-md-6"><input class="form-control" type="date" name="date" required></div>
-                                    <div class="col-md-6"><input class="form-control" type="text" name="division" placeholder="Division" required></div>
-                                    <div class="col-12"><input class="form-control" type="url" name="url" placeholder="Resource URL"></div>
-                                    <div class="col-12"><button class="btn btn-accent rounded-pill px-4" type="submit">Save Material</button></div>
                                 </form>
                             @endif
 
@@ -249,10 +299,6 @@
                                     <p class="text-secondary-soft mb-0">Review and maintain currently published records.</p>
                                 </div>
                             </div>
-
-                            @if ($activeTab === 'materials')
-                                @include('admin.partials.table-materials')
-                            @endif
 
                             @if ($activeTab === 'divisions')
                                 @include('admin.partials.table-divisions')
