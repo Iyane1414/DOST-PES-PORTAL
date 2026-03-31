@@ -35,6 +35,9 @@ class PortalController extends Controller
         $dxCoreDomains = $this->dxCoreDomains();
         $dxSubPrograms = $this->dxSubPrograms();
         $categories = IssuanceCategory::query()->orderBy('name')->get();
+        if ($categories->isEmpty()) {
+            $categories = collect($this->defaultIssuanceCategories())->map(fn (string $name) => (object) ['name' => $name]);
+        }
         $dxItems = DxItem::query()->orderBy('category')->orderBy('title')->get();
         $search = $request->string('search')->toString();
         $categoryFilter = $request->string('category')->toString();
@@ -357,6 +360,11 @@ class PortalController extends Controller
                 'head' => null,
             ],
         ]);
+    }
+
+    private function defaultIssuanceCategories(): array
+    {
+        return ['Circular', 'Letter', 'Memorandum', 'Notice', 'Order'];
     }
 
     private function resourceCollections($materials)

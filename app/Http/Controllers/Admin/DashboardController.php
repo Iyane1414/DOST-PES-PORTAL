@@ -116,6 +116,9 @@ class DashboardController extends Controller
         $divisions = Division::query()->orderBy('name')->get();
         $dxItems = DxItem::query()->orderBy('category')->orderBy('title')->get();
         $categories = IssuanceCategory::query()->orderBy('name')->get();
+        if ($categories->isEmpty()) {
+            $categories = collect($this->defaultIssuanceCategories())->map(fn (string $name) => (object) ['name' => $name]);
+        }
         $messages = ContactMessage::query()->latest()->get();
         $dxPrograms = $dxItems->where('category', 'program')->values();
         $dxDomains = $dxItems->where('category', 'domain')->values();
@@ -178,6 +181,11 @@ class DashboardController extends Controller
         return str_contains($title, $normalizedSearch)
             || str_contains($category, $normalizedSearch)
             || str_contains($division, $normalizedSearch);
+    }
+
+    private function defaultIssuanceCategories(): array
+    {
+        return ['Circular', 'Letter', 'Memorandum', 'Notice', 'Order'];
     }
 
     private function projectAnalytics($dxPrograms): array
