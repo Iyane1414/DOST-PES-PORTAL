@@ -349,6 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dxTabs = document.querySelectorAll('[data-dx-tab]');
     const dxPanels = document.querySelectorAll('[data-dx-panel]');
     const dxSection = document.getElementById('dost-dx');
+    const dxProgramCards = document.querySelectorAll('.dx-sub-card[data-program-slug]');
+    const dxProjectPanels = document.querySelectorAll('.dx-project-panel[data-program-slug]');
 
     if (dxSection instanceof HTMLElement) {
         if ('IntersectionObserver' in window) {
@@ -387,7 +389,16 @@ document.addEventListener('DOMContentLoaded', () => {
     dxTabs.forEach((tab) => {
         tab.addEventListener('click', () => {
             const tabName = tab.getAttribute('data-dx-tab');
-            if (tabName) setDxTab(tabName);
+            if (tabName) {
+                setDxTab(tabName);
+
+                if (tabName === 'programs' && !document.querySelector('.dx-sub-card.is-active')) {
+                    const firstProgram = document.querySelector('.dx-sub-card[data-program-slug]');
+                    const firstSlug = firstProgram instanceof HTMLElement ? firstProgram.dataset.programSlug : '';
+
+                    if (firstSlug) activateDxProgram(firstSlug);
+                }
+            }
         });
     });
 
@@ -437,42 +448,132 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const dxGoToSubProgram = (domain) => {
+    const activateDxProgram = (programSlug) => {
+        dxProgramCards.forEach((card) => {
+            const active = card instanceof HTMLElement && card.dataset.programSlug === programSlug;
+            card.classList.toggle('is-active', active);
+            card.classList.remove('highlighted', 'dimmed');
+        });
+
+        dxProjectPanels.forEach((panel) => {
+            const active = panel instanceof HTMLElement && panel.dataset.programSlug === programSlug;
+            panel.classList.toggle('is-active', active);
+            panel.toggleAttribute('hidden', !active);
+        });
+    };
+
+    const dxGoToSubProgram = (domain, programSlug) => {
         setDxTab('programs');
 
         window.setTimeout(() => {
-            const allCards = document.querySelectorAll('.dx-sub-card');
+            const slug = programSlug || (document.querySelector(`.dx-sub-card[data-domain="${domain}"]`) instanceof HTMLElement
+                ? document.querySelector(`.dx-sub-card[data-domain="${domain}"]`).dataset.programSlug
+                : '');
 
-            allCards.forEach((card) => {
-                card.classList.remove('highlighted', 'dimmed');
-            });
+            if (!slug) return;
 
-            allCards.forEach((card) => {
-                if (card instanceof HTMLElement && card.dataset.domain === domain) {
-                    card.classList.add('highlighted');
-                } else {
-                    card.classList.add('dimmed');
-                }
-            });
+            activateDxProgram(slug);
 
-            const first = document.querySelector(`.dx-sub-card[data-domain="${domain}"]`);
+            const first = document.querySelector(`.dx-sub-card[data-program-slug="${slug}"]`);
 
             if (first instanceof HTMLElement) {
                 first.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-
-            window.setTimeout(() => {
-                allCards.forEach((card) => {
-                    card.classList.remove('highlighted', 'dimmed');
-                });
-            }, 3000);
         }, 100);
     };
 
     window.dxGoToSubProgram = dxGoToSubProgram;
 
+    const initialDxProgram = document.querySelector('.dx-sub-card[data-program-slug]');
+    if (initialDxProgram instanceof HTMLElement && initialDxProgram.dataset.programSlug) {
+        activateDxProgram(initialDxProgram.dataset.programSlug);
+    }
+
     const dxOverviewModal = document.getElementById('dxOverviewModal');
     let pendingDxAction = null;
+    const dxProgramSearchForm = document.querySelector('.dx-program-page-controls');
+    const dxProgramSearchInput = document.querySelector('[data-dx-project-search]');
+    const dxProjectItems = Array.from(document.querySelectorAll('[data-dx-project-item]'));
+    const dxProjectCount = document.querySelector('[data-dx-project-count]');
+    const dxProjectEmpty = document.querySelector('[data-dx-project-empty]');
+
+    const dxProjectMatchesSearch = (code, title, query) => {
+        const normalizedQuery = query.trim().toLowerCase();
+
+        if (normalizedQuery === '') {
+            return true;
+        }
+
+        const normalizedCode = code.trim().toLowerCase();
+        const normalizedTitle = title.trim().toLowerCase();
+        const titleWords = normalizedTitle.split(/\s+/).filter(Boolean);
+
+        if (normalizedCode && normalizedCode.startsWith(normalizedQuery)) {
+            return true;
+        }
+
+        if (normalizedTitle && normalizedTitle.startsWith(normalizedQuery)) {
+            return true;
+        }
+
+        if (titleWords.some((word) => word.startsWith(normalizedQuery))) {
+            return true;
+        }
+
+        return normalizedTitle.includes(normalizedQuery);
+    };
+
+    const syncDxProjectSearch = () => {
+        if (!(dxProgramSearchInput instanceof HTMLInputElement)) {
+            return;
+        }
+
+        const query = dxProgramSearchInput.value;
+        let visibleCount = 0;
+
+        dxProjectItems.forEach((item) => {
+            if (!(item instanceof HTMLElement)) {
+                return;
+            }
+
+            const code = item.dataset.projectCode || '';
+            const title = item.dataset.projectTitle || '';
+            const visible = dxProjectMatchesSearch(code, title, query);
+
+            item.hidden = !visible;
+
+            if (visible) {
+                visibleCount += 1;
+            }
+        });
+
+        if (dxProjectCount instanceof HTMLElement) {
+            dxProjectCount.textContent = `${visibleCount}`;
+        }
+
+        if (dxProjectEmpty instanceof HTMLElement) {
+            dxProjectEmpty.hidden = visibleCount > 0;
+        }
+
+        if (dxProgramSearchForm instanceof HTMLFormElement) {
+            const nextUrl = new URL(dxProgramSearchForm.action, window.location.origin);
+            const normalizedQuery = query.trim();
+
+            if (normalizedQuery !== '') {
+                nextUrl.searchParams.set('search', normalizedQuery);
+            }
+
+            window.history.replaceState({}, '', normalizedQuery !== '' ? nextUrl.toString() : nextUrl.pathname);
+        }
+    };
+
+    dxProgramSearchInput?.addEventListener('input', syncDxProjectSearch);
+    dxProgramSearchInput?.addEventListener('search', syncDxProjectSearch);
+    dxProgramSearchForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        syncDxProjectSearch();
+    });
+    syncDxProjectSearch();
 
     document.querySelectorAll('[data-dx-modal-action="domains"]').forEach((button) => {
         button.addEventListener('click', () => {

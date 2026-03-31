@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PortalController::class, 'index'])->name('portal.home');
 Route::get('/resources/{collectionSlug}', [PortalController::class, 'materialCollection'])->name('portal.resources.show');
+Route::get('/dost-dx/{domainSlug}/{subProgramSlug}', [PortalController::class, 'dxProgramShow'])->name('portal.dx.program.show');
 Route::post('/contact', [PortalController::class, 'contact'])->name('portal.contact');
 Route::post('/subscribe', [PortalController::class, 'subscribe'])->name('portal.subscribe');
 Route::post('/assistant', [PortalController::class, 'assistant'])->name('portal.assistant');
