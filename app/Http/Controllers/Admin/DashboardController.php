@@ -63,9 +63,17 @@ class DashboardController extends Controller
         $allowedTabs = ['issuances', 'materials', 'divisions', 'dx', 'categories', 'messages', 'ai'];
         $requestedTab = $tab ?: $request->string('tab')->toString() ?: 'issuances';
         $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'issuances';
+        $issuanceSearch = trim($request->string('issuance_search')->toString());
         $messageSearch = trim($request->string('message_search')->toString());
         $messageSort = $request->string('message_sort')->toString() ?: 'newest';
+        $issuances = $data['issuances'];
         $messages = $data['messages'];
+
+        if ($issuanceSearch !== '') {
+            $issuances = $issuances->filter(function (Issuance $issuance) use ($issuanceSearch) {
+                return $this->matchesWorkspaceIssuanceSearch($issuance, $issuanceSearch);
+            })->values();
+        }
 
         if ($messageSearch !== '') {
             $needle = Str::lower($messageSearch);
@@ -92,6 +100,8 @@ class DashboardController extends Controller
             ...$data,
             'activeSection' => 'workspace',
             'activeTab' => $activeTab,
+            'workspaceIssuances' => $issuances,
+            'issuanceSearch' => $issuanceSearch,
             'workspaceMessages' => $messages,
             'messageSearch' => $messageSearch,
             'messageSort' => $messageSort,
@@ -132,6 +142,42 @@ class DashboardController extends Controller
                 'website_views' => $viewStats['total'],
             ],
         ];
+    }
+
+    private function matchesWorkspaceIssuanceSearch(Issuance $issuance, string $search): bool
+    {
+        $normalizedSearch = Str::of($search)->lower()->trim()->value();
+
+        if ($normalizedSearch === '') {
+            return true;
+        }
+
+        $title = Str::of($issuance->title ?? '')->lower()->trim()->value();
+        $category = Str::of($issuance->category ?? '')->lower()->trim()->value();
+        $division = Str::of($issuance->division ?? '')->lower()->trim()->value();
+        $titleWords = preg_split('/\s+/', $title, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        if ($title !== '' && str_starts_with($title, $normalizedSearch)) {
+            return true;
+        }
+
+        foreach ($titleWords as $word) {
+            if (str_starts_with($word, $normalizedSearch)) {
+                return true;
+            }
+        }
+
+        if ($category !== '' && str_starts_with($category, $normalizedSearch)) {
+            return true;
+        }
+
+        if ($division !== '' && str_starts_with($division, $normalizedSearch)) {
+            return true;
+        }
+
+        return str_contains($title, $normalizedSearch)
+            || str_contains($category, $normalizedSearch)
+            || str_contains($division, $normalizedSearch);
     }
 
     private function projectAnalytics($dxPrograms): array

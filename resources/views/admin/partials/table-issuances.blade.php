@@ -1,6 +1,42 @@
-<div class="table-responsive">
-    <table class="table admin-table align-middle">
-        <thead><tr><th>Title</th><th>Category</th><th>Date</th><th class="text-end">Action</th></tr></thead>
-        <tbody>@foreach ($issuances as $item)<tr><td>{{ $item->title }}</td><td>{{ $item->category }}</td><td>{{ optional($item->date)->format('M d, Y') }}</td><td class="text-end"><form method="POST" action="{{ route('admin.issuances.destroy', $item) }}">@csrf @method('DELETE')<button class="btn btn-sm btn-outline-danger rounded-pill" type="submit">Delete</button></form></td></tr>@endforeach</tbody>
+<div class="table-responsive admin-issuance-table-wrap">
+    <table class="table admin-table admin-issuance-table align-middle">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th class="text-end">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse (($workspaceIssuances ?? $issuances) as $item)
+                <tr>
+                    <td>
+                        <div class="admin-issuance-record">
+                            <div class="admin-issuance-record-title">{{ $item->title }}</div>
+                            <div class="admin-issuance-record-meta">{{ $item->division }}</div>
+                        </div>
+                    </td>
+                    <td><span class="admin-issuance-chip">{{ $item->category }}</span></td>
+                    <td>{{ optional($item->date)->format('M d, Y') }}</td>
+                    <td class="text-end">
+                        <form method="POST" action="{{ route('admin.issuances.destroy', $item) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-outline-danger rounded-pill admin-issuance-delete-btn" type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4">
+                        <div class="admin-issuance-empty-state">
+                            <strong>No issuances found</strong>
+                            <span>Try a different search term or publish a new issuance record.</span>
+                        </div>
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
     </table>
 </div>

@@ -240,6 +240,21 @@
     .admin-message-intro-grid {
         grid-template-columns: 1fr;
     }
+    .admin-issuance-workspace-grid {
+        grid-template-columns: 1fr;
+    }
+    .admin-issuance-meta-strip {
+        grid-template-columns: 1fr;
+    }
+    .admin-issuance-library-toolbar {
+        grid-template-columns: 1fr;
+    }
+    .admin-issuance-form-actions {
+        justify-content: stretch;
+    }
+    .admin-issuance-form-panel .btn-accent {
+        width: 100%;
+    }
     .admin-project-widget-chart {
         width: 13rem;
         height: 13rem;
