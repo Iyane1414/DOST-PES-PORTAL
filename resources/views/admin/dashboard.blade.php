@@ -161,7 +161,12 @@
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Material Type</label>
-                                            <input class="form-control" type="text" name="type" placeholder="Enter material type" required>
+                                            <select class="form-select" name="type" required>
+                                                <option value="Policy">Policy</option>
+                                                <option value="Annual Report">Annual Report</option>
+                                                <option value="R&D Survey">R&amp;D Survey</option>
+                                                <option value="Presentation">Presentation</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-6">

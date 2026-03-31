@@ -61,10 +61,11 @@ class ResourceController extends Controller
         ]);
 
         $path = $request->file('document')->store('materials', 'public');
+        $normalizedType = $this->normalizeMaterialType($data['type']);
 
         Material::query()->create([
             'title' => $data['title'],
-            'type' => $data['type'],
+            'type' => $normalizedType,
             'date' => $data['date'],
             'division' => $data['division'],
             'url' => Storage::disk('public')->url($path),
@@ -161,5 +162,24 @@ class ResourceController extends Controller
     private function redirectWithTab(string $tab, string $status): RedirectResponse
     {
         return redirect()->route('admin.workspace', ['tab' => $tab])->with('status', $status);
+    }
+
+    private function normalizeMaterialType(string $type): string
+    {
+        $normalized = strtolower(trim($type));
+
+        if (str_contains($normalized, 'policy') || str_contains($normalized, 'guideline')) {
+            return 'Policy';
+        }
+
+        if (str_contains($normalized, 'annual') || str_contains($normalized, 'report')) {
+            return 'Annual Report';
+        }
+
+        if (str_contains($normalized, 'survey') || str_contains($normalized, 'r&d') || str_contains($normalized, 'research')) {
+            return 'R&D Survey';
+        }
+
+        return 'Presentation';
     }
 }

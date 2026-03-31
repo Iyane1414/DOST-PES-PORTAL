@@ -624,10 +624,16 @@ class PortalController extends Controller
         $title = Str::lower($item->title);
 
         return match ($collection['slug']) {
-            'policies' => str_contains($type, 'policy'),
+            'policies' => str_contains($type, 'policy') || str_contains($type, 'guideline'),
             'annual-report' => str_contains($type, 'annual'),
-            'rd-survey' => str_contains($type, 'survey') || str_contains($title, 'survey'),
-            'presentations' => str_contains($type, 'presentation') || str_contains($type, 'ppt') || str_contains($type, 'powerpoint'),
+            'rd-survey' => str_contains($type, 'survey') || str_contains($type, 'r&d') || str_contains($title, 'survey'),
+            'presentations' => str_contains($type, 'presentation')
+                || str_contains($type, 'ppt')
+                || str_contains($type, 'powerpoint')
+                || str_contains($type, 'slide')
+                || str_contains($type, 'deck')
+                || str_contains($type, 'video')
+                || str_contains($type, 'infographic'),
             default => false,
         };
     }
