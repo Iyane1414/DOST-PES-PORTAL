@@ -100,7 +100,7 @@
         <section class="dx-video-slot" aria-label="DOST DX overview video">
             <div class="dx-video-frame">
                 <video class="dx-video-element" controls preload="metadata">
-                    <source src="{{ asset('videos/DOST DX FINAL VIDEO.mp4') }}" type="video/mp4">
+                    <source src="{{ asset('videos/dost-dx-final-video.mp4') }}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
             </div>
