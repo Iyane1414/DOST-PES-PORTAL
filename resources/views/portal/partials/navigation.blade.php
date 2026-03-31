@@ -7,8 +7,8 @@
         <a class="navbar-brand portal-brand" href="{{ route('portal.home') }}">
             <img src="{{ asset('images/bagongpilipinas.png') }}" alt="Bagong Pilipinas logo" class="portal-brand-logo portal-brand-logo-side">
             <span class="portal-brand-logo-stack">
-                <img src="{{ asset('images/dostlogoo.png') }}" alt="DOST logo" class="portal-brand-logo portal-brand-logo-main portal-brand-logo-default">
-                <img src="{{ asset('images/lightlogo.png') }}" alt="DOST light logo" class="portal-brand-logo portal-brand-logo-main portal-brand-logo-light">
+                <img src="{{ asset('images/DOST LOGO light.png') }}" alt="DOST light mode logo" class="portal-brand-logo portal-brand-logo-main portal-brand-logo-default">
+                <img src="{{ asset('images/DOST LOGO dark.png') }}" alt="DOST dark mode logo" class="portal-brand-logo portal-brand-logo-main portal-brand-logo-light">
             </span>
         </a>
         <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
