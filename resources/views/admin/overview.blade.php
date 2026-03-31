@@ -213,16 +213,23 @@
 
                     <div class="col-12 col-xxl-4">
                         <div class="admin-card admin-side-card admin-overview-card admin-contact-stack-card">
-                            <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-                                <h2 class="h5 fw-bold mb-0">Latest Contact Messages</h2>
-                                <a href="{{ route('admin.workspace', ['tab' => 'messages']) }}" class="admin-mini-link">Open Inbox</a>
+                            <div class="admin-contact-stack-head">
+                                <div>
+                                    <div class="admin-kicker mb-2">Inbox Monitor</div>
+                                    <h2 class="h4 fw-bold mb-1">Latest Contact Messages</h2>
+                                    <p class="admin-contact-stack-copy mb-0">Subject-led inbox preview for quick scanning before opening the full messages workspace.</p>
+                                </div>
+                                <a href="{{ route('admin.workspace', ['tab' => 'messages']) }}" class="admin-contact-stack-link">Open Inbox</a>
                             </div>
                             <div class="admin-side-list admin-contact-stack">
                                 @forelse ($recentMessages as $message)
                                     <a href="{{ route('admin.workspace', ['tab' => 'messages', 'message' => $message->id]) }}#message-{{ $message->id }}" class="admin-side-item admin-side-link admin-message-preview-card">
-                                        <div class="admin-side-item-title">{{ $message->subject }}</div>
-                                        <div class="admin-side-item-meta">{{ $message->name }} • {{ $message->email }}</div>
-                                        <div class="admin-message-preview-copy">New message preview: {{ \Illuminate\Support\Str::limit($message->message, 85) }}</div>
+                                        <div class="admin-message-preview-avatar">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($message->name, 0, 1)) }}</div>
+                                        <div class="admin-message-preview-main">
+                                            <div class="admin-side-item-title">{{ $message->subject }}</div>
+                                            <div class="admin-message-preview-sender">{{ $message->name }}</div>
+                                            <div class="admin-side-item-meta">{{ $message->email }}</div>
+                                        </div>
                                     </a>
                                 @empty
                                     <div class="text-secondary-soft">No contact messages yet.</div>
@@ -235,3 +242,4 @@
         </main>
     </div>
 @endsection
+

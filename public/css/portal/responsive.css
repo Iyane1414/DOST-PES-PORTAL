@@ -240,6 +240,12 @@
     .admin-message-intro-grid {
         grid-template-columns: 1fr;
     }
+    .admin-contact-stack-head {
+        flex-direction: column;
+    }
+    .admin-contact-stack-link {
+        width: 100%;
+    }
     .admin-issuance-workspace-grid {
         grid-template-columns: 1fr;
     }

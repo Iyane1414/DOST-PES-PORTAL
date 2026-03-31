@@ -553,12 +553,13 @@ textarea.form-control { min-height: auto; }
 }
 .admin-issuance-workspace-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.35rem;
     align-items: start;
 }
 .admin-issuance-panel {
-    min-height: 100%;
+    min-height: auto;
+    width: 100%;
 }
 .admin-issuance-form-panel {
     background:
@@ -1329,9 +1330,48 @@ textarea.form-control { min-height: auto; }
 }
 .admin-contact-stack-card {
     height: 100%;
+    background:
+        radial-gradient(circle at 88% 12%, rgba(64, 174, 255, .2), transparent 22%),
+        linear-gradient(180deg, rgba(7, 28, 49, .98), rgba(10, 38, 66, .96) 56%, rgba(14, 89, 150, .92) 100%);
+    border-color: rgba(100, 188, 255, .16);
+    box-shadow: 0 26px 58px rgba(7, 22, 40, .22), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .admin-contact-stack {
     align-content: start;
+}
+.admin-contact-stack-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.admin-contact-stack-card .admin-kicker,
+.admin-contact-stack-card h2 {
+    color: #f6fbff !important;
+}
+.admin-contact-stack-copy {
+    max-width: 24rem;
+    color: rgba(223, 237, 248, .74);
+    line-height: 1.55;
+}
+.admin-contact-stack-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.85rem;
+    padding: .75rem 1.15rem;
+    border-radius: 999px;
+    border: 1px solid rgba(120, 206, 255, .18);
+    background: rgba(255,255,255,.06);
+    color: #f5fbff;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.admin-contact-stack-link:hover {
+    background: rgba(111, 213, 255, .12);
+    color: #ffffff;
 }
 .admin-view-stack {
     gap: 1rem;
@@ -1373,15 +1413,48 @@ textarea.form-control { min-height: auto; }
 }
 .admin-message-preview-card {
     display: grid;
-    gap: .35rem;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .85rem;
+    align-items: center;
     text-decoration: none;
     transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease;
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+    border-color: rgba(121, 206, 255, .12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
 }
 .admin-message-preview-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(17, 136, 239, .18);
-    box-shadow: 0 20px 34px rgba(17, 136, 239, .12);
-    background: linear-gradient(180deg, rgba(240, 248, 255, .98), rgba(230, 242, 252, 1));
+    border-color: rgba(111, 213, 255, .24);
+    box-shadow: 0 20px 34px rgba(0, 174, 239, .12);
+    background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+}
+.admin-message-preview-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.9rem;
+    height: 2.9rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(96, 215, 255, .24), rgba(24, 139, 255, .18));
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+}
+.admin-message-preview-main {
+    min-width: 0;
+}
+.admin-message-preview-sender {
+    color: rgba(248, 249, 250, .82);
+    font-size: .9rem;
+    font-weight: 600;
+    margin-bottom: .08rem;
+}
+.admin-contact-stack-card .admin-side-item-title {
+    color: #f8fbff;
+}
+.admin-contact-stack-card .admin-side-item-meta {
+    color: rgba(223, 237, 248, .68);
 }
 .admin-message-preview-copy {
     color: rgba(17,17,17,.68);
