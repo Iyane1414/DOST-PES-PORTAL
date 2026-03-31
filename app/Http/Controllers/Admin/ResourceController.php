@@ -57,16 +57,28 @@ class ResourceController extends Controller
             'type' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date'],
             'division' => ['required', 'string', 'max:255'],
-            'url' => ['nullable', 'url', 'max:2048'],
+            'document' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:20480'],
         ]);
 
-        Material::query()->create($data);
+        $path = $request->file('document')->store('materials', 'public');
+
+        Material::query()->create([
+            'title' => $data['title'],
+            'type' => $data['type'],
+            'date' => $data['date'],
+            'division' => $data['division'],
+            'url' => Storage::disk('public')->url($path),
+        ]);
 
         return $this->redirectWithTab('materials', 'Material saved.');
     }
 
     public function destroyMaterial(Material $material): RedirectResponse
     {
+        if ($material->url && str_starts_with($material->url, '/storage/')) {
+            Storage::disk('public')->delete(str_replace('/storage/', '', $material->url));
+        }
+
         $material->delete();
 
         return $this->redirectWithTab('materials', 'Material deleted.');

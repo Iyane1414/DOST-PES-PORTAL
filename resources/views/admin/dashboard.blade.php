@@ -177,9 +177,9 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Resource URL</label>
-                                            <input class="form-control" type="url" name="url" placeholder="https://example.com/material">
+                                        <div class="admin-issuance-field admin-issuance-file-field">
+                                            <label class="form-label">Attachment</label>
+                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png" required>
                                         </div>
                                     </div>
                                     <div class="col-12 admin-issuance-form-actions">
