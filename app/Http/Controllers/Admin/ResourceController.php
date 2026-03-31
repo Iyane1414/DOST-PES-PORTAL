@@ -23,7 +23,7 @@ class ResourceController extends Controller
             'category' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date'],
             'division' => ['required', 'string', 'max:255'],
-            'document' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:20480'],
+            'document' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:51200'],
         ]);
 
         $path = $request->file('document')->store('issuances', 'public');
@@ -57,7 +57,7 @@ class ResourceController extends Controller
             'type' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date'],
             'division' => ['required', 'string', 'max:255'],
-            'document' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:20480'],
+            'document' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:102400'],
         ]);
 
         $path = $request->file('document')->store('materials', 'public');
