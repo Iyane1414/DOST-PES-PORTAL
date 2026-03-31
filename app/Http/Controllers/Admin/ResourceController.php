@@ -18,13 +18,16 @@ class ResourceController extends Controller
 {
     public function storeIssuance(Request $request): RedirectResponse
     {
-        $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'category' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
-            'division' => ['required', 'string', 'max:255'],
-            'document' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:51200'],
-        ]);
+        $data = $request->validate(
+            [
+                'title' => ['required', 'string', 'max:255'],
+                'category' => ['required', 'string', 'max:255'],
+                'date' => ['required', 'date'],
+                'division' => ['required', 'string', 'max:255'],
+                'document' => ['required', 'file', 'extensions:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:51200'],
+            ],
+            $this->uploadValidationMessages('document', 50)
+        );
 
         $path = $request->file('document')->store('issuances', 'public');
 
@@ -52,13 +55,16 @@ class ResourceController extends Controller
 
     public function storeMaterial(Request $request): RedirectResponse
     {
-        $data = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
-            'division' => ['required', 'string', 'max:255'],
-            'document' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:102400'],
-        ]);
+        $data = $request->validate(
+            [
+                'title' => ['required', 'string', 'max:255'],
+                'type' => ['required', 'string', 'max:255'],
+                'date' => ['required', 'date'],
+                'division' => ['required', 'string', 'max:255'],
+                'document' => ['required', 'file', 'extensions:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:102400'],
+            ],
+            $this->uploadValidationMessages('document', 100)
+        );
 
         $path = $request->file('document')->store('materials', 'public');
         $normalizedType = $this->normalizeMaterialType($data['type']);
@@ -181,5 +187,15 @@ class ResourceController extends Controller
         }
 
         return 'Presentation';
+    }
+
+    private function uploadValidationMessages(string $field, int $maxMb): array
+    {
+        return [
+            "{$field}.required" => 'Please choose a file before submitting.',
+            "{$field}.uploaded" => 'The file could not be uploaded. Restart your Laravel server after changing php.ini, then try again.',
+            "{$field}.extensions" => 'The selected file type is not allowed for this upload.',
+            "{$field}.max" => "The selected file is too large. Maximum allowed size is {$maxMb} MB.",
+        ];
     }
 }

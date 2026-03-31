@@ -68,6 +68,13 @@
                 <div class="alert alert-success admin-status-alert">{{ session('status') }}</div>
             @endif
 
+            @if ($errors->any())
+                <div class="alert alert-danger admin-status-alert">
+                    <strong>Upload failed.</strong>
+                    <div class="mt-2">{{ $errors->first() }}</div>
+                </div>
+            @endif
+
             <div class="row g-4">
                 <div class="col-12">
                     @if ($activeTab === 'issuances')
