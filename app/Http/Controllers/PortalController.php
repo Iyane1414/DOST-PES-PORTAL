@@ -68,7 +68,7 @@ class PortalController extends Controller
                 'date' => optional($item->date)->format('M d, Y'),
                 'url' => $item->url ?: '#',
             ])
-            ->merge($materials->map(fn (Material $item) => [
+            ->concat($materials->map(fn (Material $item) => [
                 'label' => 'Material',
                 'title' => $item->title,
                 'date' => optional($item->date)->format('M d, Y'),
