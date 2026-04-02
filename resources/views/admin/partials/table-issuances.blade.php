@@ -9,8 +9,14 @@
             </tr>
         </thead>
         <tbody>
-            @forelse (($workspaceIssuances ?? $issuances) as $item)
-                <tr>
+            @php
+                $issuanceRows = ($workspaceIssuances ?? $issuances)->values();
+            @endphp
+            @foreach ($issuanceRows as $item)
+                <tr
+                    data-admin-issuance-library-row
+                    data-admin-issuance-library-search="{{ strtolower(trim(($item->title ?? '').' '.($item->category ?? '').' '.($item->division ?? ''))) }}"
+                >
                     <td>
                         <div class="admin-issuance-record">
                             <div class="admin-issuance-record-title">{{ $item->title }}</div>
@@ -30,8 +36,8 @@
                         </div>
                     </td>
                 </tr>
-            @empty
-                <tr>
+            @endforeach
+                <tr data-admin-issuance-library-empty-row @if ($issuanceRows->isNotEmpty()) hidden @endif>
                     <td colspan="4">
                         <div class="admin-issuance-empty-state">
                             <strong>No issuances found</strong>
@@ -39,7 +45,6 @@
                         </div>
                     </td>
                 </tr>
-            @endforelse
         </tbody>
     </table>
 </div>

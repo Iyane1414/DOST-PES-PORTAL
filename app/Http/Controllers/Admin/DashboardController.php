@@ -64,17 +64,35 @@ class DashboardController extends Controller
         $requestedTab = $tab ?: $request->string('tab')->toString() ?: 'issuances';
         $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'issuances';
         $issuanceSearch = trim($request->string('issuance_search')->toString());
+        $materialSearch = trim($request->string('material_search')->toString());
+        $dxSearch = trim($request->string('dx_search')->toString());
         $messageSearch = trim($request->string('message_search')->toString());
         $messageSort = $request->string('message_sort')->toString() ?: 'newest';
         $issuances = $data['issuances'];
+        $materials = $data['materials'];
+        $dxItems = $data['dxItems'];
         $messages = $data['messages'];
         $selectedIssuance = $activeTab === 'issuances' ? Issuance::query()->find($request->integer('edit_issuance')) : null;
         $selectedMaterial = $activeTab === 'materials' ? Material::query()->find($request->integer('edit_material')) : null;
-        $selectedDxItem = $activeTab === 'dx' ? DxItem::query()->with('parent')->find($request->integer('edit_dx')) : null;
+        $selectedDxItem = $activeTab === 'dx'
+            ? DxItem::query()->with('parent')->where('category', 'project')->find($request->integer('edit_dx'))
+            : null;
 
         if ($issuanceSearch !== '') {
             $issuances = $issuances->filter(function (Issuance $issuance) use ($issuanceSearch) {
                 return $this->matchesWorkspaceIssuanceSearch($issuance, $issuanceSearch);
+            })->values();
+        }
+
+        if ($materialSearch !== '') {
+            $materials = $materials->filter(function (Material $material) use ($materialSearch) {
+                return $this->matchesWorkspaceMaterialSearch($material, $materialSearch);
+            })->values();
+        }
+
+        if ($dxSearch !== '') {
+            $dxItems = $dxItems->filter(function (DxItem $dxItem) use ($dxSearch) {
+                return $dxItem->category === 'project' && $this->matchesWorkspaceDxSearch($dxItem, $dxSearch);
             })->values();
         }
 
@@ -104,7 +122,11 @@ class DashboardController extends Controller
             'activeSection' => 'workspace',
             'activeTab' => $activeTab,
             'workspaceIssuances' => $issuances,
+            'workspaceMaterials' => $materials,
+            'workspaceDxItems' => $dxItems,
             'issuanceSearch' => $issuanceSearch,
+            'materialSearch' => $materialSearch,
+            'dxSearch' => $dxSearch,
             'workspaceMessages' => $messages,
             'messageSearch' => $messageSearch,
             'messageSort' => $messageSort,
@@ -112,6 +134,24 @@ class DashboardController extends Controller
             'selectedIssuance' => $selectedIssuance,
             'selectedMaterial' => $selectedMaterial,
             'selectedDxItem' => $selectedDxItem,
+        ]);
+    }
+
+    public function showMessage(ContactMessage $contactMessage): View
+    {
+        $data = $this->dashboardData();
+
+        if ($contactMessage->opened_at === null) {
+            $contactMessage->forceFill(['opened_at' => now()])->save();
+            $contactMessage->refresh();
+        }
+
+        return view('admin.messages.show', [
+            ...$data,
+            'activeSection' => 'workspace',
+            'activeTab' => 'messages',
+            'messageItem' => $contactMessage,
+            'messageList' => $data['messages']->take(8),
         ]);
     }
 
@@ -192,6 +232,78 @@ class DashboardController extends Controller
 
         return str_contains($title, $normalizedSearch)
             || str_contains($category, $normalizedSearch)
+            || str_contains($division, $normalizedSearch);
+    }
+
+    private function matchesWorkspaceDxSearch(DxItem $dxItem, string $search): bool
+    {
+        $normalizedSearch = Str::of($search)->lower()->trim()->value();
+
+        if ($normalizedSearch === '') {
+            return true;
+        }
+
+        $projectCode = Str::of($dxItem->code ?? '')->lower()->trim()->value();
+        $projectTitle = Str::of($dxItem->title ?? '')->lower()->trim()->value();
+        $programTitle = Str::of($dxItem->parent?->title ?? '')->lower()->trim()->value();
+        $titleWords = preg_split('/\s+/', $projectTitle, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        if ($projectCode !== '' && str_starts_with($projectCode, $normalizedSearch)) {
+            return true;
+        }
+
+        if ($projectTitle !== '' && str_starts_with($projectTitle, $normalizedSearch)) {
+            return true;
+        }
+
+        foreach ($titleWords as $word) {
+            if (str_starts_with($word, $normalizedSearch)) {
+                return true;
+            }
+        }
+
+        if ($programTitle !== '' && str_starts_with($programTitle, $normalizedSearch)) {
+            return true;
+        }
+
+        return str_contains($projectTitle, $normalizedSearch)
+            || str_contains($projectCode, $normalizedSearch)
+            || str_contains($programTitle, $normalizedSearch);
+    }
+
+    private function matchesWorkspaceMaterialSearch(Material $material, string $search): bool
+    {
+        $normalizedSearch = Str::of($search)->lower()->trim()->value();
+
+        if ($normalizedSearch === '') {
+            return true;
+        }
+
+        $title = Str::of($material->title ?? '')->lower()->trim()->value();
+        $type = Str::of($material->type ?? '')->lower()->trim()->value();
+        $division = Str::of($material->division ?? '')->lower()->trim()->value();
+        $titleWords = preg_split('/\s+/', $title, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        if ($title !== '' && str_starts_with($title, $normalizedSearch)) {
+            return true;
+        }
+
+        foreach ($titleWords as $word) {
+            if (str_starts_with($word, $normalizedSearch)) {
+                return true;
+            }
+        }
+
+        if ($type !== '' && str_starts_with($type, $normalizedSearch)) {
+            return true;
+        }
+
+        if ($division !== '' && str_starts_with($division, $normalizedSearch)) {
+            return true;
+        }
+
+        return str_contains($title, $normalizedSearch)
+            || str_contains($type, $normalizedSearch)
             || str_contains($division, $normalizedSearch);
     }
 

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AdminMessageReplyMail;
 use App\Models\AiSetting;
+use App\Models\ContactMessage;
 use App\Models\Division;
 use App\Models\DxItem;
 use App\Models\Issuance;
@@ -11,9 +13,11 @@ use App\Models\IssuanceCategory;
 use App\Models\Material;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Throwable;
 
 class ResourceController extends Controller
 {
@@ -22,7 +26,10 @@ class ResourceController extends Controller
         $data = $this->validateIssuance($request);
         $path = $request->file('document')->store('issuances', 'public');
 
-        Issuance::query()->create($this->issuancePayload($data, Storage::disk('public')->url($path)));
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+        $publicDisk = Storage::disk('public');
+
+        Issuance::query()->create($this->issuancePayload($data, $publicDisk->url($path)));
 
         return $this->redirectWithTab('issuances', 'Issuance published.');
     }
@@ -34,7 +41,10 @@ class ResourceController extends Controller
 
         if ($request->hasFile('document')) {
             $this->deletePublicFile($issuance->url);
-            $url = Storage::disk('public')->url($request->file('document')->store('issuances', 'public'));
+
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+            $publicDisk = Storage::disk('public');
+            $url = $publicDisk->url($request->file('document')->store('issuances', 'public'));
         }
 
         $issuance->update($this->issuancePayload($data, $url));
@@ -56,7 +66,10 @@ class ResourceController extends Controller
         $data = $this->validateMaterial($request);
         $path = $request->file('document')->store('materials', 'public');
 
-        Material::query()->create($this->materialPayload($data, Storage::disk('public')->url($path)));
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+        $publicDisk = Storage::disk('public');
+
+        Material::query()->create($this->materialPayload($data, $publicDisk->url($path)));
 
         return $this->redirectWithTab('materials', 'Material saved.');
     }
@@ -68,7 +81,10 @@ class ResourceController extends Controller
 
         if ($request->hasFile('document')) {
             $this->deletePublicFile($material->url);
-            $url = Storage::disk('public')->url($request->file('document')->store('materials', 'public'));
+
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+            $publicDisk = Storage::disk('public');
+            $url = $publicDisk->url($request->file('document')->store('materials', 'public'));
         }
 
         $material->update($this->materialPayload($data, $url));
@@ -154,6 +170,47 @@ class ResourceController extends Controller
         );
 
         return $this->redirectWithTab('ai', 'AI settings updated.');
+    }
+
+    public function replyToMessage(Request $request, ContactMessage $contactMessage): RedirectResponse
+    {
+        $data = $request->validate([
+            'reply_subject' => ['required', 'string', 'max:255'],
+            'reply_body' => ['required', 'string', 'max:5000'],
+        ]);
+
+        try {
+            Mail::to($contactMessage->email)->send(
+                new AdminMessageReplyMail(
+                    $contactMessage,
+                    $data['reply_subject'],
+                    $data['reply_body'],
+                )
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $errorMessage = config('app.debug')
+                ? $exception->getMessage()
+                : 'The reply could not be sent. Please check your mail configuration and try again.';
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'reply_body' => $errorMessage,
+                ]);
+        }
+
+        $contactMessage->update([
+            'opened_at' => $contactMessage->opened_at ?: now(),
+            'replied_at' => now(),
+            'admin_reply_subject' => $data['reply_subject'],
+            'admin_reply_body' => $data['reply_body'],
+        ]);
+
+        return redirect()
+            ->route('admin.messages.show', $contactMessage)
+            ->with('status', 'Reply sent successfully to '.$contactMessage->email.'.');
     }
 
     public function destroyCategory(IssuanceCategory $issuanceCategory): RedirectResponse
@@ -271,12 +328,16 @@ class ResourceController extends Controller
 
         if ($request->hasFile('image')) {
             $this->deletePublicFile($dxItem?->image_path, ['images/people.png', 'images/process.png', 'images/technology.png']);
-            $imagePath = Storage::disk('public')->url($request->file('image')->store('dx/images', 'public'));
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+            $publicDisk = Storage::disk('public');
+            $imagePath = $publicDisk->url($request->file('image')->store('dx/images', 'public'));
         }
 
         if ($request->hasFile('document')) {
             $this->deletePublicFile($dxItem?->file_url);
-            $fileUrl = Storage::disk('public')->url($request->file('document')->store('dx/files', 'public'));
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+            $publicDisk = Storage::disk('public');
+            $fileUrl = $publicDisk->url($request->file('document')->store('dx/files', 'public'));
         }
 
         if ($data['category'] !== 'domain') {

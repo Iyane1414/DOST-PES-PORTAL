@@ -144,12 +144,12 @@
                                     </div>
                                 </div>
 
-                                <form method="GET" action="{{ route('admin.workspace', ['tab' => 'issuances']) }}" class="admin-issuance-library-toolbar">
+                                <form method="GET" action="{{ route('admin.workspace', ['tab' => 'issuances']) }}" class="admin-issuance-library-toolbar" data-admin-issuance-library-form>
                                     <div class="admin-issuance-search-wrap">
                                         <i class="bi bi-search"></i>
-                                        <input class="form-control" type="search" name="issuance_search" value="{{ $issuanceSearch ?? '' }}" placeholder="Search issuance title, category, or division...">
+                                        <input class="form-control" type="search" name="issuance_search" value="{{ $issuanceSearch ?? '' }}" placeholder="Search issuance title, category, or division..." data-admin-issuance-library-search>
                                     </div>
-                                    <button class="btn admin-public-btn rounded-pill px-4" type="submit">Search</button>
+                                    <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-admin-issuance-library-apply>Search</button>
                                 </form>
 
                                 @include('admin.partials.table-issuances')
@@ -224,20 +224,145 @@
                                     </div>
                                 </div>
 
+                                <form method="GET" action="{{ route('admin.workspace', ['tab' => 'materials']) }}" class="admin-issuance-library-toolbar" data-material-library-form>
+                                    <div class="admin-issuance-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input class="form-control" type="search" name="material_search" value="{{ $materialSearch ?? '' }}" placeholder="Search material title, type, or division..." data-material-library-search>
+                                    </div>
+                                    <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-material-library-apply>Search</button>
+                                </form>
+
                                 @include('admin.partials.table-materials')
                             </div>
                         </div>
-                    @else
-                        <div class="admin-card admin-workspace-card mb-4">
-                                <div class="admin-section-head">
+                    @elseif ($activeTab === 'dx')
+                        @php
+                            $dxCodeOptions = $dxItems->where('category', 'project')->pluck('code')->filter()->unique()->sort()->values();
+                            $dxProjectPrograms = $dxPrograms->take(6)->values();
+                        @endphp
+                        <div class="admin-issuance-workspace-grid">
+                            <div class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-library-panel">
+                                <div class="admin-section-head admin-issuance-panel-head">
                                     <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
                                     <div>
-                                        <h2 class="h3 fw-bold mb-1">{{ $activeTab === 'dx' && $isEditingDx ? 'Edit DX Content' : $activeMeta['section_title'] }}</h2>
-                                        <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
+                                        <div class="admin-kicker mb-2">Publishing Desk</div>
+                                        <h2 class="h3 fw-bold mb-1">{{ $isEditingDx ? 'Edit DX Content' : 'Add DX Content' }}</h2>
+                                        <p class="text-secondary-soft mb-0">Update DOST DX sub-programs and project records in a cleaner structured workflow.</p>
                                     </div>
                                 </div>
 
-                            @if ($activeTab === 'messages')
+                                <form method="POST" action="{{ $isEditingDx ? route('admin.dx-items.update', $selectedDxItem) : route('admin.dx-items.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    @if ($isEditingDx)
+                                        @method('PUT')
+                                    @endif
+                                    <input type="hidden" name="category" value="project">
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Core Domain</label>
+                                            <select class="form-select" name="domain_key" required>
+                                                <option value="people" @selected(old('domain_key', $selectedDxItem->domain_key ?? 'people') === 'people')>People</option>
+                                                <option value="process" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'process')>Process</option>
+                                                <option value="technology" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'technology')>Technology</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Sort Order</label>
+                                            <input class="form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', $selectedDxItem->sort_order ?? 0) }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Sub-program</label>
+                                            <select class="form-select" name="parent_id" required>
+                                                @foreach ($dxProjectPrograms as $program)
+                                                    <option value="{{ $program->id }}" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === (string) $program->id)>{{ $program->title }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Project Code</label>
+                                            <select class="form-select" name="code">
+                                                <option value="">Select project code</option>
+                                                @foreach ($dxCodeOptions as $code)
+                                                    <option value="{{ $code }}" @selected(old('code', $selectedDxItem->code ?? '') === $code)>{{ $code }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Title</label>
+                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedDxItem->title ?? '') }}" placeholder="Title" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Description</label>
+                                            <textarea class="form-control" name="description" rows="4" placeholder="Description" required>{{ old('description', $selectedDxItem->description ?? '') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field admin-issuance-file-field">
+                                            <label class="form-label">Project Attachment{{ $isEditingDx ? ' (optional replacement)' : '' }}</label>
+                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field admin-issuance-file-field">
+                                            <label class="form-label">Domain Image{{ $isEditingDx ? ' (optional replacement)' : '' }}</label>
+                                            <input class="form-control" type="file" name="image" accept=".jpg,.jpeg,.png,.webp">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 admin-issuance-form-actions">
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingDx ? 'Update DX Content' : 'Save DX Content' }}</button>
+                                        @if ($isEditingDx)
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'dx']) }}">Cancel Edit</a>
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="admin-card admin-table-shell admin-issuance-panel admin-issuance-form-panel">
+                                <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
+                                    <div>
+                                        <div class="admin-kicker mb-2">Record Center</div>
+                                        <h2 class="h4 fw-bold mb-1">DOST DX Library</h2>
+                                        <p class="text-secondary-soft mb-0">Review and maintain currently published DOST DX records.</p>
+                                    </div>
+                                </div>
+
+                                <form method="GET" action="{{ route('admin.workspace', ['tab' => 'dx']) }}" class="admin-issuance-library-toolbar" data-dx-library-form>
+                                    <div class="admin-issuance-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input class="form-control" type="search" name="dx_search" value="{{ $dxSearch ?? '' }}" placeholder="Search project title, code, or sub-program..." data-dx-library-search>
+                                    </div>
+                                    <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-dx-library-apply>Search</button>
+                                </form>
+
+                                @include('admin.partials.table-dx')
+                            </div>
+                        </div>
+                    @elseif ($activeTab === 'messages')
+                        <div class="admin-issuance-workspace-grid">
+                            <div class="admin-card admin-table-shell admin-issuance-panel admin-issuance-form-panel admin-message-inbox-panel">
+                                <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
+                                    <div>
+                                        <div class="admin-kicker mb-2">Inbox Monitor</div>
+                                        <h2 class="h4 fw-bold mb-1">Messages Inbox</h2>
+                                        <p class="text-secondary-soft mb-0">Review sender details, open full message records, and reply directly from the admin workspace.</p>
+                                    </div>
+                                </div>
+
+                                <div class="admin-message-inbox-summary">
+                                    <div class="admin-message-inbox-summary-copy">
+                                        Total {{ $workspaceMessages->count() }} captured {{ \Illuminate\Support\Str::plural('message', $workspaceMessages->count()) }} from the public portal.
+                                    </div>
+                                </div>
+
                                 <form method="GET" action="{{ route('admin.workspace', ['tab' => 'messages']) }}" class="admin-message-toolbar">
                                     <div class="admin-message-toolbar-main">
                                         <div class="admin-message-search-wrap">
@@ -252,11 +377,25 @@
                                         </div>
                                     </div>
                                     <div class="admin-message-toolbar-side">
-                                        <span class="admin-message-count">Showing {{ $workspaceMessages->count() }} {{ \Illuminate\Support\Str::plural('message', $workspaceMessages->count()) }}</span>
-                                        <button class="btn btn-accent rounded-pill px-4" type="submit">Apply</button>
+                                        <button class="btn admin-public-btn rounded-pill px-4" type="submit">Apply</button>
                                     </div>
                                 </form>
-                            @endif
+
+                                <div class="admin-message-inbox-section">
+                                    <div class="admin-kicker mb-2">Inbox Status</div>
+                                    @include('admin.partials.table-messages')
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="admin-card admin-workspace-card mb-4">
+                            <div class="admin-section-head">
+                                    <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
+                                    <div>
+                                        <h2 class="h3 fw-bold mb-1">{{ $activeTab === 'dx' && $isEditingDx ? 'Edit DX Content' : $activeMeta['section_title'] }}</h2>
+                                        <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
+                                    </div>
+                                </div>
 
                             @if ($activeTab === 'divisions')
                                 <form method="POST" action="{{ route('admin.divisions.store') }}" class="row g-3">@csrf
@@ -267,92 +406,11 @@
                                 </form>
                             @endif
 
-                            @if ($activeTab === 'dx')
-                                <form method="POST" action="{{ $isEditingDx ? route('admin.dx-items.update', $selectedDxItem) : route('admin.dx-items.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
-                                    @if ($isEditingDx)
-                                        @method('PUT')
-                                    @endif
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">Record Type</label>
-                                        <select class="form-select" name="category" required>
-                                            <option value="domain" @selected(old('category', $selectedDxItem->category ?? 'domain') === 'domain')>Domain</option>
-                                            <option value="program" @selected(old('category', $selectedDxItem->category ?? '') === 'program')>Sub-Program</option>
-                                            <option value="project" @selected(old('category', $selectedDxItem->category ?? '') === 'project')>Project</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">Core Domain</label>
-                                        <select class="form-select" name="domain_key" required>
-                                            <option value="people" @selected(old('domain_key', $selectedDxItem->domain_key ?? 'people') === 'people')>People</option>
-                                            <option value="process" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'process')>Process</option>
-                                            <option value="technology" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'technology')>Technology</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">Sort Order</label>
-                                        <input class="form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', $selectedDxItem->sort_order ?? 0) }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Parent Domain / Sub-program</label>
-                                        <select class="form-select" name="parent_id">
-                                            <option value="" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === '')>None</option>
-                                            @foreach ($dxDomains as $domain)
-                                                <option value="{{ $domain->id }}" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === (string) $domain->id)>Domain: {{ $domain->title }}</option>
-                                            @endforeach
-                                            @foreach ($dxPrograms as $program)
-                                                <option value="{{ $program->id }}" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === (string) $program->id)>Sub-program: {{ $program->title }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label fw-semibold">Project Code</label>
-                                        <input class="form-control" type="text" name="code" value="{{ old('code', $selectedDxItem->code ?? '') }}" placeholder="Example: SRZ, CSP, GOV">
-                                    </div>
-                                    <div class="col-md-8">
-                                        <label class="form-label fw-semibold">Title</label>
-                                        <input class="form-control" type="text" name="title" value="{{ old('title', $selectedDxItem->title ?? '') }}" placeholder="Title" required>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label fw-semibold">Domain Image</label>
-                                        <input class="form-control" type="file" name="image" accept=".jpg,.jpeg,.png,.webp">
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold">Description</label>
-                                        <textarea class="form-control" name="description" rows="4" placeholder="Description" required>{{ old('description', $selectedDxItem->description ?? '') }}</textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold">Project Attachment{{ $isEditingDx ? ' (optional replacement)' : '' }}</label>
-                                        <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png">
-                                    </div>
-                                    <div class="col-12 d-flex flex-wrap gap-2">
-                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingDx ? 'Update DX Content' : 'Save DX Content' }}</button>
-                                        @if ($isEditingDx)
-                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'dx']) }}">Cancel Edit</a>
-                                        @endif
-                                    </div>
-                                </form>
-                            @endif
-
                             @if ($activeTab === 'categories')
                                 <form method="POST" action="{{ route('admin.categories.store') }}" class="row g-3">@csrf
                                     <div class="col-md-8"><input class="form-control" type="text" name="name" placeholder="Category Name" required></div>
                                     <div class="col-md-4"><button class="btn btn-accent rounded-pill px-4 w-100" type="submit">Add Category</button></div>
                                 </form>
-                            @endif
-
-                            @if ($activeTab === 'messages')
-                                <div class="admin-message-intro-grid">
-                                    <div class="admin-message-intro-card">
-                                        <div class="admin-message-intro-label">Inbox Status</div>
-                                        <strong>{{ $messages->count() }}</strong>
-                                        <span>Total captured contact messages from the public portal.</span>
-                                    </div>
-                                    <div class="admin-message-intro-card">
-                                        <div class="admin-message-intro-label">Latest Sender</div>
-                                        <strong>{{ optional($messages->first())->name ?? 'No messages yet' }}</strong>
-                                        <span>{{ optional($messages->first())->email ?? 'Waiting for new inbox activity.' }}</span>
-                                    </div>
-                                </div>
                             @endif
 
                             @if ($activeTab === 'ai')
@@ -388,16 +446,8 @@
                                 @include('admin.partials.table-divisions')
                             @endif
 
-                            @if ($activeTab === 'dx')
-                                @include('admin.partials.table-dx')
-                            @endif
-
                             @if ($activeTab === 'categories')
                                 @include('admin.partials.table-categories')
-                            @endif
-
-                            @if ($activeTab === 'messages')
-                                @include('admin.partials.table-messages')
                             @endif
 
                             @if ($activeTab === 'ai')

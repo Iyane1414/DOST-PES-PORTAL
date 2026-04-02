@@ -4,6 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $category
+ * @property string $slug
+ * @property int|null $parent_id
+ * @property string $domain_key
+ * @property string|null $code
+ * @property string|null $icon
+ * @property string|null $image_path
+ * @property string|null $file_url
+ * @property int $sort_order
+ * @property bool $is_active
+ * @property string $title
+ * @property string $description
+ */
 class DxItem extends Model
 {
     protected $table = 'dx_items';

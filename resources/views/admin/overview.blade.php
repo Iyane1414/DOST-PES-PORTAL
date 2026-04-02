@@ -217,19 +217,19 @@
                                 <div>
                                     <div class="admin-kicker mb-2">Inbox Monitor</div>
                                     <h2 class="h4 fw-bold mb-1">Latest Contact Messages</h2>
-                                    <p class="admin-contact-stack-copy mb-0">Subject-led inbox preview for quick scanning before opening the full messages workspace.</p>
                                 </div>
                                 <a href="{{ route('admin.workspace', ['tab' => 'messages']) }}" class="admin-contact-stack-link">Open Inbox</a>
                             </div>
                             <div class="admin-side-list admin-contact-stack">
                                 @forelse ($recentMessages as $message)
-                                    <a href="{{ route('admin.workspace', ['tab' => 'messages', 'message' => $message->id]) }}#message-{{ $message->id }}" class="admin-side-item admin-side-link admin-message-preview-card">
+                                    <a href="{{ route('admin.messages.show', $message) }}" class="admin-side-item admin-side-link admin-message-preview-card">
                                         <div class="admin-message-preview-avatar">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($message->name, 0, 1)) }}</div>
                                         <div class="admin-message-preview-main">
-                                            <div class="admin-side-item-title">{{ $message->subject }}</div>
                                             <div class="admin-message-preview-sender">{{ $message->name }}</div>
+                                            <div class="admin-side-item-title">{{ $message->subject }}</div>
                                             <div class="admin-side-item-meta">{{ $message->email }}</div>
                                         </div>
+                                        <div class="admin-message-preview-time">{{ optional($message->created_at)->diffForHumans() }}</div>
                                     </a>
                                 @empty
                                     <div class="text-secondary-soft">No contact messages yet.</div>

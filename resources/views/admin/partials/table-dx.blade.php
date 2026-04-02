@@ -1,34 +1,40 @@
-<div class="table-responsive admin-dx-table-wrap">
-    <table class="table admin-table admin-dx-table align-middle">
+<div class="table-responsive admin-issuance-table-wrap admin-dx-library-wrap">
+    <table class="table admin-table admin-issuance-table admin-dx-table align-middle">
         <thead>
             <tr>
                 <th>Title</th>
-                <th>Category</th>
+                <th>Code</th>
                 <th>Domain</th>
-                <th>Parent</th>
+                <th>Sub-program</th>
                 <th>File</th>
                 <th class="text-end">Action</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($dxItems as $item)
-                <tr>
+            @php
+                $dxProjectRows = ($workspaceDxItems ?? $dxItems)->where('category', 'project')->values();
+            @endphp
+            @foreach ($dxProjectRows as $item)
+                <tr
+                    data-dx-library-row
+                    data-dx-library-search="{{ strtolower(trim(($item->title ?? '').' '.($item->code ?? '').' '.($item->parent?->title ?? '').' '.($item->domain_key ?? ''))) }}"
+                    data-dx-library-code="{{ strtolower(trim($item->code ?? '')) }}"
+                    data-dx-library-title="{{ strtolower(trim($item->title ?? '')) }}"
+                    data-dx-library-program="{{ strtolower(trim($item->parent?->title ?? '')) }}"
+                >
                     <td>
                         <div class="admin-dx-record">
                             <div class="admin-dx-record-title">{{ $item->title }}</div>
-                            <div class="admin-dx-record-meta">
-                                {{ ucfirst($item->domain_key ?: 'General') }}
-                                @if ($item->category === 'project' && $item->parent?->title)
-                                    <span class="admin-dx-record-separator">/</span>
-                                    {{ $item->parent->title }}
-                                @endif
-                            </div>
+                            <div class="admin-dx-record-meta">{{ ucfirst($item->domain_key ?: 'General') }}</div>
                         </div>
+                    </td>
+                    <td>
                         @if ($item->code)
-                            <div class="admin-dx-record-code">{{ $item->code }}</div>
+                            <span class="admin-dx-category-chip">{{ $item->code }}</span>
+                        @else
+                            <span class="admin-dx-file-empty">No code</span>
                         @endif
                     </td>
-                    <td><span class="admin-dx-category-chip">{{ $item->category }}</span></td>
                     <td><span class="admin-dx-domain-label">{{ $item->domain_key ?: 'N/A' }}</span></td>
                     <td class="admin-dx-parent-cell">{{ $item->parent?->title ?? 'None' }}</td>
                     <td>
@@ -40,7 +46,7 @@
                     </td>
                     <td class="text-end">
                         <div class="admin-action-stack justify-content-end">
-                            <a class="btn btn-sm btn-outline-primary rounded-pill admin-issuance-edit-btn" href="{{ route('admin.workspace', ['tab' => 'dx', 'edit_dx' => $item->id]) }}">Edit</a>
+                            <a class="btn btn-sm btn-outline-primary rounded-pill admin-issuance-edit-btn" href="{{ route('admin.workspace', ['tab' => 'dx', 'edit_dx' => $item->id, 'dx_search' => $dxSearch ?? null]) }}">Edit</a>
                             <form method="POST" action="{{ route('admin.dx-items.destroy', $item) }}">
                                 @csrf
                                 @method('DELETE')
@@ -49,11 +55,10 @@
                         </div>
                     </td>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center text-secondary-soft py-4">No DOST DX records yet.</td>
-                </tr>
-            @endforelse
+            @endforeach
+            <tr data-dx-library-empty-row @if ($dxProjectRows->isNotEmpty()) hidden @endif>
+                <td colspan="6" class="text-center text-secondary-soft py-4">No DOST DX project records found.</td>
+            </tr>
         </tbody>
     </table>
 </div>

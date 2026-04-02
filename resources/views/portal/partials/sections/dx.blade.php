@@ -41,52 +41,70 @@
                 <div>
                     <span class="eyebrow text-accent">Implementation Path</span>
                     <h3 class="section-title split-title text-white mb-3">DOST DX<br><span class="split-title-accent">Roadmap</span></h3>
-                    <p class="section-copy text-white-50 mb-0">A phased progression for building interoperable platforms, institutional capability, and measurable public-sector digital outcomes.</p>
+                    <p class="section-copy text-white-50 mb-0">A timeline view of the DOST-DX program from early planning and readiness work through modernization, rollout, and expansion.</p>
                 </div>
             </div>
             <div class="dx-roadmap-track">
                 <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-phase">Phase 01</div>
+                    <div class="dx-roadmap-year">2021</div>
+                    <h4 class="dx-roadmap-title">Plan &amp; Assess</h4>
+                    <p class="dx-roadmap-copy">The initial stage focused on defining the DOST-DX direction, assessing readiness, and securing the first set of approvals.</p>
+                    <ul class="dx-roadmap-list">
+                        <li>Roadmap</li>
+                        <li>Gap Analysis</li>
+                        <li>Initial Approvals</li>
+                    </ul>
+                </article>
+                <article class="dx-roadmap-card">
+                    <div class="dx-roadmap-year">2022</div>
+                    <h4 class="dx-roadmap-title">Build Foundations</h4>
+                    <p class="dx-roadmap-copy">This stage established the first operational building blocks needed to support transformation initiatives across DOST.</p>
+                    <ul class="dx-roadmap-list">
+                        <li>Software Dev Pack</li>
+                        <li>Structure Rationalization</li>
+                        <li>iLab Launch</li>
+                    </ul>
+                </article>
+                <article class="dx-roadmap-card">
+                    <div class="dx-roadmap-year">2023</div>
+                    <h4 class="dx-roadmap-title">Strengthen Governance</h4>
+                    <p class="dx-roadmap-copy">Governance, portfolio coordination, and cyber capability-building were reinforced to prepare for wider digital delivery.</p>
+                    <ul class="dx-roadmap-list">
+                        <li>Portfolio Groups</li>
+                        <li>EA Training</li>
+                        <li>Cybersecurity Expansion</li>
+                    </ul>
+                </article>
+                <article class="dx-roadmap-card">
+                    <div class="dx-roadmap-year">2024</div>
+                    <h4 class="dx-roadmap-title">Standardize Processes</h4>
+                    <p class="dx-roadmap-copy">DOST-DX advanced process standardization, project management structures, and broader stakeholder engagement.</p>
+                    <ul class="dx-roadmap-list">
+                        <li>PM Process</li>
+                        <li>DX Core Team Proposal</li>
+                        <li>Engagement Expansion</li>
+                    </ul>
+                </article>
+                <article class="dx-roadmap-card">
                     <div class="dx-roadmap-year">2025</div>
-                    <h4 class="dx-roadmap-title">Foundation and Readiness</h4>
-                    <p class="dx-roadmap-copy">Establish governance, baseline systems, policy alignment, and internal readiness for digital transformation execution.</p>
+                    <h4 class="dx-roadmap-title">System Integration</h4>
+                    <p class="dx-roadmap-copy">Major integration workstreams were lined up to harmonize systems and strengthen portal and knowledge-management development.</p>
                     <ul class="dx-roadmap-list">
-                        <li>DX governance framework activated</li>
-                        <li>System inventory and maturity assessment completed</li>
-                        <li>Priority services identified for digitization</li>
+                        <li>Harmonized iHRMIS</li>
+                        <li>Portal &amp; KM Dev</li>
+                        <li>Phase 2 IS</li>
                     </ul>
                 </article>
                 <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-phase">Phase 02</div>
-                    <div class="dx-roadmap-year">2026</div>
-                    <h4 class="dx-roadmap-title">Integration and Enablement</h4>
-                    <p class="dx-roadmap-copy">Connect platforms, improve internal workflows, and enable interoperable data exchange across DOST units.</p>
+                    <div class="dx-roadmap-year">2026&ndash;2028</div>
+                    <h4 class="dx-roadmap-title">Modernize &amp; Expand</h4>
+                    <p class="dx-roadmap-copy">The long-range phase focuses on infrastructure modernization, harmonized rollouts, cyber capability expansion, and broader transformation support.</p>
                     <ul class="dx-roadmap-list">
-                        <li>Shared services and APIs introduced</li>
-                        <li>Core systems integration roadmap launched</li>
-                        <li>Digital capability building scaled across teams</li>
-                    </ul>
-                </article>
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-phase">Phase 03</div>
-                    <div class="dx-roadmap-year">2027</div>
-                    <h4 class="dx-roadmap-title">Optimization and Intelligence</h4>
-                    <p class="dx-roadmap-copy">Refine delivery performance through analytics, automation, and experience-led service design.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>Performance dashboards operationalized</li>
-                        <li>Automation workflows deployed in high-volume processes</li>
-                        <li>Citizen-centric digital touchpoints improved</li>
-                    </ul>
-                </article>
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-phase">Phase 04</div>
-                    <div class="dx-roadmap-year">2028</div>
-                    <h4 class="dx-roadmap-title">Unified Government Model</h4>
-                    <p class="dx-roadmap-copy">Demonstrate a scalable government-tech model that other agencies can replicate through DOST DX.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>Interoperable service architecture matured</li>
-                        <li>Cross-agency model documented for replication</li>
-                        <li>Continuous innovation and governance embedded</li>
+                        <li>Data Centers</li>
+                        <li>Cloud Plans</li>
+                        <li>Harmonized IS Rollout</li>
+                        <li>Cybersecurity Unit and ITD Transformation</li>
+                        <li>Geospatial</li>
                     </ul>
                 </article>
             </div>
@@ -131,6 +149,7 @@
                             <h3 class="dx-program-title">{{ $item['title'] }}</h3>
                             <p class="text-white-50 mb-0">{{ $item['description'] }}</p>
                             <span class="dx-program-domain">{{ strtoupper($item['domain_label']) }}</span>
+                            <span class="dx-sub-card-hint">Open dedicated page <i class="bi bi-arrow-up-right"></i></span>
                         </a>
                     @empty
                         <div class="dx-empty-state">No sub-programs available yet.</div>
@@ -139,30 +158,50 @@
 
                 @if ($dxSubPrograms->isNotEmpty())
                     <div class="dx-project-viewer">
-                        @foreach ($dxSubPrograms as $item)
+                        @foreach ($dxCoreDomains as $domain)
+                            @php
+                                $domainPrograms = $dxSubPrograms->where('domain', $domain['slug'])->values();
+                                $domainProjects = $domainPrograms->flatMap(function (array $program) {
+                                    return collect($program['projects'])->map(function (array $project) use ($program) {
+                                        $project['program_title'] = $program['title'];
+                                        $project['program_slug'] = $program['slug'];
+
+                                        return $project;
+                                    });
+                                })->values();
+                            @endphp
                             <section
                                 class="dx-project-panel{{ $loop->first ? ' is-active' : '' }}"
-                                data-program-slug="{{ $item['slug'] }}"
+                                data-domain-panel="{{ $domain['slug'] }}"
                                 @if (! $loop->first) hidden @endif
                             >
                                 <div class="dx-project-panel-head">
                                     <div>
-                                        <span class="eyebrow text-accent">{{ $item['domain_label'] }} Sub-program</span>
-                                        <h3 class="section-title split-title text-white mb-2">{{ $item['title'] }}</h3>
-                                        <p class="section-copy text-white-50 mb-0">{{ $item['description'] }}</p>
+                                        <div class="dx-project-domain-chip">{{ $domain['title'] }}</div>
+                                        <span class="eyebrow text-accent">Core Domain</span>
+                                        <h3 class="section-title split-title text-white mb-2">{{ $domain['title'] }}</h3>
+                                        <p class="section-copy text-white-50 mb-0">{{ $domain['description'] }}</p>
                                     </div>
-                                    <a class="btn dx-outline-btn rounded-pill px-4" href="{{ route('portal.dx.program.show', ['domainSlug' => $item['domain'], 'subProgramSlug' => $item['slug']]) }}">Open Dedicated Page</a>
+                                    <div class="dx-project-panel-side">
+                                        <div class="dx-project-domain-summary">
+                                            <span class="dx-project-domain-label">Sub-programs</span>
+                                            <strong>{{ $domainPrograms->count() }}</strong>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="dx-project-list" aria-label="{{ $item['title'] }} projects">
-                                    @foreach ($item['projects'] as $project)
+                                <div class="dx-project-list" aria-label="{{ $domain['title'] }} projects">
+                                    @foreach ($domainProjects as $project)
                                         <a
                                             class="dx-project-item"
                                             id="project-{{ $project['slug'] }}"
-                                            href="{{ route('portal.dx.program.show', ['domainSlug' => $item['domain'], 'subProgramSlug' => $item['slug']]) }}#project-{{ $project['slug'] }}"
+                                            href="{{ route('portal.dx.program.show', ['domainSlug' => $domain['slug'], 'subProgramSlug' => $project['program_slug']]) }}#project-{{ $project['slug'] }}"
                                         >
                                             <span class="dx-project-code">{{ $project['code'] }}</span>
-                                            <span class="dx-project-name">{{ $project['title'] }}</span>
+                                            <span class="dx-project-name-wrap">
+                                                <span class="dx-project-name">{{ $project['title'] }}</span>
+                                                <span class="dx-project-program">{{ $project['program_title'] }}</span>
+                                            </span>
                                             <i class="bi bi-arrow-up-right"></i>
                                         </a>
                                     @endforeach
@@ -226,3 +265,4 @@
         </div>
     </div>
 </div>
+

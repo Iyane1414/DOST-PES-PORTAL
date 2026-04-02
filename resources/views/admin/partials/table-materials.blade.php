@@ -9,8 +9,14 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($materials as $item)
-                <tr>
+            @php
+                $materialRows = ($workspaceMaterials ?? $materials)->values();
+            @endphp
+            @foreach ($materialRows as $item)
+                <tr
+                    data-material-library-row
+                    data-material-library-search="{{ strtolower(trim(($item->title ?? '').' '.($item->type ?? '').' '.($item->division ?? ''))) }}"
+                >
                     <td>
                         <div class="admin-issuance-record">
                             <div class="admin-issuance-record-title">{{ $item->title }}</div>
@@ -30,8 +36,8 @@
                         </div>
                     </td>
                 </tr>
-            @empty
-                <tr>
+            @endforeach
+                <tr data-material-library-empty-row @if ($materialRows->isNotEmpty()) hidden @endif>
                     <td colspan="4">
                         <div class="admin-issuance-empty-state">
                             <strong>No materials yet</strong>
@@ -39,7 +45,6 @@
                         </div>
                     </td>
                 </tr>
-            @endforelse
         </tbody>
     </table>
 </div>

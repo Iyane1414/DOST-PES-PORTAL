@@ -22,6 +22,7 @@ Route::prefix('admin')->group(function (): void {
     Route::middleware('admin.auth')->group(function (): void {
         Route::get('/', [DashboardController::class, 'overview'])->name('admin.dashboard');
         Route::get('/workspace/{tab?}', [DashboardController::class, 'workspace'])->name('admin.workspace');
+        Route::get('/messages/{contactMessage}', [DashboardController::class, 'showMessage'])->name('admin.messages.show');
         Route::post('/logout', [AuthController::class, 'destroy'])->name('admin.logout');
 
         Route::post('/issuances', [ResourceController::class, 'storeIssuance'])->name('admin.issuances.store');
@@ -43,5 +44,6 @@ Route::prefix('admin')->group(function (): void {
         Route::delete('/categories/{issuanceCategory}', [ResourceController::class, 'destroyCategory'])->name('admin.categories.destroy');
 
         Route::post('/ai-settings', [ResourceController::class, 'storeAiSettings'])->name('admin.ai-settings.store');
+        Route::post('/messages/{contactMessage}/reply', [ResourceController::class, 'replyToMessage'])->name('admin.messages.reply');
     });
 });
