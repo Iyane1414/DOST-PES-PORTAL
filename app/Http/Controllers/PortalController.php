@@ -8,6 +8,7 @@ use App\Models\DxItem;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
+use App\Models\News;
 use App\Models\Subscription;
 use App\Models\WebsiteVisit;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +26,7 @@ class PortalController extends Controller
 
         $issuances = Issuance::query()->latest('date')->get();
         $materials = Material::query()->latest('date')->get();
+        $newsItems = News::query()->latest('date')->take(6)->get();
         $materialTypes = $materials
             ->pluck('type')
             ->filter()
@@ -88,74 +90,7 @@ class PortalController extends Controller
             ];
         });
 
-        $pesInActionItems = collect([
-            [
-                'id' => 'project-lodi',
-                'eyebrow' => 'Featured',
-                'title' => 'DOST Project LODI',
-                'date' => 'August 4, 2022',
-                'summary' => 'Boosting DOST\'s digital transformation while giving solid IT internship support for science scholars.',
-                'copy' => 'The Department of Science and Technology-Science Education Institute (DOST-SEI) and the DOST Planning and Evaluation Service (DOST-PES) signed a partnership deal for the Project League of Developers Initiative (Project LODI) on August 4, 2022 at the DOST Compound in Taguig City. Project LODI enables the digital transformation of DOST with the help of IT students and DOST scholars, strengthening collaboration between institutional planning and digital capability-building.',
-                'image' => 'images/p1.png',
-                'image_alt' => 'DOST Project LODI',
-                'accent' => 'cyan',
-            ],
-            [
-                'id' => 'dx-roadmap',
-                'eyebrow' => 'Update',
-                'title' => 'DOST PES Digital Transformation Roadmap Released',
-                'date' => 'February 18, 2026',
-                'summary' => 'A new roadmap aligns service modernization, planning workflows, and data-ready operations across PES.',
-                'copy' => 'PES introduced its digital transformation roadmap to guide service improvements in planning, monitoring, records management, and information systems coordination. The roadmap outlines priority workstreams for process redesign, internal platforms, and stronger cross-office data sharing to support faster and more consistent decision-making.',
-                'image' => null,
-                'image_alt' => 'DX Roadmap',
-                'accent' => 'blue',
-            ],
-            [
-                'id' => 'planning-workshop',
-                'eyebrow' => 'Event',
-                'title' => 'PES Annual Planning & Evaluation Workshop 2026',
-                'date' => 'January 28, 2026',
-                'summary' => 'Planning and evaluation leads gathered to align targets, reporting cycles, and priority outcomes for the year.',
-                'copy' => 'The annual PES workshop convened division representatives and partner offices to align targets, refine milestone indicators, and review reporting expectations for the year. The session also focused on stronger coordination between planning activities and evaluation outputs so that institutional reporting stays timely and evidence-based.',
-                'image' => null,
-                'image_alt' => 'Workshop',
-                'accent' => 'gold',
-            ],
-            [
-                'id' => 'rd-survey',
-                'eyebrow' => 'Report',
-                'title' => 'R&D Survey Coordination Sessions Strengthened',
-                'date' => 'November 15, 2025',
-                'summary' => 'Preparatory sessions improved coordination for upcoming research and development data collection activities.',
-                'copy' => 'PES conducted coordination sessions to support upcoming R&D survey activities, improve indicator alignment, and clarify reporting timelines with partner units. These sessions help ensure the resulting data remains useful for policy analysis, planning support, and national statistical reporting.',
-                'image' => null,
-                'image_alt' => 'R&D Survey',
-                'accent' => 'mint',
-            ],
-            [
-                'id' => 'stred-updates',
-                'eyebrow' => 'Division',
-                'title' => 'STRED Data Framework Review',
-                'date' => 'October 3, 2025',
-                'summary' => 'Statistical frameworks and reporting references were reviewed to keep S&T indicators relevant and consistent.',
-                'copy' => 'The STRED-led review revisited statistical frameworks, metadata references, and reporting formats used for S&T and R&D monitoring. The activity helps maintain consistency in how datasets are prepared, interpreted, and shared with planners, policymakers, and partner institutions.',
-                'image' => null,
-                'image_alt' => 'STRED',
-                'accent' => 'violet',
-            ],
-            [
-                'id' => 'pcmd-monitoring',
-                'eyebrow' => 'Monitoring',
-                'title' => 'PCMD Investment Program Validation Support',
-                'date' => 'September 9, 2025',
-                'summary' => 'Validation work helped align proposed projects with monitoring requirements and investment planning priorities.',
-                'copy' => 'PCMD continued technical support for investment program validation by consolidating project details, checking indicator completeness, and assisting coordination with reporting units. The work supports stronger budget preparation and clearer alignment between proposed initiatives and institutional performance targets.',
-                'image' => null,
-                'image_alt' => 'PCMD',
-                'accent' => 'slate',
-            ],
-        ]);
+        $pesInActionItems = $newsItems;
 
         $resourceHighlights = collect([
             [
@@ -230,7 +165,7 @@ class PortalController extends Controller
 
     public function dxProgramShow(Request $request, string $domainSlug, string $subProgramSlug): View
     {
-        $domain = $this->dxCoreDomains()->firstWhere('slug', $domainSlug);
+        $domain = $this->dxAllDomains()->firstWhere('slug', $domainSlug);
         abort_unless($domain, 404);
 
         $subProgram = $this->dxSubPrograms()->first(function (array $item) use ($domainSlug, $subProgramSlug) {
@@ -423,11 +358,14 @@ class PortalController extends Controller
 
     private function dxCoreDomains()
     {
+        $coreDomainKeys = ['people', 'process', 'technology'];
+
         return DxItem::query()
             ->with(['children' => fn ($query) => $query->where('category', 'program')->where('is_active', true)->orderBy('sort_order')->orderBy('title')])
             ->where('category', 'domain')
             ->where('is_active', true)
             ->whereNotNull('slug')
+            ->whereIn('domain_key', $coreDomainKeys)
             ->orderBy('sort_order')
             ->orderBy('title')
             ->get()
@@ -448,6 +386,27 @@ class PortalController extends Controller
             ->values();
     }
 
+    private function dxAllDomains()
+    {
+        $domains = $this->dxCoreDomains();
+
+        $othersDomain = [
+            'key' => 'other',
+            'slug' => 'other',
+            'title' => 'Others',
+            'icon' => 'bi-grid-3x3-gap',
+            'image' => 'images/technology.png',
+            'description' => 'Cross-cutting and special DOST DX projects that do not need to sit inside the three main core-domain cards.',
+            'default_sub_program' => 'others',
+        ];
+
+        if ($domains->contains(fn (array $item) => $item['slug'] === 'other')) {
+            return $domains;
+        }
+
+        return $domains->push($othersDomain)->values();
+    }
+
     private function dxSubPrograms()
     {
         return DxItem::query()
@@ -465,7 +424,7 @@ class PortalController extends Controller
                 return [
                     'slug' => $item->slug,
                     'domain' => $item->domain_key,
-                    'domain_label' => $item->parent?->title ?: Str::headline($item->domain_key),
+                    'domain_label' => $item->parent?->title ?: ($item->domain_key === 'other' ? 'Others' : Str::headline($item->domain_key)),
                     'title' => $item->title,
                     'description' => $item->description,
                     'accent' => 'cyan',
@@ -661,6 +620,16 @@ class PortalController extends Controller
             ];
         });
 
+        $newsSources = News::query()->latest('date')->get()->map(function (News $news) use ($scoreText) {
+            $summary = $news->title.' | type: '.($news->eyebrow ?: 'News').' | date: '.(optional($news->date)->format('F d, Y') ?: 'No date').' | '.$news->summary;
+
+            return [
+                'score' => $scoreText($summary),
+                'citation' => '[Source: News - '.$news->title.']',
+                'summary' => $summary,
+            ];
+        });
+
         $divisionSources = $this->organizationDivisions()->map(function ($division) use ($scoreText) {
             $summary = $division->name.' | abbreviation: '.$division->abbr.' | '.$division->description;
 
@@ -696,6 +665,7 @@ class PortalController extends Controller
 
         return $issuanceSources
             ->concat($materialSources)
+            ->concat($newsSources)
             ->concat($divisionSources)
             ->concat($dxSources)
             ->concat($staticSources)
@@ -713,7 +683,7 @@ class PortalController extends Controller
         }
 
         $scopeKeywords = [
-            'pes', 'planning', 'evaluation', 'mandate', 'division', 'issuance', 'material',
+            'pes', 'planning', 'evaluation', 'mandate', 'division', 'issuance', 'material', 'news',
             'policy', 'report', 'survey', 'presentation', 'dx', 'digital', 'contact',
             'office', 'taguig', 'dost', 'pcmd', 'pdpd', 'stred', 'itd',
         ];
@@ -743,6 +713,14 @@ class PortalController extends Controller
             return $latest
                 ? 'Latest issuances include '.$latest.'.'
                 : 'No issuances are published yet.';
+        }
+
+        if (str_contains($message, 'news') || str_contains($message, 'story')) {
+            $latest = News::query()->latest('date')->take(3)->pluck('title')->implode('; ');
+
+            return $latest
+                ? 'Latest PES news includes '.$latest.'.'
+                : 'No PES news stories are published yet.';
         }
 
         if (str_contains($message, 'dx') || str_contains($message, 'digital')) {

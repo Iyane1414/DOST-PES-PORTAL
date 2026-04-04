@@ -295,6 +295,26 @@ return new class extends Migration
                     ['slug' => 'competency-based-development', 'code' => 'PRH', 'title' => 'Competency Based Development'],
                 ],
             ],
+            [
+                'slug' => 'others',
+                'domain' => 'other',
+                'title' => 'Others',
+                'description' => 'Cross-cutting and support projects that sit outside the six main DOST DX sub-program buckets.',
+                'projects' => [
+                    ['slug' => 'dost-lms-development', 'code' => 'ETC', 'title' => 'DOST LMS Development'],
+                    ['slug' => 'mbt', 'code' => 'ETC', 'title' => 'MBT'],
+                    ['slug' => 'cbt', 'code' => 'ETC', 'title' => 'CBT'],
+                    ['slug' => 'wbt', 'code' => 'ETC', 'title' => 'WBT'],
+                    ['slug' => 'internal-users', 'code' => 'ETC', 'title' => 'Internal Users'],
+                    ['slug' => 'external-users', 'code' => 'ETC', 'title' => 'External Users'],
+                    ['slug' => 'supply-chain-mobile-app', 'code' => 'ETC', 'title' => 'Supply Chain Mobile App'],
+                    ['slug' => 'openscience', 'code' => 'ETC', 'title' => 'OpenScience'],
+                    ['slug' => 'ias-system', 'code' => 'ETC', 'title' => 'IAS System'],
+                    ['slug' => 'web-content', 'code' => 'ETC', 'title' => 'Web Content'],
+                    ['slug' => 'geo-spatial-platform-enhancement', 'code' => 'ETC', 'title' => 'Geo-Spatial Platform Enhancement'],
+                    ['slug' => 'foresight-institutionalization', 'code' => 'ETC', 'title' => 'Foresight Institutionalization'],
+                ],
+            ],
         ];
     }
 };

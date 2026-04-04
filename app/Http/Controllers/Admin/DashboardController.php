@@ -10,6 +10,7 @@ use App\Models\DxItem;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
+use App\Models\News;
 use App\Models\WebsiteVisit;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -26,6 +27,7 @@ class DashboardController extends Controller
             'activeSection' => 'overview',
             'recentIssuances' => $data['issuances']->take(5),
             'recentMaterials' => $data['materials']->take(5),
+            'recentNews' => $data['news']->take(5),
             'recentMessages' => $data['messages']->take(4),
             'latestDxPrograms' => $data['dxPrograms']->take(6),
             'quickLinks' => [
@@ -40,6 +42,12 @@ class DashboardController extends Controller
                     'copy' => 'Maintain reports, presentations, surveys, and linked resources.',
                     'route' => route('admin.workspace', ['tab' => 'materials']),
                     'icon' => 'bi-collection-play',
+                ],
+                [
+                    'title' => 'Manage News',
+                    'copy' => 'Publish PES in Action stories with thumbnails and optional article links.',
+                    'route' => route('admin.workspace', ['tab' => 'news']),
+                    'icon' => 'bi-newspaper',
                 ],
                 [
                     'title' => 'Update DOST DX',
@@ -60,20 +68,23 @@ class DashboardController extends Controller
     public function workspace(Request $request, ?string $tab = null): View
     {
         $data = $this->dashboardData();
-        $allowedTabs = ['issuances', 'materials', 'divisions', 'dx', 'categories', 'messages', 'ai'];
+        $allowedTabs = ['issuances', 'materials', 'news', 'divisions', 'dx', 'categories', 'messages', 'ai'];
         $requestedTab = $tab ?: $request->string('tab')->toString() ?: 'issuances';
         $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'issuances';
         $issuanceSearch = trim($request->string('issuance_search')->toString());
         $materialSearch = trim($request->string('material_search')->toString());
+        $newsSearch = trim($request->string('news_search')->toString());
         $dxSearch = trim($request->string('dx_search')->toString());
         $messageSearch = trim($request->string('message_search')->toString());
         $messageSort = $request->string('message_sort')->toString() ?: 'newest';
         $issuances = $data['issuances'];
         $materials = $data['materials'];
+        $news = $data['news'];
         $dxItems = $data['dxItems'];
         $messages = $data['messages'];
         $selectedIssuance = $activeTab === 'issuances' ? Issuance::query()->find($request->integer('edit_issuance')) : null;
         $selectedMaterial = $activeTab === 'materials' ? Material::query()->find($request->integer('edit_material')) : null;
+        $selectedNews = $activeTab === 'news' ? News::query()->find($request->integer('edit_news')) : null;
         $selectedDxItem = $activeTab === 'dx'
             ? DxItem::query()->with('parent')->where('category', 'project')->find($request->integer('edit_dx'))
             : null;
@@ -87,6 +98,12 @@ class DashboardController extends Controller
         if ($materialSearch !== '') {
             $materials = $materials->filter(function (Material $material) use ($materialSearch) {
                 return $this->matchesWorkspaceMaterialSearch($material, $materialSearch);
+            })->values();
+        }
+
+        if ($newsSearch !== '') {
+            $news = $news->filter(function (News $newsItem) use ($newsSearch) {
+                return $this->matchesWorkspaceNewsSearch($newsItem, $newsSearch);
             })->values();
         }
 
@@ -123,9 +140,11 @@ class DashboardController extends Controller
             'activeTab' => $activeTab,
             'workspaceIssuances' => $issuances,
             'workspaceMaterials' => $materials,
+            'workspaceNews' => $news,
             'workspaceDxItems' => $dxItems,
             'issuanceSearch' => $issuanceSearch,
             'materialSearch' => $materialSearch,
+            'newsSearch' => $newsSearch,
             'dxSearch' => $dxSearch,
             'workspaceMessages' => $messages,
             'messageSearch' => $messageSearch,
@@ -133,6 +152,7 @@ class DashboardController extends Controller
             'selectedMessageId' => $request->integer('message'),
             'selectedIssuance' => $selectedIssuance,
             'selectedMaterial' => $selectedMaterial,
+            'selectedNews' => $selectedNews,
             'selectedDxItem' => $selectedDxItem,
         ]);
     }
@@ -159,6 +179,7 @@ class DashboardController extends Controller
     {
         $issuances = Issuance::query()->latest('date')->get();
         $materials = Material::query()->latest('date')->get();
+        $news = News::query()->latest('date')->get();
         $divisions = Division::query()->orderBy('name')->get();
         $dxItems = DxItem::query()
             ->with('parent')
@@ -173,6 +194,7 @@ class DashboardController extends Controller
         }
         $messages = ContactMessage::query()->latest()->get();
         $dxPrograms = $dxItems->where('category', 'program')->values();
+        $dxProjects = $dxItems->where('category', 'project')->values();
         $dxDomains = $dxItems->where('category', 'domain')->values();
         $aiSetting = AiSetting::query()->first();
         $projectAnalytics = $this->projectAnalytics($dxPrograms);
@@ -181,10 +203,12 @@ class DashboardController extends Controller
         return [
             'issuances' => $issuances,
             'materials' => $materials,
+            'news' => $news,
             'divisions' => $divisions,
             'messages' => $messages,
             'dxItems' => $dxItems,
             'dxPrograms' => $dxPrograms,
+            'dxProjects' => $dxProjects,
             'dxDomains' => $dxDomains,
             'categories' => $categories,
             'aiSetting' => $aiSetting,
@@ -193,7 +217,8 @@ class DashboardController extends Controller
             'stats' => [
                 'issuances' => $issuances->count(),
                 'materials' => $materials->count(),
-                'dx_programs' => $dxPrograms->count(),
+                'news' => $news->count(),
+                'dx_programs' => $dxProjects->count(),
                 'website_views' => $viewStats['total'],
             ],
         ];
@@ -305,6 +330,38 @@ class DashboardController extends Controller
         return str_contains($title, $normalizedSearch)
             || str_contains($type, $normalizedSearch)
             || str_contains($division, $normalizedSearch);
+    }
+
+    private function matchesWorkspaceNewsSearch(News $news, string $search): bool
+    {
+        $normalizedSearch = Str::of($search)->lower()->trim()->value();
+
+        if ($normalizedSearch === '') {
+            return true;
+        }
+
+        $title = Str::of($news->title ?? '')->lower()->trim()->value();
+        $eyebrow = Str::of($news->eyebrow ?? '')->lower()->trim()->value();
+        $summary = Str::of($news->summary ?? '')->lower()->trim()->value();
+        $titleWords = preg_split('/\s+/', $title, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        if ($title !== '' && str_starts_with($title, $normalizedSearch)) {
+            return true;
+        }
+
+        foreach ($titleWords as $word) {
+            if (str_starts_with($word, $normalizedSearch)) {
+                return true;
+            }
+        }
+
+        if ($eyebrow !== '' && str_starts_with($eyebrow, $normalizedSearch)) {
+            return true;
+        }
+
+        return str_contains($title, $normalizedSearch)
+            || str_contains($eyebrow, $normalizedSearch)
+            || str_contains($summary, $normalizedSearch);
     }
 
     private function defaultIssuanceCategories(): array

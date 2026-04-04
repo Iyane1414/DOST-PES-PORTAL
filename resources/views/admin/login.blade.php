@@ -21,7 +21,7 @@
             <div class="admin-auth-card-mesh"></div>
 
             <h1 class="admin-auth-title">Admin Access</h1>
-            <p class="admin-auth-copy">Enter the administrative password to manage the PES portal through a secure government-tech workspace.</p>
+            <p class="admin-auth-copy">Sign in with the official administrative email and password to manage the PES portal through a secure government-tech workspace.</p>
 
             @if ($errors->any())
                 <div class="alert alert-danger admin-auth-alert">{{ $errors->first() }}</div>
@@ -29,6 +29,10 @@
 
             <form method="POST" action="{{ route('admin.login.store') }}" class="admin-auth-form">
                 @csrf
+                <div class="admin-auth-field">
+                    <span class="admin-auth-field-icon"><i class="bi bi-envelope"></i></span>
+                    <input class="form-control form-control-lg admin-auth-input" type="email" name="email" value="{{ old('email', 'pes@dost.gov.ph') }}" placeholder="Enter admin email" required>
+                </div>
                 <div class="admin-auth-field">
                     <span class="admin-auth-field-icon"><i class="bi bi-key"></i></span>
                     <input class="form-control form-control-lg admin-auth-input" type="password" name="password" placeholder="Enter password" required>

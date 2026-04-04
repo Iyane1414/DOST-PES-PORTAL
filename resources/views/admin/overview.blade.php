@@ -6,6 +6,7 @@
     $tabMeta = [
         'issuances' => ['icon' => 'bi-briefcase'],
         'materials' => ['icon' => 'bi-collection-play'],
+        'news' => ['icon' => 'bi-newspaper'],
         'divisions' => ['icon' => 'bi-diagram-3'],
         'dx' => ['icon' => 'bi-cpu'],
         'categories' => ['icon' => 'bi-tags'],
@@ -53,7 +54,7 @@
                         <div class="admin-stat-body">
                             <div class="admin-stat-label">DOST DX Projects</div>
                             <div class="admin-stat-value">{{ $stats['dx_programs'] }}</div>
-                            <div class="admin-stat-meta">Tracked sub-programs</div>
+                            <div class="admin-stat-meta">Active projects total</div>
                         </div>
                     </div>
                     <div class="admin-stat-card admin-overview-stat-card">
@@ -195,6 +196,20 @@
                                 </div>
 
                                 <div class="admin-overview-stream-card">
+                                    <h3 class="h5 fw-bold mb-3">Latest PES News</h3>
+                                    <div class="admin-side-list">
+                                        @forelse ($recentNews as $newsItem)
+                                            <div class="admin-side-item">
+                                                <div class="admin-side-item-title">{{ $newsItem->title }}</div>
+                                                <div class="admin-side-item-meta">{{ $newsItem->eyebrow }} | {{ optional($newsItem->date)->format('M d, Y') }}</div>
+                                            </div>
+                                        @empty
+                                            <div class="text-secondary-soft">No news stories yet.</div>
+                                        @endforelse
+                                    </div>
+                                </div>
+
+                                <div class="admin-overview-stream-card">
                                     <h3 class="h5 fw-bold mb-3">Latest Materials</h3>
                                     <div class="admin-side-list">
                                         @forelse ($recentMaterials as $material)
@@ -242,4 +257,3 @@
         </main>
     </div>
 @endsection
-

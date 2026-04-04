@@ -17,17 +17,7 @@
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#top">Home</a></li>
-                <li class="nav-item portal-nav-dropdown">
-                    <button class="nav-link portal-nav-toggle" type="button" aria-expanded="false">
-                        <span>About</span>
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <div class="portal-nav-menu">
-                        <a class="portal-nav-menu-link" href="{{ $portalHomeUrl }}#mandate" data-about-panel="mandate">Mandate</a>
-                        <a class="portal-nav-menu-link" href="{{ $portalHomeUrl }}#organizational-structure" data-about-panel="organization">Organizational Structure</a>
-                        <a class="portal-nav-menu-link" href="{{ $portalHomeUrl }}#pes-action">PES in Action</a>
-                    </div>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#about">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#issuances">Issuances</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#materials">Resources</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-dx">DOST DX</a></li>

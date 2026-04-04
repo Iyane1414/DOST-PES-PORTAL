@@ -33,6 +33,10 @@ Route::prefix('admin')->group(function (): void {
         Route::put('/materials/{material}', [ResourceController::class, 'updateMaterial'])->name('admin.materials.update');
         Route::delete('/materials/{material}', [ResourceController::class, 'destroyMaterial'])->name('admin.materials.destroy');
 
+        Route::post('/news', [ResourceController::class, 'storeNews'])->name('admin.news.store');
+        Route::put('/news/{news}', [ResourceController::class, 'updateNews'])->name('admin.news.update');
+        Route::delete('/news/{news}', [ResourceController::class, 'destroyNews'])->name('admin.news.destroy');
+
         Route::post('/divisions', [ResourceController::class, 'storeDivision'])->name('admin.divisions.store');
         Route::delete('/divisions/{division}', [ResourceController::class, 'destroyDivision'])->name('admin.divisions.destroy');
 

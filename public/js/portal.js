@@ -98,8 +98,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const aboutStage = document.getElementById('about-horizontal-stage');
     const aboutTrack = document.getElementById('about-horizontal-track');
     const aboutPanels = Array.from(document.querySelectorAll('.about-panel[data-about-panel]'));
-    const aboutPanelLinks = document.querySelectorAll('a[data-about-panel]');
     const getNavbarOffset = () => (navbar instanceof HTMLElement ? navbar.offsetHeight : 0);
+    const getStandardTargetTop = (target) => {
+        if (!(target instanceof HTMLElement)) {
+            return null;
+        }
+
+        return window.scrollY + target.getBoundingClientRect().top - getNavbarOffset() - 12;
+    };
+
+    const scrollToHashTarget = (hash, behavior = 'smooth') => {
+        if (!hash) {
+            return false;
+        }
+
+        const normalizedHash = hash.startsWith('#') ? hash : `#${hash}`;
+        const panelLink = document.querySelector(`a[data-about-panel][href$="${normalizedHash}"]`);
+        const panelName = panelLink instanceof HTMLElement ? panelLink.getAttribute('data-about-panel') : null;
+
+        if (panelName) {
+            return scrollToAboutPanel(panelName, behavior);
+        }
+
+        const target = document.getElementById(normalizedHash.slice(1));
+        const targetTop = getStandardTargetTop(target);
+
+        if (targetTop === null) {
+            return false;
+        }
+
+        window.scrollTo({
+            top: Math.max(targetTop, 0),
+            behavior,
+        });
+
+        return true;
+    };
     const getAboutPanelTargetTop = (panelName) => {
         const panel = panelName ? aboutPanels.find((item) => item.getAttribute('data-about-panel') === panelName) : null;
 
@@ -118,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return window.scrollY + panel.getBoundingClientRect().top - getNavbarOffset() - 12;
     };
 
-    const scrollToAboutPanel = (panelName) => {
+    const scrollToAboutPanel = (panelName, behavior = 'smooth') => {
         const targetTop = getAboutPanelTargetTop(panelName);
 
         if (targetTop === null) {
@@ -127,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.scrollTo({
             top: Math.max(targetTop, 0),
-            behavior: 'smooth',
+            behavior,
         });
 
         return true;
@@ -164,22 +198,43 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', syncAboutScroll, { passive: true });
     window.addEventListener('resize', syncAboutScroll);
 
-    aboutPanelLinks.forEach((link) => {
+    document.querySelectorAll('a[href*="#"]').forEach((link) => {
         link.addEventListener('click', (event) => {
-            const panelName = link.getAttribute('data-about-panel');
-            if (!panelName) return;
+            if (!(link instanceof HTMLAnchorElement)) {
+                return;
+            }
 
-            const didScroll = scrollToAboutPanel(panelName);
+            const href = link.getAttribute('href') || '';
+
+            if (!href.includes('#')) {
+                return;
+            }
+
+            const url = new URL(href, window.location.href);
+            const samePage = url.origin === window.location.origin && url.pathname === window.location.pathname;
+
+            if (!samePage || !url.hash) {
+                return;
+            }
+
+            const didScroll = scrollToHashTarget(url.hash);
 
             if (!didScroll) {
                 return;
             }
 
             event.preventDefault();
-
-            window.history.replaceState(null, '', link.getAttribute('href') || '#about');
+            window.history.replaceState(null, '', `${url.pathname}${url.hash}`);
         });
     });
+
+    if (window.location.hash) {
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                scrollToHashTarget(window.location.hash, 'auto');
+            });
+        });
+    }
 
     document.querySelectorAll('#mainNav .nav-link, #mainNav .portal-nav-menu-link').forEach((link) => {
         link.addEventListener('click', () => {
@@ -379,6 +434,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const materialLibraryApply = document.querySelector('[data-material-library-apply]');
     const materialLibraryRows = Array.from(document.querySelectorAll('[data-material-library-row]'));
     const materialLibraryEmpty = document.querySelector('[data-material-library-empty-row]');
+    const newsLibraryForm = document.querySelector('[data-news-library-form]');
+    const newsLibrarySearch = document.querySelector('[data-news-library-search]');
+    const newsLibraryApply = document.querySelector('[data-news-library-apply]');
+    const newsLibraryRows = Array.from(document.querySelectorAll('[data-news-library-row]'));
+    const newsLibraryEmpty = document.querySelector('[data-news-library-empty-row]');
 
     const filterMaterialLibraryRows = () => {
         if (!(materialLibrarySearch instanceof HTMLInputElement)) {
@@ -411,6 +471,38 @@ document.addEventListener('DOMContentLoaded', () => {
     materialLibrarySearch?.addEventListener('search', filterMaterialLibraryRows);
     materialLibraryApply?.addEventListener('click', filterMaterialLibraryRows);
     filterMaterialLibraryRows();
+
+    const filterNewsLibraryRows = () => {
+        if (!(newsLibrarySearch instanceof HTMLInputElement)) {
+            return;
+        }
+
+        const query = newsLibrarySearch.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        newsLibraryRows.forEach((row) => {
+            if (!(row instanceof HTMLElement)) return;
+
+            const searchText = (row.dataset.newsLibrarySearch || '').toLowerCase();
+            const visible = matchesStartOrContains(searchText, query);
+            row.hidden = !visible;
+
+            if (visible) visibleCount += 1;
+        });
+
+        if (newsLibraryEmpty instanceof HTMLElement) {
+            newsLibraryEmpty.hidden = visibleCount > 0;
+        }
+    };
+
+    newsLibraryForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        filterNewsLibraryRows();
+    });
+    newsLibrarySearch?.addEventListener('input', filterNewsLibraryRows);
+    newsLibrarySearch?.addEventListener('search', filterNewsLibraryRows);
+    newsLibraryApply?.addEventListener('click', filterNewsLibraryRows);
+    filterNewsLibraryRows();
 
     document.querySelectorAll('[data-project-chart]').forEach((chart) => {
         if (!(chart instanceof HTMLElement)) return;
@@ -520,7 +612,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dxPanels = document.querySelectorAll('[data-dx-panel]');
     const dxSection = document.getElementById('dost-dx');
     const dxProgramCards = document.querySelectorAll('.dx-sub-card[data-program-slug]');
-    const dxProjectPanels = document.querySelectorAll('.dx-project-panel[data-domain-panel]');
 
     if (dxSection instanceof HTMLElement) {
         if ('IntersectionObserver' in window) {
@@ -622,15 +713,9 @@ document.addEventListener('DOMContentLoaded', () => {
         dxProgramCards.forEach((card) => {
             if (!(card instanceof HTMLElement)) return;
 
-            const inDomain = card.dataset.domain === domainSlug;
+            const inDomain = domainSlug && card.dataset.domain === domainSlug;
             card.classList.toggle('is-domain-active', inDomain);
-            card.classList.toggle('is-domain-dimmed', !inDomain);
-        });
-
-        dxProjectPanels.forEach((panel) => {
-            const active = panel instanceof HTMLElement && panel.dataset.domainPanel === domainSlug;
-            panel.classList.toggle('is-active', active);
-            panel.toggleAttribute('hidden', !active);
+            card.classList.toggle('is-domain-dimmed', Boolean(domainSlug) && !inDomain);
         });
     };
 
@@ -651,11 +736,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.dxGoToSubProgram = dxGoToSubProgram;
-
-    const initialDxProgram = document.querySelector('.dx-sub-card[data-program-slug]');
-    if (initialDxProgram instanceof HTMLElement && initialDxProgram.dataset.domain) {
-        activateDxDomain(initialDxProgram.dataset.domain);
-    }
 
     const dxOverviewModal = document.getElementById('dxOverviewModal');
     let pendingDxAction = null;

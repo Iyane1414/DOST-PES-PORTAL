@@ -3,6 +3,7 @@
     $sidebarTabIcons = [
         'issuances' => 'bi-briefcase',
         'materials' => 'bi-collection-play',
+        'news' => 'bi-newspaper',
         'dx' => 'bi-cpu',
         'messages' => 'bi-chat-left-text',
         'ai' => 'bi-robot',
@@ -38,7 +39,7 @@
     <div class="admin-nav-group">
         <div class="admin-nav-label">Workspace</div>
         <div class="nav flex-column nav-pills gap-2">
-            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'dx' => 'DOST DX', 'messages' => 'Messages', 'ai' => 'AI Agent'] as $tab => $label)
+            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'news' => 'PES News', 'dx' => 'DOST DX', 'messages' => 'Messages', 'ai' => 'AI Agent'] as $tab => $label)
                 <a href="{{ route('admin.workspace', ['tab' => $tab]) }}" class="nav-link admin-nav-link @if (($activeTab ?? null) === $tab) active @endif">
                     <span class="admin-nav-link-main">
                         <span class="admin-nav-link-icon">
@@ -52,10 +53,8 @@
         </div>
     </div>
 
-    <div class="admin-sidebar-note">
-        <div class="admin-sidebar-note-title">Administration Guide</div>
-        <p class="mb-0">Manage public-facing PES content, monitor inbound engagement, and keep the portal current.</p>
-        <form method="POST" action="{{ route('admin.logout') }}" class="admin-sidebar-logout">
+    <div class="admin-nav-group mt-auto">
+        <form method="POST" action="{{ route('admin.logout') }}" class="w-100">
             @csrf
             <button class="btn btn-outline-danger w-100 rounded-pill" type="submit">
                 <i class="bi bi-power me-2"></i>Logout

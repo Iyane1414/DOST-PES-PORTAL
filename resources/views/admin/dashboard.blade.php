@@ -16,6 +16,12 @@
             'section_copy' => 'Manage videos, infographics, presentations, and supporting resources.',
             'icon' => 'bi-collection-play',
         ],
+        'news' => [
+            'label' => 'PES News',
+            'section_title' => 'Add News Story',
+            'section_copy' => 'Manage PES in Action stories with thumbnails, summaries, and optional external article links.',
+            'icon' => 'bi-newspaper',
+        ],
         'divisions' => [
             'label' => 'Divisions',
             'section_title' => 'Add New Division',
@@ -51,6 +57,7 @@
     $activeMeta = $tabMeta[$activeTab] ?? $tabMeta['issuances'];
     $isEditingIssuance = isset($selectedIssuance) && $selectedIssuance;
     $isEditingMaterial = isset($selectedMaterial) && $selectedMaterial;
+    $isEditingNews = isset($selectedNews) && $selectedNews;
     $isEditingDx = isset($selectedDxItem) && $selectedDxItem;
 @endphp
 
@@ -235,10 +242,113 @@
                                 @include('admin.partials.table-materials')
                             </div>
                         </div>
+                    @elseif ($activeTab === 'news')
+                        <div class="admin-issuance-workspace-grid">
+                            <div class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-library-panel">
+                                <div class="admin-section-head admin-issuance-panel-head">
+                                    <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
+                                    <div>
+                                        <div class="admin-kicker mb-2">Publishing Desk</div>
+                                        <h2 class="h3 fw-bold mb-1">{{ $isEditingNews ? 'Edit News Story' : $activeMeta['section_title'] }}</h2>
+                                        <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
+                                    </div>
+                                </div>
+
+                                <form method="POST" action="{{ $isEditingNews ? route('admin.news.update', $selectedNews) : route('admin.news.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    @if ($isEditingNews)
+                                        @method('PUT')
+                                    @endif
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Story Label</label>
+                                            <input class="form-control" type="text" name="eyebrow" value="{{ old('eyebrow', $selectedNews->eyebrow ?? 'Update') }}" placeholder="Featured, Event, Update..." required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Published Date</label>
+                                            <input class="form-control" type="date" name="date" value="{{ old('date', isset($selectedNews) && $selectedNews?->date ? $selectedNews->date->format('Y-m-d') : '') }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Accent Style</label>
+                                            <select class="form-select" name="accent" required>
+                                                @foreach (['cyan' => 'Cyan', 'blue' => 'Blue', 'gold' => 'Gold', 'mint' => 'Mint', 'violet' => 'Violet', 'slate' => 'Slate'] as $accentValue => $accentLabel)
+                                                    <option value="{{ $accentValue }}" @selected(old('accent', $selectedNews->accent ?? 'cyan') === $accentValue)>{{ $accentLabel }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Headline</label>
+                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedNews->title ?? '') }}" placeholder="Enter PES news headline" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Card Summary</label>
+                                            <textarea class="form-control" name="summary" rows="3" placeholder="Short summary shown on the homepage card" required>{{ old('summary', $selectedNews->summary ?? '') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Full Story</label>
+                                            <textarea class="form-control" name="content" rows="6" placeholder="Full story content for the modal view" required>{{ old('content', $selectedNews->content ?? '') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Article Link (optional)</label>
+                                            <input class="form-control" type="url" name="link_url" value="{{ old('link_url', $selectedNews->link_url ?? '') }}" placeholder="https://example.com/news-story">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Thumbnail Alt Text</label>
+                                            <input class="form-control" type="text" name="image_alt" value="{{ old('image_alt', $selectedNews->image_alt ?? '') }}" placeholder="Short image description">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field admin-issuance-file-field">
+                                            <label class="form-label">Thumbnail{{ $isEditingNews ? ' (optional replacement)' : '' }}</label>
+                                            <input class="form-control" type="file" name="thumbnail" accept=".jpg,.jpeg,.png,.webp">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 admin-issuance-form-actions">
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingNews ? 'Update Story' : 'Publish Story' }}</button>
+                                        @if ($isEditingNews)
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'news']) }}">Cancel Edit</a>
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="admin-card admin-table-shell admin-issuance-panel admin-issuance-form-panel">
+                                <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
+                                    <div>
+                                        <div class="admin-kicker mb-2">Record Center</div>
+                                        <h2 class="h4 fw-bold mb-1">{{ $activeMeta['label'] }} Library</h2>
+                                        <p class="text-secondary-soft mb-0">Review and maintain the stories visible in the PES in Action section.</p>
+                                    </div>
+                                </div>
+
+                                <form method="GET" action="{{ route('admin.workspace', ['tab' => 'news']) }}" class="admin-issuance-library-toolbar" data-news-library-form>
+                                    <div class="admin-issuance-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input class="form-control" type="search" name="news_search" value="{{ $newsSearch ?? '' }}" placeholder="Search story title, label, or summary..." data-news-library-search>
+                                    </div>
+                                    <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-news-library-apply>Search</button>
+                                </form>
+
+                                @include('admin.partials.table-news')
+                            </div>
+                        </div>
                     @elseif ($activeTab === 'dx')
                         @php
-                            $dxCodeOptions = $dxItems->where('category', 'project')->pluck('code')->filter()->unique()->sort()->values();
-                            $dxProjectPrograms = $dxPrograms->take(6)->values();
+                            $dxCodeOptions = $dxItems->where('category', 'project')->pluck('code')->filter()->push('ETC')->unique()->sort()->values();
+                            $dxProjectPrograms = $dxPrograms->values();
                         @endphp
                         <div class="admin-issuance-workspace-grid">
                             <div class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-library-panel">
@@ -263,6 +373,7 @@
                                                 <option value="people" @selected(old('domain_key', $selectedDxItem->domain_key ?? 'people') === 'people')>People</option>
                                                 <option value="process" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'process')>Process</option>
                                                 <option value="technology" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'technology')>Technology</option>
+                                                <option value="other" @selected(old('domain_key', $selectedDxItem->domain_key ?? '') === 'other')>Others</option>
                                             </select>
                                         </div>
                                     </div>

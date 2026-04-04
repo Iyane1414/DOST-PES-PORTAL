@@ -156,60 +156,6 @@
                     @endforelse
                 </div>
 
-                @if ($dxSubPrograms->isNotEmpty())
-                    <div class="dx-project-viewer">
-                        @foreach ($dxCoreDomains as $domain)
-                            @php
-                                $domainPrograms = $dxSubPrograms->where('domain', $domain['slug'])->values();
-                                $domainProjects = $domainPrograms->flatMap(function (array $program) {
-                                    return collect($program['projects'])->map(function (array $project) use ($program) {
-                                        $project['program_title'] = $program['title'];
-                                        $project['program_slug'] = $program['slug'];
-
-                                        return $project;
-                                    });
-                                })->values();
-                            @endphp
-                            <section
-                                class="dx-project-panel{{ $loop->first ? ' is-active' : '' }}"
-                                data-domain-panel="{{ $domain['slug'] }}"
-                                @if (! $loop->first) hidden @endif
-                            >
-                                <div class="dx-project-panel-head">
-                                    <div>
-                                        <div class="dx-project-domain-chip">{{ $domain['title'] }}</div>
-                                        <span class="eyebrow text-accent">Core Domain</span>
-                                        <h3 class="section-title split-title text-white mb-2">{{ $domain['title'] }}</h3>
-                                        <p class="section-copy text-white-50 mb-0">{{ $domain['description'] }}</p>
-                                    </div>
-                                    <div class="dx-project-panel-side">
-                                        <div class="dx-project-domain-summary">
-                                            <span class="dx-project-domain-label">Sub-programs</span>
-                                            <strong>{{ $domainPrograms->count() }}</strong>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="dx-project-list" aria-label="{{ $domain['title'] }} projects">
-                                    @foreach ($domainProjects as $project)
-                                        <a
-                                            class="dx-project-item"
-                                            id="project-{{ $project['slug'] }}"
-                                            href="{{ route('portal.dx.program.show', ['domainSlug' => $domain['slug'], 'subProgramSlug' => $project['program_slug']]) }}#project-{{ $project['slug'] }}"
-                                        >
-                                            <span class="dx-project-code">{{ $project['code'] }}</span>
-                                            <span class="dx-project-name-wrap">
-                                                <span class="dx-project-name">{{ $project['title'] }}</span>
-                                                <span class="dx-project-program">{{ $project['program_title'] }}</span>
-                                            </span>
-                                            <i class="bi bi-arrow-up-right"></i>
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </section>
-                        @endforeach
-                    </div>
-                @endif
             </div>
 
             <div class="dx-metrics-board" aria-label="DOST DX quick stats">

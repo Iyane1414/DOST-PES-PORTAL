@@ -11,6 +11,7 @@ use App\Models\DxItem;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
+use App\Models\News;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -99,6 +100,31 @@ class ResourceController extends Controller
         $material->delete();
 
         return $this->redirectWithTab('materials', 'Material deleted.');
+    }
+
+    public function storeNews(Request $request): RedirectResponse
+    {
+        $data = $this->validateNews($request);
+
+        News::query()->create($this->newsPayload($request, $data));
+
+        return $this->redirectWithTab('news', 'News item published.');
+    }
+
+    public function updateNews(Request $request, News $news): RedirectResponse
+    {
+        $data = $this->validateNews($request);
+        $news->update($this->newsPayload($request, $data, $news));
+
+        return $this->redirectWithTab('news', 'News item updated.');
+    }
+
+    public function destroyNews(News $news): RedirectResponse
+    {
+        $this->deletePublicFile($news->thumbnail_path);
+        $news->delete();
+
+        return $this->redirectWithTab('news', 'News item deleted.');
     }
 
     public function storeDivision(Request $request): RedirectResponse
@@ -308,7 +334,7 @@ class ResourceController extends Controller
     {
         return $request->validate([
             'category' => ['required', Rule::in(['domain', 'program', 'project'])],
-            'domain_key' => ['required', Rule::in(['people', 'process', 'technology'])],
+            'domain_key' => ['required', Rule::in(['people', 'process', 'technology', 'other'])],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:2000'],
             'parent_id' => ['nullable', 'integer', 'exists:dx_items,id'],
@@ -320,9 +346,52 @@ class ResourceController extends Controller
         ]);
     }
 
+    private function validateNews(Request $request): array
+    {
+        return $request->validate([
+            'eyebrow' => ['required', 'string', 'max:100'],
+            'title' => ['required', 'string', 'max:255'],
+            'date' => ['required', 'date'],
+            'summary' => ['required', 'string', 'max:500'],
+            'content' => ['required', 'string', 'max:10000'],
+            'link_url' => ['nullable', 'url', 'max:255'],
+            'accent' => ['required', Rule::in(['cyan', 'blue', 'gold', 'mint', 'violet', 'slate'])],
+            'image_alt' => ['nullable', 'string', 'max:255'],
+            'thumbnail' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+    }
+
+    private function newsPayload(Request $request, array $data, ?News $news = null): array
+    {
+        $thumbnailPath = $news?->thumbnail_path;
+
+        if ($request->hasFile('thumbnail')) {
+            $this->deletePublicFile($news?->thumbnail_path);
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+            $publicDisk = Storage::disk('public');
+            $thumbnailPath = $publicDisk->url($request->file('thumbnail')->store('news', 'public'));
+        }
+
+        return [
+            'eyebrow' => $data['eyebrow'],
+            'title' => $data['title'],
+            'date' => $data['date'],
+            'summary' => $data['summary'],
+            'content' => $data['content'],
+            'link_url' => $data['link_url'] ?: null,
+            'thumbnail_path' => $thumbnailPath,
+            'accent' => $data['accent'],
+            'image_alt' => $data['image_alt'] ?: $data['title'],
+        ];
+    }
+
     private function dxItemPayload(Request $request, array $data, ?DxItem $dxItem = null): array
     {
         $parentId = $this->resolveDxParentId($data['category'], $data['parent_id'] ?? null);
+        $parentItem = $parentId ? DxItem::query()->find($parentId) : null;
+        $resolvedDomainKey = $data['category'] === 'project'
+            ? ($parentItem?->domain_key ?: $data['domain_key'])
+            : $data['domain_key'];
         $imagePath = $dxItem?->image_path;
         $fileUrl = $dxItem?->file_url;
 
@@ -352,10 +421,10 @@ class ResourceController extends Controller
             'category' => $data['category'],
             'slug' => $dxItem?->slug ?: $this->makeUniqueDxSlug($data['title']),
             'parent_id' => $parentId,
-            'domain_key' => $data['domain_key'],
+            'domain_key' => $resolvedDomainKey,
             'code' => $data['category'] === 'project' ? ($data['code'] ?: null) : null,
-            'icon' => $data['category'] === 'domain' ? ($data['icon'] ?: ($dxItem?->icon ?: $this->defaultDxDomainIcon($data['domain_key']))) : null,
-            'image_path' => $data['category'] === 'domain' ? ($imagePath ?: $this->defaultDxDomainImage($data['domain_key'])) : null,
+            'icon' => $data['category'] === 'domain' ? ($data['icon'] ?: ($dxItem?->icon ?: $this->defaultDxDomainIcon($resolvedDomainKey))) : null,
+            'image_path' => $data['category'] === 'domain' ? ($imagePath ?: $this->defaultDxDomainImage($resolvedDomainKey)) : null,
             'file_url' => $data['category'] === 'project' ? $fileUrl : null,
             'sort_order' => $data['sort_order'] ?? 0,
             'is_active' => true,
@@ -431,6 +500,7 @@ class ResourceController extends Controller
         return match ($domainKey) {
             'people' => 'bi-person',
             'process' => 'bi-activity',
+            'other' => 'bi-grid-3x3-gap',
             default => 'bi-pc-display',
         };
     }
@@ -440,6 +510,7 @@ class ResourceController extends Controller
         return match ($domainKey) {
             'people' => 'images/people.png',
             'process' => 'images/process.png',
+            'other' => 'images/technology.png',
             default => 'images/technology.png',
         };
     }

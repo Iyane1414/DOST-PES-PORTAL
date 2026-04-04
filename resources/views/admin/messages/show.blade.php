@@ -33,7 +33,7 @@
             </div>
 
             <div class="admin-message-detail-grid">
-                <section class="admin-card admin-issuance-panel admin-issuance-form-panel admin-message-detail-panel">
+                <section class="admin-card admin-issuance-panel admin-issuance-library-panel admin-message-detail-panel">
                     <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
                         <div>
                             <div class="admin-kicker mb-2">Message Record</div>
@@ -80,7 +80,7 @@
                     @endif
                 </section>
 
-                <aside class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-library-panel admin-message-reply-panel">
+                <aside class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-form-panel admin-message-reply-panel">
                     <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
                         <div>
                             <div class="admin-kicker mb-2">Reply Desk</div>
