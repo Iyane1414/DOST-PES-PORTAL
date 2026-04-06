@@ -498,4 +498,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = document.getElementById('dx-content');
         target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+
+    document.querySelectorAll('.gates-tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.gates-tab').forEach(function(t) { t.classList.remove('is-active'); });
+            tab.classList.add('is-active');
+            var filter = tab.dataset.gatesFilter;
+            document.querySelectorAll('.gates-card').forEach(function(card) {
+                card.classList.toggle('is-hidden', filter !== 'all' && card.dataset.type !== filter);
+            });
+        });
+    });
+    
+    function openGatesLightbox(src, title, desc, type) {
+        var media = document.getElementById('gatesLightboxMedia');
+        media.innerHTML = type === 'video'
+            ? '<video src="' + src + '" controls autoplay playsinline></video>'
+            : '<img src="' + src + '" alt="' + title + '">';
+        document.getElementById('gatesLightboxTitle').textContent = title;
+        document.getElementById('gatesLightboxDesc').textContent  = desc;
+        document.getElementById('gatesLightbox').classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeGatesLightboxDirect() {
+        document.getElementById('gatesLightbox').classList.remove('is-open');
+        document.getElementById('gatesLightboxMedia').innerHTML = '';
+        document.body.style.overflow = '';
+    }
+    function closeGatesLightbox(e) {
+        if (e.target === document.getElementById('gatesLightbox')) closeGatesLightboxDirect();
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeGatesLightboxDirect();
+    });
 });
