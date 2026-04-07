@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AiSetting;
 use App\Models\ContactMessage;
 use App\Models\DxItem;
+use App\Models\GatesProject;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
@@ -26,6 +27,7 @@ class PortalController extends Controller
 
         $issuances = Issuance::query()->latest('date')->get();
         $materials = Material::query()->latest('date')->get();
+        $gatesProjects = GatesProject::query()->where('is_active', true)->orderBy('sort_order')->latest('date')->get();
         $newsItems = News::query()->latest('date')->take(6)->get();
         $materialTypes = $materials
             ->pluck('type')
@@ -140,6 +142,7 @@ class PortalController extends Controller
         return view('portal.index', [
             'issuances' => $issuances,
             'materials' => $materials,
+            'gatesProjects' => $gatesProjects,
             'divisions' => $divisions,
             'dxCoreDomains' => $dxCoreDomains,
             'dxSubPrograms' => $dxSubPrograms,
@@ -151,6 +154,7 @@ class PortalController extends Controller
             'analytics' => $analytics,
             'issuanceCount' => $issuances->count(),
             'materialCount' => $materials->count(),
+            'gatesProjectCount' => $gatesProjects->count(),
             'filteredIssuances' => $filteredIssuances,
             'search' => $search,
             'categoryFilter' => $categoryFilter,
@@ -263,6 +267,52 @@ class PortalController extends Controller
         ]);
     }
 
+    public function gatesCollection(Request $request, string $collectionSlug): View
+    {
+        $gatesProjects = GatesProject::query()->where('is_active', true)->latest('date')->get();
+        $gatesCollections = $this->gatesCollections($gatesProjects);
+        $gatesCollection = $gatesCollections->firstWhere('slug', $collectionSlug);
+
+        abort_unless($gatesCollection, 404);
+
+        $search = $request->string('search')->toString();
+        $year = $request->string('year')->toString();
+        $collectionProjects = $gatesProjects->filter(fn (GatesProject $item) => $this->matchesGatesCollection($item, $gatesCollection))->values();
+
+        $availableYears = $collectionProjects
+            ->map(fn (GatesProject $item) => optional($item->date)->format('Y'))
+            ->filter()
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        $filteredProjects = $collectionProjects->filter(function (GatesProject $item) use ($search, $year) {
+            if ($search === '') {
+                $matchesSearch = true;
+            } else {
+                $normalizedSearch = Str::lower(trim($search));
+                $titleMatch = str_starts_with(Str::lower($item->title), $normalizedSearch);
+                $codeMatch = str_starts_with(Str::lower($item->code ?? ''), $normalizedSearch);
+                $matchesSearch = $titleMatch || $codeMatch;
+            }
+            $matchesYear = $year === '' || $year === 'All' || optional($item->date)->format('Y') === $year;
+
+            return $matchesSearch && $matchesYear;
+        })->values();
+
+        return view('portal.gates.show', [
+            'title' => $gatesCollection['label'].' - DOST GATES',
+            'gatesCollection' => $gatesCollection,
+            'gatesCollections' => $gatesCollections,
+            'gatesProjects' => $filteredProjects,
+            'gatesProjectsCount' => $filteredProjects->count(),
+            'totalGatesProjectsCount' => $collectionProjects->count(),
+            'search' => $search,
+            'year' => $year,
+            'availableYears' => $availableYears,
+        ]);
+    }
+
     private function organizationDivisions()
     {
         return collect([
@@ -355,7 +405,35 @@ class PortalController extends Controller
             return $collection;
         });
     }
+    private function gatesCollections($gatesProjects)
+    {
+        return collect([
+            [
+                'slug' => 'projects',
+                'label' => 'Projects',
+                'filter' => 'Project',
+                'anchor' => 'gates-projects',
+                'icon' => 'bi-briefcase',
+                'eyebrow' => 'Project',
+                'description' => 'GATES program projects and initiatives.',
+                'page_copy' => 'No GATES projects have been uploaded yet.',
+            ],
+            [
+                'slug' => 'video-presentations',
+                'label' => 'Video Presentations',
+                'filter' => 'Video Presentation',
+                'anchor' => 'gates-videos',
+                'icon' => 'bi-play-circle',
+                'eyebrow' => 'Video',
+                'description' => 'GATES video presentations and demos.',
+                'page_copy' => 'No GATES video presentations have been uploaded yet.',
+            ],
+        ])->map(function (array $collection) use ($gatesProjects) {
+            $collection['count'] = $gatesProjects->filter(fn (GatesProject $item) => $this->matchesGatesCollection($item, $collection))->count();
 
+            return $collection;
+        });
+    }
     private function dxCoreDomains()
     {
         $coreDomainKeys = ['people', 'process', 'technology'];
@@ -469,6 +547,17 @@ class PortalController extends Controller
         };
     }
 
+    private function matchesGatesCollection(GatesProject $item, array $collection): bool
+    {
+        $type = Str::lower($item->type);
+
+        return match ($collection['slug']) {
+            'projects' => str_contains($type, 'project') && ! str_contains($type, 'video'),
+            'video-presentations' => str_contains($type, 'video'),
+            default => false,
+        };
+    }
+
     public function contact(Request $request): RedirectResponse
     {
         $data = $request->validate([
@@ -574,6 +663,7 @@ class PortalController extends Controller
             $divisionSummary !== '' ? 'Current PES divisions: '.$divisionSummary.'.' : null,
             $dxDomains !== '' ? 'DOST DX core domains: '.$dxDomains.'.' : null,
             $dxPrograms !== '' ? 'DOST DX sub-programs: '.$dxPrograms.'.' : null,
+            GatesProject::query()->exists() ? 'DOST GATES project records are also available in the portal.' : null,
             'Official contact details: DOST Complex, Gen Santos Ave., Bicutan, Taguig City, Philippines; phone +63 (2) 8837-2071 to 82; email pes@dost.gov.ph; office hours Monday to Thursday, 8:00AM to 5:00PM.',
             $sourceLines !== '' ? "Matched portal sources:\n".$sourceLines : 'Matched portal sources: none strongly matched for this question.',
         ]));
@@ -650,6 +740,16 @@ class PortalController extends Controller
             ];
         });
 
+        $gatesSources = GatesProject::query()->latest('date')->get()->map(function (GatesProject $project) use ($scoreText) {
+            $summary = $project->title.' | code: '.($project->code ?: 'GATES').' | '.($project->description ?: 'GATES project');
+
+            return [
+                'score' => $scoreText($summary),
+                'citation' => '[Source: DOST GATES - '.$project->title.']',
+                'summary' => $summary,
+            ];
+        });
+
         $staticSources = collect([
             [
                 'score' => $scoreText('PES mandate planning evaluation service DOST mandate strategic planning evaluation national priorities impact assessment'),
@@ -668,6 +768,7 @@ class PortalController extends Controller
             ->concat($newsSources)
             ->concat($divisionSources)
             ->concat($dxSources)
+            ->concat($gatesSources)
             ->concat($staticSources)
             ->filter(fn (array $source) => $source['score'] > 0)
             ->sortByDesc('score')
@@ -685,7 +786,7 @@ class PortalController extends Controller
         $scopeKeywords = [
             'pes', 'planning', 'evaluation', 'mandate', 'division', 'issuance', 'material', 'news',
             'policy', 'report', 'survey', 'presentation', 'dx', 'digital', 'contact',
-            'office', 'taguig', 'dost', 'pcmd', 'pdpd', 'stred', 'itd',
+            'office', 'taguig', 'dost', 'pcmd', 'pdpd', 'stred', 'itd', 'gates',
         ];
 
         $hasScopeKeyword = collect($scopeKeywords)->contains(fn ($keyword) => str_contains($message, $keyword));
@@ -731,7 +832,15 @@ class PortalController extends Controller
                 : 'DOST DX content is available through the admin dashboard.';
         }
 
-        return 'I can help with PES mandates, divisions, issuances, materials, and DOST DX updates.';
+        if (str_contains($message, 'gates')) {
+            $latest = GatesProject::query()->orderBy('sort_order')->latest('date')->take(3)->pluck('title')->implode('; ');
+
+            return $latest !== ''
+                ? 'DOST GATES currently highlights these projects: '.$latest.'.'
+                : 'DOST GATES project records will appear once they are added by the admin team.';
+        }
+
+        return 'I can help with PES mandates, divisions, issuances, materials, DOST GATES, and DOST DX updates.';
     }
 
     private function recordWebsiteVisit(Request $request): void

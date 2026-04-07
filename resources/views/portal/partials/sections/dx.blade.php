@@ -119,7 +119,13 @@
             <div class="dx-panel is-active" data-dx-panel="domains">
                 <div class="dx-domain-grid">
                     @forelse ($dxCoreDomains as $item)
-                        <article class="dx-domain-card" role="button" tabindex="0" onclick="dxGoToSubProgram('{{ $item['slug'] }}', '{{ $item['default_sub_program'] }}')" onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); dxGoToSubProgram('{{ $item['slug'] }}', '{{ $item['default_sub_program'] }}'); }">
+                        <button
+                            class="dx-domain-card"
+                            type="button"
+                            data-dx-domain="{{ $item['slug'] }}"
+                            data-dx-default-program="{{ $item['default_sub_program'] }}"
+                            aria-label="View {{ $item['title'] }} sub-programs"
+                        >
                             <div class="dx-domain-media">
                                 <img src="{{ asset($item['image']) }}" alt="{{ $item['title'] }}" class="dx-domain-image">
                             </div>
@@ -129,7 +135,7 @@
                                 <h3 class="dx-domain-title">{{ $item['title'] }}</h3>
                                 <p class="dx-domain-copy mb-0">{{ $item['description'] }}</p>
                             </div>
-                        </article>
+                        </button>
                     @empty
                         <div class="dx-empty-state">No core domains available yet.</div>
                     @endforelse
@@ -211,4 +217,3 @@
         </div>
     </div>
 </div>
-

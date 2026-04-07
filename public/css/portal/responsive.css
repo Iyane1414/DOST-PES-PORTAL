@@ -1,6 +1,31 @@
 @media (max-width: 991.98px) {
     .hero-section { min-height: auto; padding-top: 7rem; }
     .hero-section .container::before { inset: -1.25rem -.5rem; border-radius: 2rem; }
+    .portal-navbar-shell {
+        padding-inline: 1rem;
+    }
+    .portal-navbar-collapse {
+        margin-top: .9rem;
+        padding: 1rem;
+        border-radius: 1.35rem;
+        background: rgba(255, 255, 255, .9);
+        box-shadow: 0 18px 38px rgba(13, 20, 31, .08);
+    }
+    [data-bs-theme="dark"] .portal-navbar-collapse {
+        background: rgba(11, 14, 20, .94);
+    }
+    .portal-navbar-menu {
+        align-items: flex-start;
+        gap: .2rem;
+    }
+    .portal-navbar-menu .nav-link {
+        white-space: normal;
+    }
+    .portal-navbar-actions {
+        margin-left: 0;
+        margin-top: .9rem;
+        justify-content: flex-start;
+    }
     .portal-nav-dropdown {
         width: 100%;
     }
@@ -196,6 +221,10 @@
     }
     .dx-tabbar { display: flex; width: 100%; justify-content: stretch; }
     .dx-tab { flex: 1 1 0; min-width: 0; }
+    .dx-domain-grid,
+    .dx-program-grid {
+        grid-template-columns: 1fr;
+    }
     .dx-domain-card,
     .dx-program-tile { min-height: 20rem; }
     .admin-auth-card-enhanced {
@@ -228,6 +257,9 @@
         padding: 1rem;
     }
     .admin-project-widget-layout {
+        grid-template-columns: 1fr;
+    }
+    .gates-collection-grid {
         grid-template-columns: 1fr;
     }
     .admin-message-toolbar,
@@ -300,4 +332,81 @@
     .admin-sidebar { border-right: 0; border-bottom: 1px solid rgba(15,23,42,.06); }
     .portal-brand-logo-main { height: 3.3rem; }
     .portal-brand-logo-side { height: 3.3rem; }
+}
+@media (max-width: 1199.98px) {
+    .gates-project-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gates-achieves-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .gates-achieve-number {
+        font-size: 2.4rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .gates-projects-shell {
+        padding: 1.8rem;
+        border-radius: 1.4rem;
+    }
+
+    .gates-project-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gates-achieves-grid {
+        grid-template-columns: 1fr;
+        gap: .9rem;
+    }
+
+    .gates-achieve-item {
+        padding: 1.1rem;
+        gap: .6rem;
+    }
+
+    .gates-achieve-number {
+        font-size: 2.2rem;
+    }
+
+    .gates-achieve-text {
+        font-size: .82rem;
+    }
+
+    .gates-hero-actions {
+        flex-direction: column;
+    }
+
+    .gates-hero-actions .btn {
+        width: 100%;
+    }
+
+    .gates-title {
+        font-size: clamp(2.2rem, 7vw, 3.2rem);
+    }
+
+    .gates-copy {
+        font-size: 1rem;
+    }
+
+    .gates-hero-visual {
+        min-height: 20rem;
+        margin-top: 1rem;
+    }
+
+    .gates-projects-section {
+        margin-top: 1rem;
+    }
+
+    .gates-achieves-section {
+        margin: 1rem 0;
+        padding: 1rem 0;
+    }
+
+    .gates-projects-head .section-title {
+        font-size: clamp(1.4rem, 5vw, 2rem);
+    }
 }

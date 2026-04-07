@@ -434,6 +434,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const materialLibraryApply = document.querySelector('[data-material-library-apply]');
     const materialLibraryRows = Array.from(document.querySelectorAll('[data-material-library-row]'));
     const materialLibraryEmpty = document.querySelector('[data-material-library-empty-row]');
+    const gatesLibraryForm = document.querySelector('[data-gates-library-form]');
+    const gatesLibrarySearch = document.querySelector('[data-gates-library-search]');
+    const gatesLibraryApply = document.querySelector('[data-gates-library-apply]');
+    const gatesLibraryRows = Array.from(document.querySelectorAll('[data-gates-library-row]'));
+    const gatesLibraryEmpty = document.querySelector('[data-gates-library-empty-row]');
     const newsLibraryForm = document.querySelector('[data-news-library-form]');
     const newsLibrarySearch = document.querySelector('[data-news-library-search]');
     const newsLibraryApply = document.querySelector('[data-news-library-apply]');
@@ -471,6 +476,38 @@ document.addEventListener('DOMContentLoaded', () => {
     materialLibrarySearch?.addEventListener('search', filterMaterialLibraryRows);
     materialLibraryApply?.addEventListener('click', filterMaterialLibraryRows);
     filterMaterialLibraryRows();
+
+    const filterGatesLibraryRows = () => {
+        if (!(gatesLibrarySearch instanceof HTMLInputElement)) {
+            return;
+        }
+
+        const query = gatesLibrarySearch.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        gatesLibraryRows.forEach((row) => {
+            if (!(row instanceof HTMLElement)) return;
+
+            const searchText = (row.dataset.gatesLibrarySearch || '').toLowerCase();
+            const visible = matchesStartOrContains(searchText, query);
+            row.hidden = !visible;
+
+            if (visible) visibleCount += 1;
+        });
+
+        if (gatesLibraryEmpty instanceof HTMLElement) {
+            gatesLibraryEmpty.hidden = visibleCount > 0;
+        }
+    };
+
+    gatesLibraryForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        filterGatesLibraryRows();
+    });
+    gatesLibrarySearch?.addEventListener('input', filterGatesLibraryRows);
+    gatesLibrarySearch?.addEventListener('search', filterGatesLibraryRows);
+    gatesLibraryApply?.addEventListener('click', filterGatesLibraryRows);
+    filterGatesLibraryRows();
 
     const filterNewsLibraryRows = () => {
         if (!(newsLibrarySearch instanceof HTMLInputElement)) {
@@ -611,7 +648,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const dxTabs = document.querySelectorAll('[data-dx-tab]');
     const dxPanels = document.querySelectorAll('[data-dx-panel]');
     const dxSection = document.getElementById('dost-dx');
+    const dxDomainCards = document.querySelectorAll('.dx-domain-card[data-dx-domain]');
     const dxProgramCards = document.querySelectorAll('.dx-sub-card[data-program-slug]');
+    let activeDxDomain = '';
 
     if (dxSection instanceof HTMLElement) {
         if ('IntersectionObserver' in window) {
@@ -652,13 +691,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const tabName = tab.getAttribute('data-dx-tab');
             if (tabName) {
                 setDxTab(tabName);
-
-                if (tabName === 'programs' && !document.querySelector('.dx-sub-card.is-active')) {
-                    const firstProgram = document.querySelector('.dx-sub-card[data-program-slug]');
-                    const firstSlug = firstProgram instanceof HTMLElement ? firstProgram.dataset.programSlug : '';
-
-                    if (firstSlug) activateDxProgram(firstSlug);
-                }
             }
         });
     });
@@ -710,12 +742,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const activateDxDomain = (domainSlug) => {
+        activeDxDomain = domainSlug || '';
+        let primaryMarked = false;
+
         dxProgramCards.forEach((card) => {
             if (!(card instanceof HTMLElement)) return;
 
             const inDomain = domainSlug && card.dataset.domain === domainSlug;
             card.classList.toggle('is-domain-active', inDomain);
             card.classList.toggle('is-domain-dimmed', Boolean(domainSlug) && !inDomain);
+            card.classList.toggle('is-domain-primary', false);
+
+            if (inDomain && !primaryMarked) {
+                card.classList.add('is-domain-primary');
+                primaryMarked = true;
+            }
+        });
+
+        dxDomainCards.forEach((card) => {
+            if (!(card instanceof HTMLElement)) return;
+
+            const isActive = domainSlug !== '' && card.dataset.dxDomain === domainSlug;
+            card.classList.toggle('is-selected', isActive);
+            card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
     };
 
@@ -723,7 +772,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setDxTab('programs');
 
         window.setTimeout(() => {
-            const firstInDomain = document.querySelector(`.dx-sub-card[data-domain="${domain}"]`);
+            const preferredProgram = programSlug
+                ? document.querySelector(`.dx-sub-card[data-domain="${domain}"][data-program-slug="${programSlug}"]`)
+                : null;
+            const firstInDomain = preferredProgram instanceof HTMLElement
+                ? preferredProgram
+                : document.querySelector(`.dx-sub-card[data-domain="${domain}"]`);
 
             if (!domain) return;
 
@@ -736,6 +790,23 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.dxGoToSubProgram = dxGoToSubProgram;
+
+    dxDomainCards.forEach((card) => {
+        card.addEventListener('click', () => {
+            if (!(card instanceof HTMLElement)) {
+                return;
+            }
+
+            const domain = card.dataset.dxDomain || '';
+            const defaultProgram = card.dataset.dxDefaultProgram || '';
+
+            if (!domain) {
+                return;
+            }
+
+            dxGoToSubProgram(domain, defaultProgram);
+        });
+    });
 
     const dxOverviewModal = document.getElementById('dxOverviewModal');
     let pendingDxAction = null;
@@ -847,4 +918,48 @@ document.addEventListener('DOMContentLoaded', () => {
         const target = document.getElementById('dx-content');
         target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+
+    // GATES Collection Page Search (Client-side filtering)
+    const gatesSearchForm = document.querySelector('[data-gates-search-form]');
+    const gatesSearchInput = document.querySelector('[data-gates-search-input]');
+    const gatesSearchRows = Array.from(document.querySelectorAll('[data-gates-search-row]'));
+    const gatesSearchEmpty = document.querySelector('[data-gates-library-empty-row]');
+    const gatesSearchCount = document.querySelector('[data-gates-search-count]');
+
+    const filterGatesSearchRows = () => {
+        if (!(gatesSearchInput instanceof HTMLInputElement)) {
+            return;
+        }
+
+        const query = gatesSearchInput.value.trim().toLowerCase();
+        let visibleCount = 0;
+
+        gatesSearchRows.forEach((row) => {
+            if (!(row instanceof HTMLElement)) return;
+
+            const searchText = (row.dataset.gatesSearchRow || '').toLowerCase();
+            const visible = matchesStartOrContains(searchText, query);
+            row.hidden = !visible;
+
+            if (visible) visibleCount += 1;
+        });
+
+        if (gatesSearchCount instanceof HTMLElement) {
+            gatesSearchCount.textContent = visibleCount;
+        }
+
+        // Show/hide empty state based on filter results (not form submission)
+        const gatesPageEmpty = document.querySelector('.gates-page-empty');
+        if (gatesPageEmpty instanceof HTMLElement) {
+            gatesPageEmpty.hidden = visibleCount > 0;
+        }
+    };
+
+    gatesSearchForm?.addEventListener('submit', (event) => {
+        event.preventDefault();
+        filterGatesSearchRows();
+    });
+    gatesSearchInput?.addEventListener('input', filterGatesSearchRows);
+    gatesSearchInput?.addEventListener('search', filterGatesSearchRows);
+    filterGatesSearchRows();
 });

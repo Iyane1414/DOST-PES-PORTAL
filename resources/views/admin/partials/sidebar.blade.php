@@ -3,6 +3,7 @@
     $sidebarTabIcons = [
         'issuances' => 'bi-briefcase',
         'materials' => 'bi-collection-play',
+        'gates' => 'bi-grid-1x2',
         'news' => 'bi-newspaper',
         'dx' => 'bi-cpu',
         'messages' => 'bi-chat-left-text',
@@ -39,7 +40,7 @@
     <div class="admin-nav-group">
         <div class="admin-nav-label">Workspace</div>
         <div class="nav flex-column nav-pills gap-2">
-            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'news' => 'PES News', 'dx' => 'DOST DX', 'messages' => 'Messages', 'ai' => 'AI Agent'] as $tab => $label)
+            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'gates' => 'DOST GATES', 'news' => 'PES News', 'dx' => 'DOST DX', 'messages' => 'Messages', 'ai' => 'AI Agent'] as $tab => $label)
                 <a href="{{ route('admin.workspace', ['tab' => $tab]) }}" class="nav-link admin-nav-link @if (($activeTab ?? null) === $tab) active @endif">
                     <span class="admin-nav-link-main">
                         <span class="admin-nav-link-icon">

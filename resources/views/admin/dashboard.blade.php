@@ -16,6 +16,12 @@
             'section_copy' => 'Manage videos, infographics, presentations, and supporting resources.',
             'icon' => 'bi-collection-play',
         ],
+        'gates' => [
+            'label' => 'DOST GATES',
+            'section_title' => 'Add GATES Project',
+            'section_copy' => 'Manage the DOST GATES brief overview and the project files shown on the public portal.',
+            'icon' => 'bi-grid-1x2',
+        ],
         'news' => [
             'label' => 'PES News',
             'section_title' => 'Add News Story',
@@ -57,6 +63,7 @@
     $activeMeta = $tabMeta[$activeTab] ?? $tabMeta['issuances'];
     $isEditingIssuance = isset($selectedIssuance) && $selectedIssuance;
     $isEditingMaterial = isset($selectedMaterial) && $selectedMaterial;
+    $isEditingGates = isset($selectedGatesProject) && $selectedGatesProject;
     $isEditingNews = isset($selectedNews) && $selectedNews;
     $isEditingDx = isset($selectedDxItem) && $selectedDxItem;
 @endphp
@@ -240,6 +247,99 @@
                                 </form>
 
                                 @include('admin.partials.table-materials')
+                            </div>
+                        </div>
+                    @elseif ($activeTab === 'gates')
+                        <div class="admin-issuance-workspace-grid">
+                            <div class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-library-panel">
+                                <div class="admin-section-head admin-issuance-panel-head">
+                                    <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
+                                    <div>
+                                        <div class="admin-kicker mb-2">Program Desk</div>
+                                        <h2 class="h3 fw-bold mb-1">{{ $isEditingGates ? 'Edit GATES Project' : $activeMeta['section_title'] }}</h2>
+                                        <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
+                                    </div>
+                                </div>
+
+                                <form method="POST" action="{{ $isEditingGates ? route('admin.gates.update', $selectedGatesProject) : route('admin.gates.store') }}" class="row g-3" enctype="multipart/form-data">@csrf
+                                    @if ($isEditingGates)
+                                        @method('PUT')
+                                    @endif
+                                    <div class="col-md-8">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Project Title</label>
+                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedGatesProject->title ?? '') }}" placeholder="Enter GATES project title" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Project Code</label>
+                                            <input class="form-control" type="text" name="code" value="{{ old('code', $selectedGatesProject->code ?? 'GATES') }}" placeholder="GATES">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Content Type</label>
+                                            <select class="form-select" name="type" required>
+                                                @php
+                                                    $selectedGatesType = strtolower(str_replace(' ', '_', old('type', $selectedGatesProject->type ?? 'project')));
+                                                @endphp
+                                                <option value="project" @selected($selectedGatesType === 'project')>Project</option>
+                                                <option value="video_presentation" @selected($selectedGatesType === 'video_presentation')>Video Presentation</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Date</label>
+                                            <input class="form-control" type="date" name="date" value="{{ old('date', isset($selectedGatesProject) && $selectedGatesProject?->date ? $selectedGatesProject->date->format('Y-m-d') : '') }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Sort Order</label>
+                                            <input class="form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', $selectedGatesProject->sort_order ?? 0) }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Brief Description</label>
+                                            <textarea class="form-control" name="description" rows="4" placeholder="Write a short public-facing summary for this GATES project." required>{{ old('description', $selectedGatesProject->description ?? '') }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="admin-issuance-field admin-issuance-file-field">
+                                            <label class="form-label">Project Attachment{{ $isEditingGates ? ' (optional replacement)' : '' }}</label>
+                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png" {{ $isEditingGates ? '' : 'required' }}>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 admin-issuance-form-actions">
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingGates ? 'Update GATES Project' : 'Save GATES Project' }}</button>
+                                        @if ($isEditingGates)
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'gates']) }}">Cancel Edit</a>
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="admin-card admin-table-shell admin-issuance-panel admin-issuance-form-panel">
+                                <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
+                                    <div>
+                                        <div class="admin-kicker mb-2">Record Center</div>
+                                        <h2 class="h4 fw-bold mb-1">DOST GATES Library</h2>
+                                        <p class="text-secondary-soft mb-0">Review and maintain the public-facing GATES projects and reference files.</p>
+                                    </div>
+                                </div>
+
+                                <form method="GET" action="{{ route('admin.workspace', ['tab' => 'gates']) }}" class="admin-issuance-library-toolbar" data-gates-library-form>
+                                    <div class="admin-issuance-search-wrap">
+                                        <i class="bi bi-search"></i>
+                                        <input class="form-control" type="search" name="material_search" value="{{ $materialSearch ?? '' }}" placeholder="Search GATES title, code, or description..." data-gates-library-search>
+                                    </div>
+                                    <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-gates-library-apply>Search</button>
+                                </form>
+
+                                @include('admin.partials.table-gates')
                             </div>
                         </div>
                     @elseif ($activeTab === 'news')

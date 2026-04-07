@@ -6,6 +6,7 @@
     $tabMeta = [
         'issuances' => ['icon' => 'bi-briefcase'],
         'materials' => ['icon' => 'bi-collection-play'],
+        'gates' => ['icon' => 'bi-grid-1x2'],
         'news' => ['icon' => 'bi-newspaper'],
         'divisions' => ['icon' => 'bi-diagram-3'],
         'dx' => ['icon' => 'bi-cpu'],

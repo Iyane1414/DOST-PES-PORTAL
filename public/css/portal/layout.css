@@ -5,10 +5,40 @@
 .portal-navbar .nav-link:hover, .portal-navbar .nav-link:focus { color: var(--accent); }
 [data-bs-theme="dark"] .portal-navbar .nav-link { color: rgba(248, 249, 250, .82); }
 [data-bs-theme="dark"] .portal-navbar .nav-link:hover, [data-bs-theme="dark"] .portal-navbar .nav-link:focus { color: var(--accent-soft); }
+.portal-navbar-shell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding-inline: clamp(1rem, 3vw, 2.75rem);
+}
+.portal-navbar-collapse {
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 1.2rem;
+}
+.portal-navbar-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(.7rem, 1.15vw, 1.55rem);
+    width: 100%;
+}
+.portal-navbar-menu .nav-link {
+    white-space: nowrap;
+    font-weight: 500;
+}
+.portal-navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    margin-left: auto;
+    flex-shrink: 0;
+}
 
 .brand-mark, .icon-chip { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 1rem; }
 .brand-mark { background: var(--accent); color: #fff; }
-.portal-brand { display: flex; align-items: center; gap: .9rem; }
+.portal-brand { display: flex; align-items: center; gap: .9rem; margin-right: clamp(.75rem, 2vw, 2rem); flex-shrink: 0; }
 .portal-brand-logo-stack { position: relative; display: block; }
 .portal-brand-logo { display: block; width: auto; object-fit: contain; transition: opacity .35s ease; }
 .portal-brand-logo-main { height: 4.25rem; }
@@ -16,7 +46,8 @@
 .portal-brand-logo-light { position: absolute; inset: 0; opacity: 0; }
 [data-bs-theme="dark"] .portal-brand-logo-default { opacity: 0; }
 [data-bs-theme="dark"] .portal-brand-logo-light { opacity: 1; }
-.btn-theme-toggle { width: 2.75rem; height: 2.75rem; border-radius: 999px; border: 0; background: transparent; }
+.btn-theme-toggle { width: 2.75rem; height: 2.75rem; border-radius: 999px; border: 0; background: transparent; flex-shrink: 0; }
+.portal-admin-btn { white-space: nowrap; min-width: 7.8rem; }
 
 .portal-footer { padding: 2.5rem 0; background: var(--surface); }
 

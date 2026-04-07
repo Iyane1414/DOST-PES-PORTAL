@@ -8,6 +8,7 @@ use App\Models\AiSetting;
 use App\Models\ContactMessage;
 use App\Models\Division;
 use App\Models\DxItem;
+use App\Models\GatesProject;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
 use App\Models\Material;
@@ -100,6 +101,45 @@ class ResourceController extends Controller
         $material->delete();
 
         return $this->redirectWithTab('materials', 'Material deleted.');
+    }
+
+    public function storeGatesProject(Request $request): RedirectResponse
+    {
+        $data = $this->validateGatesProject($request);
+        $path = $request->file('document')->store('gates', 'public');
+
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+        $publicDisk = Storage::disk('public');
+
+        GatesProject::query()->create($this->gatesProjectPayload($data, $publicDisk->url($path)));
+
+        return $this->redirectWithTab('gates', 'GATES project saved.');
+    }
+
+    public function updateGatesProject(Request $request, GatesProject $gatesProject): RedirectResponse
+    {
+        $data = $this->validateGatesProject($request, false);
+        $url = $gatesProject->url;
+
+        if ($request->hasFile('document')) {
+            $this->deletePublicFile($gatesProject->url);
+
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+            $publicDisk = Storage::disk('public');
+            $url = $publicDisk->url($request->file('document')->store('gates', 'public'));
+        }
+
+        $gatesProject->update($this->gatesProjectPayload($data, $url));
+
+        return $this->redirectWithTab('gates', 'GATES project updated.');
+    }
+
+    public function destroyGatesProject(GatesProject $gatesProject): RedirectResponse
+    {
+        $this->deletePublicFile($gatesProject->url);
+        $gatesProject->delete();
+
+        return $this->redirectWithTab('gates', 'GATES project deleted.');
     }
 
     public function storeNews(Request $request): RedirectResponse
@@ -311,6 +351,41 @@ class ResourceController extends Controller
         ];
     }
 
+    private function validateGatesProject(Request $request, bool $documentRequired = true): array
+    {
+        return $request->validate(
+            [
+                'title' => ['required', 'string', 'max:255'],
+                'code' => ['nullable', 'string', 'max:50'],
+                'type' => ['required', 'string', 'in:project,video_presentation'],
+                'description' => ['required', 'string', 'max:2000'],
+                'date' => ['nullable', 'date'],
+                'sort_order' => ['nullable', 'integer', 'min:0'],
+                'document' => array_filter([
+                    $documentRequired ? 'required' : 'nullable',
+                    'file',
+                    'extensions:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png',
+                    'max:512000',
+                ]),
+            ],
+            $this->uploadValidationMessages('document', 500)
+        );
+    }
+
+    private function gatesProjectPayload(array $data, string $url): array
+    {
+        return [
+            'title' => $data['title'],
+            'code' => $data['code'] ?: null,
+            'type' => $this->normalizeGatesProjectType($data['type']),
+            'description' => $data['description'],
+            'date' => $data['date'] ?: null,
+            'url' => $url,
+            'sort_order' => $data['sort_order'] ?? 0,
+            'is_active' => true,
+        ];
+    }
+
     private function normalizeMaterialType(string $type): string
     {
         $normalized = strtolower(trim($type));
@@ -328,6 +403,21 @@ class ResourceController extends Controller
         }
 
         return 'Presentation';
+    }
+
+    private function normalizeGatesProjectType(string $type): string
+    {
+        $normalized = strtolower(trim($type));
+
+        if ($normalized === 'project' || str_contains($normalized, 'project')) {
+            return 'Project';
+        }
+
+        if ($normalized === 'video_presentation' || $normalized === 'video presentation' || str_contains($normalized, 'video')) {
+            return 'Video Presentation';
+        }
+
+        return 'Project';
     }
 
     private function validateDxItem(Request $request, ?DxItem $dxItem = null): array
