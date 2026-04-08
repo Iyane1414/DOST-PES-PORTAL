@@ -20,8 +20,8 @@
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#about">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#issuances">Issuances</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#materials">Resources</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-gates">DOST GATES</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-dx">DOST DX</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-gates">DOST GATES</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#contact">Contact</a></li>
             </ul>
             <div class="portal-navbar-actions">

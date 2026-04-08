@@ -18,8 +18,8 @@
         @include('portal.partials.sections.whats-new')
         @include('portal.partials.sections.issuances')
         @include('portal.partials.sections.materials')
-        @include('portal.partials.sections.gates')
         @include('portal.partials.sections.dx')
+        @include('portal.partials.sections.gates')
         @include('portal.partials.sections.contact')
     </main>
 
