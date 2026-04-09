@@ -69,9 +69,14 @@ class DashboardController extends Controller
     public function workspace(Request $request, ?string $tab = null): View
     {
         $data = $this->dashboardData();
-        $allowedTabs = ['issuances', 'materials', 'gates', 'news', 'divisions', 'dx', 'categories', 'messages', 'ai'];
+        $allowedTabs = ['issuances', 'materials', 'news', 'divisions', 'dx', 'categories', 'messages', 'ai', 'gates-projects', 'gates-issuances', 'gates-news', 'gates'];
         $requestedTab = $tab ?: $request->string('tab')->toString() ?: 'issuances';
+        if ($requestedTab === 'gates') {
+            $requestedTab = 'gates-projects';
+        }
         $activeTab = in_array($requestedTab, $allowedTabs, true) ? $requestedTab : 'issuances';
+        $isGatesWorkspaceTab = $this->isGatesWorkspaceTab($activeTab);
+        $gatesFilterType = $this->gatesWorkspaceFilterType($activeTab);
         $issuanceSearch = trim($request->string('issuance_search')->toString());
         $materialSearch = trim($request->string('material_search')->toString());
         $newsSearch = trim($request->string('news_search')->toString());
@@ -86,7 +91,7 @@ class DashboardController extends Controller
         $messages = $data['messages'];
         $selectedIssuance = $activeTab === 'issuances' ? Issuance::query()->find($request->integer('edit_issuance')) : null;
         $selectedMaterial = $activeTab === 'materials' ? Material::query()->find($request->integer('edit_material')) : null;
-        $selectedGatesProject = $activeTab === 'gates' ? GatesProject::query()->find($request->integer('edit_gate')) : null;
+        $selectedGatesProject = $isGatesWorkspaceTab ? GatesProject::query()->find($request->integer('edit_gate')) : null;
         $selectedNews = $activeTab === 'news' ? News::query()->find($request->integer('edit_news')) : null;
         $selectedDxItem = $activeTab === 'dx'
             ? DxItem::query()->with('parent')->where('category', 'project')->find($request->integer('edit_dx'))
@@ -110,7 +115,13 @@ class DashboardController extends Controller
             })->values();
         }
 
-        if ($activeTab === 'gates' && $materialSearch !== '') {
+        if ($isGatesWorkspaceTab) {
+            $gatesProjects = $gatesProjects
+                ->filter(fn (GatesProject $project) => $this->matchesWorkspaceGatesType($project, $gatesFilterType))
+                ->values();
+        }
+
+        if ($isGatesWorkspaceTab && $materialSearch !== '') {
             $gatesProjects = $gatesProjects->filter(function (GatesProject $project) use ($materialSearch) {
                 return $this->matchesWorkspaceGatesSearch($project, $materialSearch);
             })->values();
@@ -408,6 +419,42 @@ class DashboardController extends Controller
         return str_contains($title, $normalizedSearch)
             || str_contains($code, $normalizedSearch)
             || str_contains($description, $normalizedSearch);
+    }
+
+    private function isGatesWorkspaceTab(string $tab): bool
+    {
+        return in_array($tab, ['gates-projects', 'gates-issuances', 'gates-news'], true);
+    }
+
+    private function gatesWorkspaceFilterType(string $tab): ?string
+    {
+        return match ($tab) {
+            'gates-projects' => 'project_library',
+            'gates-issuances' => 'issuance',
+            'gates-news' => 'gates_p1_news',
+            default => null,
+        };
+    }
+
+    private function matchesWorkspaceGatesType(GatesProject $project, ?string $expectedType): bool
+    {
+        if ($expectedType === null) {
+            return true;
+        }
+
+        $type = Str::lower(trim((string) $project->type));
+
+        return match ($expectedType) {
+            'project_library' => (str_contains($type, 'project') && ! str_contains($type, 'issuance') && ! str_contains($type, 'news'))
+                || str_contains($type, 'video'),
+            'project' => str_contains($type, 'project')
+                && ! str_contains($type, 'video')
+                && ! str_contains($type, 'issuance')
+                && ! str_contains($type, 'news'),
+            'issuance' => str_contains($type, 'issuance'),
+            'gates_p1_news' => str_contains($type, 'p1 news') || str_contains($type, 'gates p1 news') || str_contains($type, 'news'),
+            default => false,
+        };
     }
 
     private function defaultIssuanceCategories(): array

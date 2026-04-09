@@ -28,6 +28,7 @@ class PortalController extends Controller
         $issuances = Issuance::query()->latest('date')->get();
         $materials = Material::query()->latest('date')->get();
         $gatesProjects = GatesProject::query()->where('is_active', true)->orderBy('sort_order')->latest('date')->get();
+        $gatesP1NewsItems = $this->gatesP1NewsItems($gatesProjects);
         $newsItems = News::query()->latest('date')->take(6)->get();
         $materialTypes = $materials
             ->pluck('type')
@@ -163,6 +164,7 @@ class PortalController extends Controller
             'resourceCollections' => $resourceCollections,
             'selectedResourceCollection' => $selectedResourceCollection,
             'pesInActionItems' => $pesInActionItems,
+            'gatesP1NewsItems' => $gatesP1NewsItems,
             'resourceHighlights' => $resourceHighlights,
         ]);
     }
@@ -419,6 +421,16 @@ class PortalController extends Controller
                 'page_copy' => 'No GATES projects have been uploaded yet.',
             ],
             [
+                'slug' => 'issuances',
+                'label' => 'Issuances',
+                'filter' => 'Issuance',
+                'anchor' => 'gates-issuances',
+                'icon' => 'bi-file-earmark-text',
+                'eyebrow' => 'Issuance',
+                'description' => 'GATES advisories, memoranda, and official issuances.',
+                'page_copy' => 'No GATES issuances have been uploaded yet.',
+            ],
+            [
                 'slug' => 'video-presentations',
                 'label' => 'Video Presentations',
                 'filter' => 'Video Presentation',
@@ -549,13 +561,113 @@ class PortalController extends Controller
 
     private function matchesGatesCollection(GatesProject $item, array $collection): bool
     {
-        $type = Str::lower($item->type);
+        $type = Str::lower($item->type ?? '');
 
         return match ($collection['slug']) {
-            'projects' => str_contains($type, 'project') && ! str_contains($type, 'video'),
+            'projects' => str_contains($type, 'project')
+                && ! str_contains($type, 'video')
+                && ! str_contains($type, 'issuance')
+                && ! str_contains($type, 'news'),
+            'issuances' => str_contains($type, 'issuance'),
             'video-presentations' => str_contains($type, 'video'),
             default => false,
         };
+    }
+
+    private function gatesP1NewsItems($gatesProjects)
+    {
+        $items = $gatesProjects
+            ->filter(fn (GatesProject $item) => $this->isGatesP1NewsType((string) $item->type))
+            ->sortByDesc(fn (GatesProject $item) => optional($item->date)?->timestamp ?? 0)
+            ->take(6)
+            ->values()
+            ->map(function (GatesProject $item, int $index) {
+                $storyUrl = $item->news_link_url ?: $item->url ?: null;
+                $fallbackImage = asset('images/GATES LOGO.png');
+                $imageUrl = $item->thumbnail_path ?: ($this->isImageFileUrl($storyUrl) ? $storyUrl : $fallbackImage);
+
+                return [
+                    'id' => 'gates-news-'.$item->id,
+                    'eyebrow' => $item->news_eyebrow ?: 'GATES P1 NEWS',
+                    'title' => $item->title,
+                    'summary' => Str::limit((string) ($item->news_summary ?: $item->description ?: 'Read the latest GATES P1 update.'), 130),
+                    'content' => $item->news_content ?: $item->description ?: 'No full story has been added yet for this update.',
+                    'date' => $item->date,
+                    'image_url' => $imageUrl,
+                    'image_alt' => $item->news_image_alt ?: $item->title,
+                    'story_url' => $storyUrl,
+                    'accent' => $item->news_accent ?: match ($index % 3) {
+                        1 => 'blue',
+                        2 => 'violet',
+                        default => 'cyan',
+                    },
+                ];
+            })
+            ->values();
+
+        if ($items->isNotEmpty()) {
+            return $items;
+        }
+
+        return collect([
+            [
+                'id' => 'gates-news-demo-1',
+                'eyebrow' => 'GATES P1 NEWS',
+                'title' => 'GATES Program Kickoff Briefing',
+                'summary' => 'Initial alignment session on geospatial priorities, implementation timeline, and inter-office coordination.',
+                'content' => 'This is sample content for GATES P1 News. Admin can replace this by adding a record under DOST GATES > GATES P1 News in the admin portal.',
+                'date' => now()->subDays(4),
+                'image_url' => asset('images/GATES LOGO.png'),
+                'image_alt' => 'GATES Program Kickoff Briefing',
+                'story_url' => null,
+                'accent' => 'cyan',
+            ],
+            [
+                'id' => 'gates-news-demo-2',
+                'eyebrow' => 'GATES P1 NEWS',
+                'title' => 'Data Harmonization Workshop',
+                'summary' => 'Teams reviewed data standards and prepared baseline mapping templates for pilot deployment.',
+                'content' => 'This is sample content for GATES P1 News. Add your official story and attachment in admin to publish your real update here.',
+                'date' => now()->subDays(10),
+                'image_url' => asset('images/GATES LOGO.png'),
+                'image_alt' => 'Data Harmonization Workshop',
+                'story_url' => null,
+                'accent' => 'blue',
+            ],
+            [
+                'id' => 'gates-news-demo-3',
+                'eyebrow' => 'GATES P1 NEWS',
+                'title' => 'Pilot Dashboard Preview',
+                'summary' => 'A preview of the dashboard experience was presented with initial geospatial layers and analytics blocks.',
+                'content' => 'This is sample content for GATES P1 News. Once admin publishes real GATES P1 News entries, these demo cards will automatically disappear.',
+                'date' => now()->subDays(16),
+                'image_url' => asset('images/GATES LOGO.png'),
+                'image_alt' => 'Pilot Dashboard Preview',
+                'story_url' => null,
+                'accent' => 'violet',
+            ],
+        ]);
+    }
+
+    private function isGatesP1NewsType(string $type): bool
+    {
+        $normalized = Str::lower(trim($type));
+
+        return str_contains($normalized, 'p1 news')
+            || str_contains($normalized, 'gates p1 news')
+            || (str_contains($normalized, 'news') && str_contains($normalized, 'gates'));
+    }
+
+    private function isImageFileUrl(?string $url): bool
+    {
+        if (! filled($url)) {
+            return false;
+        }
+
+        $path = parse_url($url, PHP_URL_PATH) ?: '';
+        $extension = Str::lower(pathinfo($path, PATHINFO_EXTENSION));
+
+        return in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true);
     }
 
     public function contact(Request $request): RedirectResponse

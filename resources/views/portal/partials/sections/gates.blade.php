@@ -65,48 +65,186 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
+    </div>
+</section>
 
-                <div class="gates-projects-section">
-                    <div class="gates-projects-shell" id="gates-projects">
-                        <div class="gates-projects-head">
-                            <div>
-                                <span class="eyebrow">Project Library</span>
-                                <h3 class="section-title split-title mb-2">Browse by <span class="split-title-accent">Category</span></h3>
-                                <p class="section-copy mb-0">Explore GATES projects and video presentations organized by category.</p>
+<section class="section-space gates-band-section gates-news-band" id="gates-p1-news" data-scroll-scene="gates-news">
+    <div class="container">
+        <div class="gates-news-section">
+            <div class="gates-news-shell">
+                <div class="pes-action-heading gates-news-head">
+                    <span class="eyebrow">GATES P1 NEWS</span>
+                    <div class="pes-action-heading-copy">
+                        <h2 class="section-title split-title">GATES P1 <span class="split-title-accent">News</span></h2>
+                        <p class="section-copy mb-0">Latest stories and program updates from DOST GATES.</p>
+                    </div>
+                </div>
+
+                <div class="pes-action-grid gates-news-grid">
+                    @forelse ($gatesP1NewsItems as $item)
+                        @php
+                            $thumbnailSrc = data_get($item, 'image_url')
+                                ? ((str_starts_with(data_get($item, 'image_url'), '/') || str_starts_with(data_get($item, 'image_url'), 'http'))
+                                    ? data_get($item, 'image_url')
+                                    : asset(data_get($item, 'image_url')))
+                                : null;
+                            $modalId = 'gatesP1NewsModal'.$loop->index;
+                            $storyUrl = data_get($item, 'story_url');
+                        @endphp
+                        <article class="pes-action-news-card gates-news-card">
+                            @if ($storyUrl)
+                                <a
+                                    class="pes-action-news-trigger"
+                                    href="{{ $storyUrl }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                            @else
+                                <button
+                                    class="gates-news-slide-trigger pes-action-news-trigger"
+                                    type="button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#{{ $modalId }}"
+                                >
+                            @endif
+                                <div class="pes-action-news-media accent-{{ data_get($item, 'accent', 'cyan') }}">
+                                    @if ($thumbnailSrc)
+                                        <img src="{{ $thumbnailSrc }}" alt="{{ data_get($item, 'image_alt', data_get($item, 'title')) }}" class="pes-action-news-image">
+                                    @else
+                                        <div class="pes-action-news-placeholder">
+                                            <span>{{ data_get($item, 'image_alt', data_get($item, 'title')) }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="pes-action-news-body">
+                                    <div class="pes-action-news-eyebrow">{{ data_get($item, 'eyebrow', 'GATES P1 NEWS') }}</div>
+                                    <h3 class="pes-action-news-title">{{ data_get($item, 'title') }}</h3>
+                                    <div class="pes-action-news-date">{{ optional(data_get($item, 'date'))->format('F d, Y') }}</div>
+                                    <p class="pes-action-news-summary">{{ data_get($item, 'summary') }}</p>
+                                    <span class="pes-action-news-link">
+                                        {{ $storyUrl ? 'Open Article' : 'Read Full' }}
+                                        <i class="bi bi-chevron-right"></i>
+                                    </span>
+                                </div>
+                            @if ($storyUrl)
+                                </a>
+                            @else
+                                </button>
+                            @endif
+                        </article>
+                    @empty
+                        <div class="pes-action-empty-state gates-news-empty-state">
+                            <strong>No GATES P1 News yet.</strong>
+                            <span>Stories published from DOST GATES admin will appear here.</span>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@foreach ($gatesP1NewsItems as $item)
+    @php
+        $itemDate = data_get($item, 'date');
+        $formattedDate = $itemDate ? \Illuminate\Support\Carbon::parse($itemDate)->format('F d, Y') : null;
+        $storyUrl = data_get($item, 'story_url');
+        $thumbnailSrc = data_get($item, 'image_url')
+            ? ((str_starts_with(data_get($item, 'image_url'), '/') || str_starts_with(data_get($item, 'image_url'), 'http'))
+                ? data_get($item, 'image_url')
+                : asset(data_get($item, 'image_url')))
+            : null;
+    @endphp
+    <div class="modal fade" id="gatesP1NewsModal{{ $loop->index }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content pes-action-modal gates-news-modal">
+                <div class="modal-body p-0">
+                    <button class="btn-close pes-action-modal-close gates-news-modal-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    <div class="pes-action-modal-media accent-{{ data_get($item, 'accent', 'cyan') }}">
+                        @if ($thumbnailSrc)
+                            <img src="{{ $thumbnailSrc }}" alt="{{ data_get($item, 'image_alt', data_get($item, 'title')) }}" class="pes-action-modal-image">
+                        @else
+                            <div class="pes-action-modal-placeholder">
+                                <span>{{ data_get($item, 'image_alt', data_get($item, 'title')) }}</span>
                             </div>
-                        </div>
+                        @endif
+                    </div>
 
-                        <div class="gates-collection-grid">
-                            @php
-                                $projectsCount = $gatesProjects->filter(fn($p) => strtolower($p->type ?? '') === 'project')->count();
-                                $videosCount = $gatesProjects->filter(fn($p) => strtolower($p->type ?? '') === 'video presentation')->count();
-                            @endphp
-                            
-                            <a href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}" class="gates-collection-card">
-                                <div class="gates-collection-icon">
-                                    <i class="bi bi-briefcase"></i>
-                                </div>
-                                <h4 class="gates-collection-title">Projects</h4>
-                                <p class="gates-collection-copy">{{ $projectsCount }} project{{ $projectsCount !== 1 ? 's' : '' }} available</p>
-                                <div class="gates-collection-action">
-                                    Browse Projects <i class="bi bi-arrow-right ms-2"></i>
-                                </div>
-                            </a>
-
-                            <a href="{{ route('portal.gates.show', ['collectionSlug' => 'video-presentations']) }}" class="gates-collection-card">
-                                <div class="gates-collection-icon">
-                                    <i class="bi bi-play-circle"></i>
-                                </div>
-                                <h4 class="gates-collection-title">Video Presentations</h4>
-                                <p class="gates-collection-copy">{{ $videosCount }} video{{ $videosCount !== 1 ? 's' : '' }} available</p>
-                                <div class="gates-collection-action">
-                                    Browse Videos <i class="bi bi-arrow-right ms-2"></i>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="pes-action-modal-content">
+                        <div class="pes-action-modal-eyebrow">{{ data_get($item, 'eyebrow', 'GATES P1 NEWS') }}</div>
+                        <h3 class="pes-action-modal-title">{{ data_get($item, 'title') }}</h3>
+                        @if ($formattedDate)
+                            <div class="pes-action-modal-date">{{ $formattedDate }}</div>
+                        @endif
+                        <p class="pes-action-modal-copy">{{ data_get($item, 'content', data_get($item, 'summary')) }}</p>
+                        @if ($storyUrl)
+                            <div class="mt-4">
+                                <a class="btn btn-accent rounded-pill px-4" href="{{ $storyUrl }}" target="_blank" rel="noopener noreferrer">Open Full Article</a>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
+@endforeach
+
+<section class="section-space gates-band-section gates-library-band" id="gates-projects-section">
+    <div class="container">
+        <div class="gates-projects-section">
+            <div class="gates-projects-shell" id="gates-projects">
+                <div class="gates-projects-head">
+                    <div>
+                        <span class="eyebrow">Project Library</span>
+                        <h3 class="section-title split-title mb-2">Browse by <span class="split-title-accent">Category</span></h3>
+                        <p class="section-copy mb-0">Explore GATES projects, issuances, and video presentations organized by category.</p>
+                    </div>
+                </div>
+
+                <div class="gates-collection-grid">
+                    @php
+                        $projectsCount = $gatesProjects->filter(fn($p) => strtolower($p->type ?? '') === 'project')->count();
+                        $issuancesCount = $gatesProjects->filter(fn($p) => strtolower($p->type ?? '') === 'issuance')->count();
+                        $videosCount = $gatesProjects->filter(fn($p) => strtolower($p->type ?? '') === 'video presentation')->count();
+                    @endphp
+                    
+                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}" class="gates-collection-card">
+                        <div class="gates-collection-icon">
+                            <i class="bi bi-briefcase"></i>
+                        </div>
+                        <h4 class="gates-collection-title">Projects</h4>
+                        <p class="gates-collection-copy">{{ $projectsCount }} project{{ $projectsCount !== 1 ? 's' : '' }} available</p>
+                        <div class="gates-collection-action">
+                            Browse Projects <i class="bi bi-arrow-right ms-2"></i>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'issuances']) }}" class="gates-collection-card">
+                        <div class="gates-collection-icon">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <h4 class="gates-collection-title">Issuances</h4>
+                        <p class="gates-collection-copy">{{ $issuancesCount }} issuance{{ $issuancesCount !== 1 ? 's' : '' }} available</p>
+                        <div class="gates-collection-action">
+                            Browse Issuances <i class="bi bi-arrow-right ms-2"></i>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'video-presentations']) }}" class="gates-collection-card">
+                        <div class="gates-collection-icon">
+                            <i class="bi bi-play-circle"></i>
+                        </div>
+                        <h4 class="gates-collection-title">Video Presentations</h4>
+                        <p class="gates-collection-copy">{{ $videosCount }} video{{ $videosCount !== 1 ? 's' : '' }} available</p>
+                        <div class="gates-collection-action">
+                            Browse Videos <i class="bi bi-arrow-right ms-2"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>

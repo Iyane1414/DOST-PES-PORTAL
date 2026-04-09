@@ -16,11 +16,23 @@
             'section_copy' => 'Manage videos, infographics, presentations, and supporting resources.',
             'icon' => 'bi-collection-play',
         ],
-        'gates' => [
-            'label' => 'DOST GATES',
+        'gates-projects' => [
+            'label' => 'DOST GATES Projects',
             'section_title' => 'Add GATES Project',
-            'section_copy' => 'Manage the DOST GATES brief overview and the project files shown on the public portal.',
-            'icon' => 'bi-grid-1x2',
+            'section_copy' => 'Manage DOST GATES project and video presentation files shown on the public portal.',
+            'icon' => 'bi-folder',
+        ],
+        'gates-issuances' => [
+            'label' => 'DOST GATES Issuances',
+            'section_title' => 'Add GATES Issuance',
+            'section_copy' => 'Manage issuances published under the DOST GATES workspace.',
+            'icon' => 'bi-file-earmark-text',
+        ],
+        'gates-news' => [
+            'label' => 'DOST GATES P1 News',
+            'section_title' => 'Add News Story',
+            'section_copy' => 'Manage GATES P1 stories with thumbnails, summaries, and optional external article links.',
+            'icon' => 'bi-megaphone',
         ],
         'news' => [
             'label' => 'PES News',
@@ -66,6 +78,19 @@
     $isEditingGates = isset($selectedGatesProject) && $selectedGatesProject;
     $isEditingNews = isset($selectedNews) && $selectedNews;
     $isEditingDx = isset($selectedDxItem) && $selectedDxItem;
+    $isGatesWorkspace = in_array($activeTab, ['gates-projects', 'gates-issuances', 'gates-news'], true);
+    $gatesTypeByTab = [
+        'gates-projects' => 'project_library',
+        'gates-issuances' => 'issuance',
+        'gates-news' => 'gates_p1_news',
+    ];
+    $gatesLabelByTab = [
+        'gates-projects' => 'Project / Video Presentation',
+        'gates-issuances' => 'Issuance',
+        'gates-news' => 'GATES P1 News',
+    ];
+    $activeGatesType = $gatesTypeByTab[$activeTab] ?? 'project_library';
+    $activeGatesLabel = $gatesLabelByTab[$activeTab] ?? 'Project / Video Presentation';
 @endphp
 
 @section('content')
@@ -249,14 +274,14 @@
                                 @include('admin.partials.table-materials')
                             </div>
                         </div>
-                    @elseif ($activeTab === 'gates')
+                    @elseif ($isGatesWorkspace)
                         <div class="admin-issuance-workspace-grid">
                             <div class="admin-card admin-workspace-card admin-issuance-panel admin-issuance-library-panel">
                                 <div class="admin-section-head admin-issuance-panel-head">
                                     <div class="admin-section-icon"><i class="bi {{ $activeMeta['icon'] }}"></i></div>
                                     <div>
-                                        <div class="admin-kicker mb-2">Program Desk</div>
-                                        <h2 class="h3 fw-bold mb-1">{{ $isEditingGates ? 'Edit GATES Project' : $activeMeta['section_title'] }}</h2>
+                                        <div class="admin-kicker mb-2">{{ $activeTab === 'gates-news' ? 'Publishing Desk' : 'Program Desk' }}</div>
+                                        <h2 class="h3 fw-bold mb-1">{{ $isEditingGates ? 'Edit '.$activeGatesLabel : $activeMeta['section_title'] }}</h2>
                                         <p class="text-secondary-soft mb-0">{{ $activeMeta['section_copy'] }}</p>
                                     </div>
                                 </div>
@@ -265,58 +290,129 @@
                                     @if ($isEditingGates)
                                         @method('PUT')
                                     @endif
-                                    <div class="col-md-8">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Project Title</label>
-                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedGatesProject->title ?? '') }}" placeholder="Enter GATES project title" required>
+                                    @if ($activeTab !== 'gates-news')
+                                        <div class="col-md-8">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">{{ $activeTab === 'gates-projects' ? 'Project Title' : $activeGatesLabel.' Title' }}</label>
+                                                <input class="form-control" type="text" name="title" value="{{ old('title', $selectedGatesProject->title ?? '') }}" placeholder="{{ $activeTab === 'gates-projects' ? 'Enter project or video presentation title' : 'Enter '.strtolower($activeGatesLabel).' title' }}" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Project Code</label>
-                                            <input class="form-control" type="text" name="code" value="{{ old('code', $selectedGatesProject->code ?? 'GATES') }}" placeholder="GATES">
+                                        <div class="col-md-4">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">{{ $activeTab === 'gates-projects' ? 'Project Code' : $activeGatesLabel.' Code' }}</label>
+                                                <input class="form-control" type="text" name="code" value="{{ old('code', $selectedGatesProject->code ?? 'GATES') }}" placeholder="GATES">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Content Type</label>
-                                            <select class="form-select" name="type" required>
-                                                @php
-                                                    $selectedGatesType = strtolower(str_replace(' ', '_', old('type', $selectedGatesProject->type ?? 'project')));
-                                                @endphp
-                                                <option value="project" @selected($selectedGatesType === 'project')>Project</option>
-                                                <option value="video_presentation" @selected($selectedGatesType === 'video_presentation')>Video Presentation</option>
-                                            </select>
+                                    @else
+                                        <input type="hidden" name="code" value="{{ old('code', $selectedGatesProject->code ?? 'GATES-P1') }}">
+                                    @endif
+                                    @if ($activeTab === 'gates-projects')
+                                        @php
+                                            $selectedGatesType = strtolower(str_replace(' ', '_', old('type', $selectedGatesProject->type ?? 'project')));
+                                        @endphp
+                                        <div class="col-md-4">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Content Type</label>
+                                                <select class="form-select" name="type" required>
+                                                    <option value="project" @selected($selectedGatesType === 'project')>Project</option>
+                                                    <option value="video_presentation" @selected($selectedGatesType === 'video_presentation')>Video Presentation</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Date</label>
-                                            <input class="form-control" type="date" name="date" value="{{ old('date', isset($selectedGatesProject) && $selectedGatesProject?->date ? $selectedGatesProject->date->format('Y-m-d') : '') }}">
+                                    @else
+                                        <input type="hidden" name="type" value="{{ $activeGatesType }}">
+                                    @endif
+                                    <input type="hidden" name="workspace_tab" value="{{ $activeTab }}">
+                                    @if ($activeTab === 'gates-news')
+                                        <div class="col-md-4">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Story Label</label>
+                                                <input class="form-control" type="text" name="eyebrow" value="{{ old('eyebrow', $selectedGatesProject->news_eyebrow ?? 'GATES P1 NEWS') }}" placeholder="Featured, Event, Update..." required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Sort Order</label>
-                                            <input class="form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', $selectedGatesProject->sort_order ?? 0) }}">
+                                        <div class="col-md-4">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Published Date</label>
+                                                <input class="form-control" type="date" name="date" value="{{ old('date', isset($selectedGatesProject) && $selectedGatesProject?->date ? $selectedGatesProject->date->format('Y-m-d') : '') }}" required>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Brief Description</label>
-                                            <textarea class="form-control" name="description" rows="4" placeholder="Write a short public-facing summary for this GATES project." required>{{ old('description', $selectedGatesProject->description ?? '') }}</textarea>
+                                        <div class="col-md-4">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Accent Style</label>
+                                                <select class="form-select" name="accent" required>
+                                                    @foreach (['cyan' => 'Cyan', 'blue' => 'Blue', 'gold' => 'Gold', 'mint' => 'Mint', 'violet' => 'Violet', 'slate' => 'Slate'] as $accentValue => $accentLabel)
+                                                        <option value="{{ $accentValue }}" @selected(old('accent', $selectedGatesProject->news_accent ?? 'cyan') === $accentValue)>{{ $accentLabel }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-12">
-                                        <div class="admin-issuance-field admin-issuance-file-field">
-                                            <label class="form-label">Project Attachment{{ $isEditingGates ? ' (optional replacement)' : '' }}</label>
-                                            <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png" {{ $isEditingGates ? '' : 'required' }}>
+                                        <div class="col-12">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Headline</label>
+                                                <input class="form-control" type="text" name="title" value="{{ old('title', $selectedGatesProject->title ?? '') }}" placeholder="Enter GATES P1 news headline" required>
+                                            </div>
                                         </div>
-                                    </div>
+                                        <div class="col-12">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Card Summary</label>
+                                                <textarea class="form-control" name="summary" rows="3" placeholder="Short summary shown on the homepage card" required>{{ old('summary', $selectedGatesProject->news_summary ?? $selectedGatesProject->description ?? '') }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Full Story</label>
+                                                <textarea class="form-control" name="content" rows="7" placeholder="Full story content for the modal view" required>{{ old('content', $selectedGatesProject->news_content ?? $selectedGatesProject->description ?? '') }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Article Link (optional)</label>
+                                                <input class="form-control" type="url" name="link_url" value="{{ old('link_url', $selectedGatesProject->news_link_url ?? $selectedGatesProject->url ?? '') }}" placeholder="https://example.com/news-story">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Thumbnail Alt Text</label>
+                                                <input class="form-control" type="text" name="image_alt" value="{{ old('image_alt', $selectedGatesProject->news_image_alt ?? $selectedGatesProject->title ?? '') }}" placeholder="Short image description">
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="admin-issuance-field admin-issuance-file-field">
+                                                <label class="form-label">Thumbnail{{ $isEditingGates ? ' (optional replacement)' : '' }}</label>
+                                                <input class="form-control" type="file" name="thumbnail" accept=".jpg,.jpeg,.png,.webp">
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="sort_order" value="{{ old('sort_order', $selectedGatesProject->sort_order ?? 0) }}">
+                                    @else
+                                        <div class="col-md-4">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Date</label>
+                                                <input class="form-control" type="date" name="date" value="{{ old('date', isset($selectedGatesProject) && $selectedGatesProject?->date ? $selectedGatesProject->date->format('Y-m-d') : '') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Sort Order</label>
+                                                <input class="form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', $selectedGatesProject->sort_order ?? 0) }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="admin-issuance-field">
+                                                <label class="form-label">Brief Description</label>
+                                                <textarea class="form-control" name="description" rows="4" placeholder="Write a short public-facing summary for this {{ strtolower($activeGatesLabel) }}." required>{{ old('description', $selectedGatesProject->description ?? '') }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="admin-issuance-field admin-issuance-file-field">
+                                                <label class="form-label">{{ $activeTab === 'gates-projects' ? 'Project Attachment' : $activeGatesLabel.' Attachment' }}{{ $isEditingGates ? ' (optional replacement)' : '' }}</label>
+                                                <input class="form-control" type="file" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.mp4,.mov,.jpg,.jpeg,.png" {{ $isEditingGates ? '' : 'required' }}>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="col-12 admin-issuance-form-actions">
-                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingGates ? 'Update GATES Project' : 'Save GATES Project' }}</button>
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingGates ? 'Update '.$activeGatesLabel : 'Save '.$activeGatesLabel }}</button>
                                         @if ($isEditingGates)
-                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'gates']) }}">Cancel Edit</a>
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => $activeTab]) }}">Cancel Edit</a>
                                         @endif
                                     </div>
                                 </form>
@@ -326,15 +422,15 @@
                                 <div class="admin-section-head admin-section-head-sm admin-issuance-panel-head">
                                     <div>
                                         <div class="admin-kicker mb-2">Record Center</div>
-                                        <h2 class="h4 fw-bold mb-1">DOST GATES Library</h2>
-                                        <p class="text-secondary-soft mb-0">Review and maintain the public-facing GATES projects and reference files.</p>
+                                        <h2 class="h4 fw-bold mb-1">{{ $activeMeta['label'] }} Library</h2>
+                                        <p class="text-secondary-soft mb-0">Review and maintain the public-facing GATES {{ strtolower($activeGatesLabel) }} records.</p>
                                     </div>
                                 </div>
 
-                                <form method="GET" action="{{ route('admin.workspace', ['tab' => 'gates']) }}" class="admin-issuance-library-toolbar" data-gates-library-form>
+                                <form method="GET" action="{{ route('admin.workspace', ['tab' => $activeTab]) }}" class="admin-issuance-library-toolbar" data-gates-library-form>
                                     <div class="admin-issuance-search-wrap">
                                         <i class="bi bi-search"></i>
-                                        <input class="form-control" type="search" name="material_search" value="{{ $materialSearch ?? '' }}" placeholder="Search GATES title, code, or description..." data-gates-library-search>
+                                        <input class="form-control" type="search" name="material_search" value="{{ $materialSearch ?? '' }}" placeholder="{{ $activeTab === 'gates-news' ? 'Search story title, label, or summary...' : 'Search '.strtolower($activeGatesLabel).' title, code, or description...' }}" data-gates-library-search>
                                     </div>
                                     <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-gates-library-apply>Search</button>
                                 </form>

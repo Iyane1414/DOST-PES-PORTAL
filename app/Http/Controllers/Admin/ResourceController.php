@@ -106,40 +106,59 @@ class ResourceController extends Controller
     public function storeGatesProject(Request $request): RedirectResponse
     {
         $data = $this->validateGatesProject($request);
-        $path = $request->file('document')->store('gates', 'public');
-
+        $isNews = $this->isGatesNewsType($data['type'] ?? '');
         /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
         $publicDisk = Storage::disk('public');
+        $fileUrl = null;
+        $thumbnailPath = null;
 
-        GatesProject::query()->create($this->gatesProjectPayload($data, $publicDisk->url($path)));
+        if ($isNews) {
+            if ($request->hasFile('thumbnail')) {
+                $thumbnailPath = $publicDisk->url($request->file('thumbnail')->store('gates/news', 'public'));
+            }
+        } elseif ($request->hasFile('document')) {
+            $fileUrl = $publicDisk->url($request->file('document')->store('gates', 'public'));
+        }
 
-        return $this->redirectWithTab('gates', 'GATES project saved.');
+        GatesProject::query()->create($this->gatesProjectPayload($data, $fileUrl, $thumbnailPath));
+
+        return $this->redirectWithTab($this->resolveGatesWorkspaceTab($request), 'GATES item saved.');
     }
 
     public function updateGatesProject(Request $request, GatesProject $gatesProject): RedirectResponse
     {
         $data = $this->validateGatesProject($request, false);
+        $isNews = $this->isGatesNewsType($data['type'] ?? '');
+        /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
+        $publicDisk = Storage::disk('public');
         $url = $gatesProject->url;
+        $thumbnailPath = $gatesProject->thumbnail_path;
 
-        if ($request->hasFile('document')) {
+        if ($isNews) {
+            if ($request->hasFile('thumbnail')) {
+                $this->deletePublicFile($gatesProject->thumbnail_path);
+                $thumbnailPath = $publicDisk->url($request->file('thumbnail')->store('gates/news', 'public'));
+            }
+            $url = $data['link_url'] ?: null;
+        } elseif ($request->hasFile('document')) {
             $this->deletePublicFile($gatesProject->url);
-
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $publicDisk */
-            $publicDisk = Storage::disk('public');
             $url = $publicDisk->url($request->file('document')->store('gates', 'public'));
+            $thumbnailPath = null;
         }
 
-        $gatesProject->update($this->gatesProjectPayload($data, $url));
+        $gatesProject->update($this->gatesProjectPayload($data, $url, $thumbnailPath));
 
-        return $this->redirectWithTab('gates', 'GATES project updated.');
+        return $this->redirectWithTab($this->resolveGatesWorkspaceTab($request, $gatesProject), 'GATES item updated.');
     }
 
-    public function destroyGatesProject(GatesProject $gatesProject): RedirectResponse
+    public function destroyGatesProject(Request $request, GatesProject $gatesProject): RedirectResponse
     {
         $this->deletePublicFile($gatesProject->url);
+        $this->deletePublicFile($gatesProject->thumbnail_path);
+        $workspaceTab = $this->resolveGatesWorkspaceTab($request, $gatesProject);
         $gatesProject->delete();
 
-        return $this->redirectWithTab('gates', 'GATES project deleted.');
+        return $this->redirectWithTab($workspaceTab, 'GATES item deleted.');
     }
 
     public function storeNews(Request $request): RedirectResponse
@@ -353,14 +372,43 @@ class ResourceController extends Controller
 
     private function validateGatesProject(Request $request, bool $documentRequired = true): array
     {
+        $type = (string) $request->input('type', '');
+        $isNews = $this->isGatesNewsType($type);
+
+        $baseRules = [
+            'title' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:50'],
+            'type' => ['required', 'string', 'in:project,issuance,gates_p1_news,video_presentation'],
+            'date' => ['nullable', 'date'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+        ];
+
+        if ($isNews) {
+            return $request->validate(
+                $baseRules + [
+                    'eyebrow' => ['required', 'string', 'max:100'],
+                    'summary' => ['required', 'string', 'max:500'],
+                    'content' => ['required', 'string', 'max:10000'],
+                    'date' => ['required', 'date'],
+                    'link_url' => ['nullable', 'url', 'max:255'],
+                    'accent' => ['required', Rule::in(['cyan', 'blue', 'gold', 'mint', 'violet', 'slate'])],
+                    'image_alt' => ['nullable', 'string', 'max:255'],
+                    'thumbnail' => [
+                        'nullable',
+                        'image',
+                        'mimes:jpg,jpeg,png,webp',
+                        'max:5120',
+                    ],
+                    'description' => ['nullable', 'string', 'max:2000'],
+                    'document' => ['nullable', 'file', 'extensions:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:512000'],
+                ],
+                $this->uploadValidationMessages('thumbnail', 5)
+            );
+        }
+
         return $request->validate(
-            [
-                'title' => ['required', 'string', 'max:255'],
-                'code' => ['nullable', 'string', 'max:50'],
-                'type' => ['required', 'string', 'in:project,video_presentation'],
+            $baseRules + [
                 'description' => ['required', 'string', 'max:2000'],
-                'date' => ['nullable', 'date'],
-                'sort_order' => ['nullable', 'integer', 'min:0'],
                 'document' => array_filter([
                     $documentRequired ? 'required' : 'nullable',
                     'file',
@@ -372,15 +420,24 @@ class ResourceController extends Controller
         );
     }
 
-    private function gatesProjectPayload(array $data, string $url): array
+    private function gatesProjectPayload(array $data, ?string $url, ?string $thumbnailPath = null): array
     {
+        $isNews = $this->isGatesNewsType($data['type'] ?? '');
+
         return [
             'title' => $data['title'],
             'code' => $data['code'] ?: null,
             'type' => $this->normalizeGatesProjectType($data['type']),
-            'description' => $data['description'],
+            'news_eyebrow' => $isNews ? $data['eyebrow'] : null,
+            'description' => $isNews ? ($data['summary'] ?? $data['description'] ?? '') : $data['description'],
+            'news_summary' => $isNews ? $data['summary'] : null,
+            'news_content' => $isNews ? $data['content'] : null,
             'date' => $data['date'] ?: null,
-            'url' => $url,
+            'url' => $isNews ? ($data['link_url'] ?: $url) : $url,
+            'news_link_url' => $isNews ? ($data['link_url'] ?: null) : null,
+            'news_accent' => $isNews ? ($data['accent'] ?? 'cyan') : null,
+            'news_image_alt' => $isNews ? ($data['image_alt'] ?: $data['title']) : null,
+            'thumbnail_path' => $isNews ? $thumbnailPath : null,
             'sort_order' => $data['sort_order'] ?? 0,
             'is_active' => true,
         ];
@@ -413,11 +470,59 @@ class ResourceController extends Controller
             return 'Project';
         }
 
+        if ($normalized === 'issuance' || str_contains($normalized, 'issuance')) {
+            return 'Issuance';
+        }
+
+        if ($normalized === 'gates_p1_news' || str_contains($normalized, 'p1 news') || str_contains($normalized, 'gates news')) {
+            return 'GATES P1 News';
+        }
+
         if ($normalized === 'video_presentation' || $normalized === 'video presentation' || str_contains($normalized, 'video')) {
             return 'Video Presentation';
         }
 
         return 'Project';
+    }
+
+    private function isGatesNewsType(string $type): bool
+    {
+        $normalized = Str::lower(trim($type));
+
+        return $normalized === 'gates_p1_news'
+            || str_contains($normalized, 'p1 news')
+            || str_contains($normalized, 'gates p1 news');
+    }
+
+    private function resolveGatesWorkspaceTab(Request $request, ?GatesProject $gatesProject = null): string
+    {
+        $requestedTab = $request->string('workspace_tab')->toString();
+        $allowedTabs = ['gates-projects', 'gates-issuances', 'gates-news'];
+
+        if (in_array($requestedTab, $allowedTabs, true)) {
+            return $requestedTab;
+        }
+
+        if ($gatesProject) {
+            return $this->workspaceTabForGatesType($gatesProject->type ?? '');
+        }
+
+        return 'gates-projects';
+    }
+
+    private function workspaceTabForGatesType(string $type): string
+    {
+        $normalized = Str::lower(trim($type));
+
+        if (str_contains($normalized, 'issuance')) {
+            return 'gates-issuances';
+        }
+
+        if (str_contains($normalized, 'p1 news') || str_contains($normalized, 'gates p1 news') || str_contains($normalized, 'news')) {
+            return 'gates-news';
+        }
+
+        return 'gates-projects';
     }
 
     private function validateDxItem(Request $request, ?DxItem $dxItem = null): array
