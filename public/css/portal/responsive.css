@@ -225,6 +225,9 @@
     .dx-program-grid {
         grid-template-columns: 1fr;
     }
+    .whats-new-orb-right {
+        display: none;
+    }
     .dx-domain-card,
     .dx-program-tile { min-height: 20rem; }
     .admin-auth-card-enhanced {
@@ -378,6 +381,10 @@
 
     .gates-hero-actions {
         flex-direction: column;
+    }
+
+    .whats-new-track {
+        animation-duration: 24s;
     }
 
     .gates-hero-actions .btn {

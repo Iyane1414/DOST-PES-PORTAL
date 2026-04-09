@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const root = document.documentElement;
     const body = document.body;
     const themeToggle = document.getElementById('theme-toggle');
+    const themeToggleLabel = document.getElementById('theme-toggle-label');
+    const themeToggleIcon = document.getElementById('theme-toggle-icon');
     const savedTheme = localStorage.getItem('pes-theme');
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const navbar = document.getElementById('portal-navbar');
@@ -13,7 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
         root.setAttribute('data-bs-theme', theme);
         localStorage.setItem('pes-theme', theme);
         if (themeToggle) {
-            themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
+            const isDark = theme === 'dark';
+            themeToggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
+            if (themeToggleLabel) {
+                themeToggleLabel.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            }
+            if (themeToggleIcon) {
+                themeToggleIcon.className = isDark ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+            }
         }
     };
 
