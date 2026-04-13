@@ -137,8 +137,14 @@
                                     @endif
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
-                                            <label class="form-label">Issuance Title</label>
-                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedIssuance->title ?? '') }}" placeholder="Enter issuance title" required>
+                                            <label class="form-label">ERMS Number</label>
+                                            <input class="form-control" type="text" name="erm_number" value="{{ old('erm_number', $selectedIssuance->erm_number ?? '') }}" placeholder="Enter ERMS number (optional)">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="admin-issuance-field">
+                                            <label class="form-label">Issuance Title/Subject</label>
+                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedIssuance->title ?? '') }}" placeholder="Enter issuance title/subject" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -156,7 +162,13 @@
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Division</label>
-                                            <input class="form-control" type="text" name="division" value="{{ old('division', $selectedIssuance->division ?? '') }}" placeholder="Enter division name" required>
+                                            <select class="form-select" name="division" required>
+                                                <option value="" disabled @selected(old('division', $selectedIssuance->division ?? '') === '')>Select division</option>
+                                                <option value="PDPD" @selected(old('division', $selectedIssuance->division ?? '') === 'PDPD')>PDPD</option>
+                                                <option value="PCMD" @selected(old('division', $selectedIssuance->division ?? '') === 'PCMD')>PCMD</option>
+                                                <option value="STRAED" @selected(old('division', $selectedIssuance->division ?? '') === 'STRAED')>STRAED</option>
+                                                <option value="ITD" @selected(old('division', $selectedIssuance->division ?? '') === 'ITD')>ITD</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -186,7 +198,7 @@
                                 <form method="GET" action="{{ route('admin.workspace', ['tab' => 'issuances']) }}" class="admin-issuance-library-toolbar" data-admin-issuance-library-form>
                                     <div class="admin-issuance-search-wrap">
                                         <i class="bi bi-search"></i>
-                                        <input class="form-control" type="search" name="issuance_search" value="{{ $issuanceSearch ?? '' }}" placeholder="Search issuance title, category, or division..." data-admin-issuance-library-search>
+                                        <input class="form-control" type="search" name="issuance_search" value="{{ $issuanceSearch ?? '' }}" placeholder="Search ERMS no., title, category, or division..." data-admin-issuance-library-search>
                                     </div>
                                     <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-admin-issuance-library-apply>Search</button>
                                 </form>
@@ -212,8 +224,8 @@
                                     @endif
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
-                                            <label class="form-label">Material Title</label>
-                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedMaterial->title ?? '') }}" placeholder="Enter material title" required>
+                                            <label class="form-label">Material Title/Subject</label>
+                                            <input class="form-control" type="text" name="title" value="{{ old('title', $selectedMaterial->title ?? '') }}" placeholder="Enter material title/subject" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -236,7 +248,13 @@
                                     <div class="col-md-6">
                                         <div class="admin-issuance-field">
                                             <label class="form-label">Division</label>
-                                            <input class="form-control" type="text" name="division" value="{{ old('division', $selectedMaterial->division ?? '') }}" placeholder="Enter division name" required>
+                                            <select class="form-select" name="division" required>
+                                                <option value="" disabled @selected(old('division', $selectedMaterial->division ?? '') === '')>Select division</option>
+                                                <option value="PDPD" @selected(old('division', $selectedMaterial->division ?? '') === 'PDPD')>PDPD</option>
+                                                <option value="PCMD" @selected(old('division', $selectedMaterial->division ?? '') === 'PCMD')>PCMD</option>
+                                                <option value="STRAED" @selected(old('division', $selectedMaterial->division ?? '') === 'STRAED')>STRAED</option>
+                                                <option value="ITD" @selected(old('division', $selectedMaterial->division ?? '') === 'ITD')>ITD</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -543,7 +561,6 @@
                         </div>
                     @elseif ($activeTab === 'dx')
                         @php
-                            $dxCodeOptions = $dxItems->where('category', 'project')->pluck('code')->filter()->push('ETC')->unique()->sort()->values();
                             $dxProjectPrograms = $dxPrograms->values();
                         @endphp
                         <div class="admin-issuance-workspace-grid">
@@ -585,17 +602,6 @@
                                             <select class="form-select" name="parent_id" required>
                                                 @foreach ($dxProjectPrograms as $program)
                                                     <option value="{{ $program->id }}" @selected((string) old('parent_id', $selectedDxItem->parent_id ?? '') === (string) $program->id)>{{ $program->title }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="admin-issuance-field">
-                                            <label class="form-label">Project Code</label>
-                                            <select class="form-select" name="code">
-                                                <option value="">Select project code</option>
-                                                @foreach ($dxCodeOptions as $code)
-                                                    <option value="{{ $code }}" @selected(old('code', $selectedDxItem->code ?? '') === $code)>{{ $code }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -645,7 +651,7 @@
                                 <form method="GET" action="{{ route('admin.workspace', ['tab' => 'dx']) }}" class="admin-issuance-library-toolbar" data-dx-library-form>
                                     <div class="admin-issuance-search-wrap">
                                         <i class="bi bi-search"></i>
-                                        <input class="form-control" type="search" name="dx_search" value="{{ $dxSearch ?? '' }}" placeholder="Search project title, code, or sub-program..." data-dx-library-search>
+                                        <input class="form-control" type="search" name="dx_search" value="{{ $dxSearch ?? '' }}" placeholder="Search project title or sub-program..." data-dx-library-search>
                                     </div>
                                     <button class="btn admin-public-btn rounded-pill px-4" type="submit" data-dx-library-apply>Search</button>
                                 </form>

@@ -1,5 +1,5 @@
-.portal-navbar { padding: 1rem 0; transition: background-color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease; }
-.portal-navbar.scrolled { background: rgba(255,255,255,.62); backdrop-filter: blur(18px); box-shadow: 0 10px 30px rgba(0,0,0,.04); }
+.portal-navbar { padding: .72rem 0; transition: background-color .25s ease, box-shadow .25s ease, backdrop-filter .25s ease; }
+.portal-navbar.scrolled { background: rgba(255,255,255,.9); backdrop-filter: blur(12px); box-shadow: 0 10px 26px rgba(18, 63, 108, .1); }
 [data-bs-theme="dark"] .portal-navbar.scrolled { background: rgba(9,13,18,.62); }
 .portal-navbar .nav-link { color: rgba(17, 17, 17, .78); transition: color .2s ease, opacity .2s ease; }
 .portal-navbar .nav-link:hover, .portal-navbar .nav-link:focus { color: var(--accent); }
@@ -9,8 +9,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.25rem;
-    padding-inline: clamp(1rem, 3vw, 2.75rem);
+    gap: .95rem;
+    padding-inline: clamp(.85rem, 2.2vw, 2.1rem);
 }
 .portal-navbar-collapse {
     flex: 1 1 auto;
@@ -23,31 +23,65 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: clamp(.35rem, .75vw, .9rem);
+    gap: clamp(.2rem, .52vw, .64rem);
     width: auto;
     margin-left: auto;
     flex: 0 0 auto;
 }
 .portal-navbar-menu .nav-link {
+    position: relative;
     white-space: nowrap;
-    font-weight: 500;
-    padding-inline: .58rem;
+    font-weight: 520;
+    font-size: .98rem;
+    padding: .34rem .56rem;
+    transform: translateY(0);
+    transition: color .24s ease, transform .24s ease, text-shadow .24s ease;
+}
+.portal-navbar-menu .nav-link::after {
+    content: "";
+    position: absolute;
+    left: .56rem;
+    right: .56rem;
+    bottom: -.16rem;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(24, 143, 234, .75), rgba(76, 191, 255, .9));
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform .24s ease;
+}
+.portal-navbar-menu .nav-link:hover,
+.portal-navbar-menu .nav-link:focus-visible,
+.portal-navbar-menu .nav-link.is-active {
+    transform: translateY(-1px);
+    text-shadow: 0 0 18px rgba(74, 176, 255, .24);
+}
+.portal-navbar-menu .nav-link:hover::after,
+.portal-navbar-menu .nav-link:focus-visible::after,
+.portal-navbar-menu .nav-link.is-active::after {
+    transform: scaleX(1);
+}
+.portal-navbar-menu .nav-link.is-active {
+    color: #0d73be;
+}
+[data-bs-theme="dark"] .portal-navbar-menu .nav-link.is-active {
+    color: #7ad5ff;
 }
 .portal-navbar-actions {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: .38rem;
     margin-left: .9rem;
     flex-shrink: 0;
 }
 
 .brand-mark, .icon-chip { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 1rem; }
 .brand-mark { background: var(--accent); color: #fff; }
-.portal-brand { display: flex; align-items: center; gap: .9rem; margin-right: clamp(.75rem, 2vw, 2rem); flex-shrink: 0; }
+.portal-brand { display: flex; align-items: center; gap: .72rem; margin-right: clamp(.5rem, 1.6vw, 1.2rem); flex-shrink: 0; }
 .portal-brand-logo-stack { position: relative; display: block; }
 .portal-brand-logo { display: block; width: auto; object-fit: contain; transition: opacity .35s ease; }
-.portal-brand-logo-main { height: 4.25rem; }
-.portal-brand-logo-side { height: 4.25rem; }
+.portal-brand-logo-main { height: 3.95rem; }
+.portal-brand-logo-side { height: 3.95rem; }
 .portal-brand-logo-light { position: absolute; inset: 0; opacity: 0; }
 [data-bs-theme="dark"] .portal-brand-logo-default { opacity: 0; }
 [data-bs-theme="dark"] .portal-brand-logo-light { opacity: 1; }
@@ -57,21 +91,21 @@
     height: 2.8rem;
     border: 1px solid rgba(17, 17, 17, .08);
     border-radius: 999px;
-    background: rgba(255,255,255,.44);
+    background: rgba(255,255,255,.88);
     color: rgba(17, 17, 17, .78);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 18px rgba(18, 63, 108, .12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 .portal-settings-toggle:hover,
 .portal-settings-toggle:focus,
 .portal-settings-toggle.show {
     color: var(--accent);
     border-color: rgba(0, 174, 239, .24);
-    background: rgba(255,255,255,.74);
+    background: rgba(255,255,255,.96);
 }
 [data-bs-theme="dark"] .portal-settings-toggle {
     background: rgba(11, 14, 20, .72);

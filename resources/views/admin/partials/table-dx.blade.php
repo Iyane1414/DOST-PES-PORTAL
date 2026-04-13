@@ -3,7 +3,6 @@
         <thead>
             <tr>
                 <th>Title</th>
-                <th>Code</th>
                 <th>Domain</th>
                 <th>Sub-program</th>
                 <th>File</th>
@@ -17,8 +16,7 @@
             @foreach ($dxProjectRows as $item)
                 <tr
                     data-dx-library-row
-                    data-dx-library-search="{{ strtolower(trim(($item->title ?? '').' '.($item->code ?? '').' '.($item->parent?->title ?? '').' '.($item->domain_key ?? ''))) }}"
-                    data-dx-library-code="{{ strtolower(trim($item->code ?? '')) }}"
+                    data-dx-library-search="{{ strtolower(trim(($item->title ?? '').' '.($item->parent?->title ?? '').' '.($item->domain_key ?? ''))) }}"
                     data-dx-library-title="{{ strtolower(trim($item->title ?? '')) }}"
                     data-dx-library-program="{{ strtolower(trim($item->parent?->title ?? '')) }}"
                 >
@@ -28,14 +26,7 @@
                             <div class="admin-dx-record-meta">{{ ucfirst($item->domain_key ?: 'General') }}</div>
                         </div>
                     </td>
-                    <td>
-                        @if ($item->code)
-                            <span class="admin-dx-category-chip">{{ $item->code }}</span>
-                        @else
-                            <span class="admin-dx-file-empty">No code</span>
-                        @endif
-                    </td>
-                    <td><span class="admin-dx-domain-label">{{ $item->domain_key ?: 'N/A' }}</span></td>
+                    <td><span class="admin-dx-domain-label">{{ ucfirst($item->domain_key ?: 'N/A') }}</span></td>
                     <td class="admin-dx-parent-cell">{{ $item->parent?->title ?? 'None' }}</td>
                     <td>
                         @if ($item->file_url)
@@ -57,7 +48,7 @@
                 </tr>
             @endforeach
             <tr data-dx-library-empty-row @if ($dxProjectRows->isNotEmpty()) hidden @endif>
-                <td colspan="6" class="text-center text-secondary-soft py-4">No DOST DX project records found.</td>
+                <td colspan="5" class="text-center text-secondary-soft py-4">No DOST DX project records found.</td>
             </tr>
         </tbody>
     </table>

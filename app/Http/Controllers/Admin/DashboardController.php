@@ -258,9 +258,14 @@ class DashboardController extends Controller
         }
 
         $title = Str::of($issuance->title ?? '')->lower()->trim()->value();
+        $ermNumber = Str::of($issuance->erm_number ?? '')->lower()->trim()->value();
         $category = Str::of($issuance->category ?? '')->lower()->trim()->value();
         $division = Str::of($issuance->division ?? '')->lower()->trim()->value();
         $titleWords = preg_split('/\s+/', $title, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        if ($ermNumber !== '' && str_starts_with($ermNumber, $normalizedSearch)) {
+            return true;
+        }
 
         if ($title !== '' && str_starts_with($title, $normalizedSearch)) {
             return true;
@@ -280,7 +285,8 @@ class DashboardController extends Controller
             return true;
         }
 
-        return str_contains($title, $normalizedSearch)
+        return str_contains($ermNumber, $normalizedSearch)
+            || str_contains($title, $normalizedSearch)
             || str_contains($category, $normalizedSearch)
             || str_contains($division, $normalizedSearch);
     }
@@ -293,14 +299,9 @@ class DashboardController extends Controller
             return true;
         }
 
-        $projectCode = Str::of($dxItem->code ?? '')->lower()->trim()->value();
         $projectTitle = Str::of($dxItem->title ?? '')->lower()->trim()->value();
         $programTitle = Str::of($dxItem->parent?->title ?? '')->lower()->trim()->value();
         $titleWords = preg_split('/\s+/', $projectTitle, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-
-        if ($projectCode !== '' && str_starts_with($projectCode, $normalizedSearch)) {
-            return true;
-        }
 
         if ($projectTitle !== '' && str_starts_with($projectTitle, $normalizedSearch)) {
             return true;
@@ -317,7 +318,6 @@ class DashboardController extends Controller
         }
 
         return str_contains($projectTitle, $normalizedSearch)
-            || str_contains($projectCode, $normalizedSearch)
             || str_contains($programTitle, $normalizedSearch);
     }
 

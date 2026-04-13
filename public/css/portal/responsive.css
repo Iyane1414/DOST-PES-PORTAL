@@ -1,18 +1,27 @@
 @media (max-width: 991.98px) {
-    .hero-section { min-height: auto; padding-top: 7rem; }
-    .hero-section .container::before { inset: -1.25rem -.5rem; border-radius: 2rem; }
+    .hero-section { min-height: auto; padding-top: 7.2rem; padding-bottom: 3.4rem; }
+    .hero-content-shell { padding: 1.8rem 1rem 1.3rem; border-radius: 0; }
+    .hero-title { font-size: clamp(2.4rem, 10vw, 3.9rem); }
+    .hero-copy { font-size: 1rem; margin-bottom: 1.45rem; }
+    .hero-streak { width: 50vw; right: 2%; bottom: 22%; }
+    .gates-whats-new-shell {
+        padding: 1.5rem .95rem 1.1rem;
+        border-radius: 1.35rem;
+    }
     .portal-navbar-shell {
         padding-inline: 1rem;
+        border-radius: 1rem;
+        min-height: 4.2rem;
     }
     .portal-navbar-collapse {
         margin-top: .9rem;
         padding: 1rem;
         border-radius: 1.35rem;
-        background: rgba(255, 255, 255, .9);
+        background: rgba(255, 255, 255, .94);
         box-shadow: 0 18px 38px rgba(13, 20, 31, .08);
     }
     [data-bs-theme="dark"] .portal-navbar-collapse {
-        background: rgba(11, 14, 20, .94);
+        background: rgba(8, 13, 22, .94);
     }
     .portal-navbar-menu {
         align-items: flex-start;
@@ -336,6 +345,108 @@
     .portal-brand-logo-main { height: 3.3rem; }
     .portal-brand-logo-side { height: 3.3rem; }
 }
+
+@media (max-width: 991.98px) {
+    .repository-page-hero {
+        padding: 6.5rem 0 2.8rem;
+    }
+
+    .repository-page-title {
+        font-size: clamp(2.9rem, 11vw, 4.6rem);
+    }
+
+    .repository-page-controls,
+    .repository-page-item {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .repository-page-year-wrap {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .repository-page-year {
+        min-width: 0;
+        width: min(100%, 13rem);
+    }
+
+    .repository-page-item-actions {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .repository-page-item-actions .btn {
+        min-width: 0;
+    }
+
+    .dx-program-page-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .repository-page-summary-card {
+        width: 100%;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .repository-page-shell::before {
+        height: min(35rem, 62vh);
+    }
+
+    .repository-page-hero {
+        padding: 6rem 0 2.3rem;
+    }
+
+    .repository-page-back {
+        padding: .72rem 1.15rem;
+        font-size: .95rem;
+    }
+
+    .repository-page-toolbar-card,
+    .repository-page-item,
+    .repository-page-empty {
+        padding: 1rem;
+        border-radius: 1.5rem;
+    }
+
+    .repository-page-controls {
+        gap: .85rem;
+    }
+
+    .repository-page-year-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .45rem;
+    }
+
+    .repository-page-year {
+        width: 100%;
+    }
+
+    .repository-page-item h2 {
+        font-size: 1.5rem;
+    }
+
+    .repository-page-item p,
+    .repository-page-description {
+        font-size: .96rem;
+    }
+
+    .repository-page-item-actions .btn {
+        width: 100%;
+    }
+
+    .repository-page-search {
+        min-height: 3.35rem;
+    }
+
+    .repository-page-status {
+        padding-inline: .15rem;
+    }
+}
 @media (max-width: 1199.98px) {
     .gates-project-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -352,6 +463,25 @@
 }
 
 @media (max-width: 767.98px) {
+    .hero-content-shell {
+        padding: 1.45rem .9rem 1.2rem;
+        border-radius: 0;
+    }
+
+    .hero-pill {
+        padding: .52rem .9rem;
+        letter-spacing: .16em;
+        font-size: .66rem;
+    }
+
+    .hero-cta {
+        width: 100%;
+    }
+
+    .gates-whats-new-shell {
+        padding: 1.15rem .65rem .9rem;
+    }
+
     .gates-news-shell {
         padding: 1.35rem 1rem 1rem;
         border-radius: 1.3rem;
@@ -471,5 +601,223 @@
 
     .gates-projects-head .section-title {
         font-size: clamp(1.4rem, 5vw, 2rem);
+    }
+}
+
+@media (max-width: 991.98px) {
+    body.portal-page-resources .repository-page-hero,
+    body.portal-page-gates .repository-page-hero,
+    body.portal-page-dx .repository-page-hero {
+        padding: 7.1rem 0 1.6rem;
+    }
+
+    body.portal-page-resources .repository-page-hero .container,
+    body.portal-page-gates .repository-page-hero .container,
+    body.portal-page-dx .repository-page-hero .container {
+        padding: 1.5rem 1.35rem 1.8rem;
+    }
+
+    body.portal-page-resources .repository-page-controls,
+    body.portal-page-gates .repository-page-controls,
+    body.portal-page-dx .repository-page-controls {
+        grid-template-columns: 1fr;
+    }
+
+    body.portal-page-resources .repository-page-year-wrap,
+    body.portal-page-gates .repository-page-year-wrap,
+    body.portal-page-dx .repository-page-year-wrap {
+        grid-template-columns: 1fr;
+        gap: .5rem;
+    }
+
+    body.portal-page-resources .repository-page-title,
+    body.portal-page-gates .repository-page-title,
+    body.portal-page-dx .repository-page-title {
+        font-size: clamp(3rem, 11vw, 4.8rem);
+        max-width: 100%;
+    }
+
+    body.portal-page-resources .repository-page-item,
+    body.portal-page-gates .repository-page-item,
+    body.portal-page-dx .repository-page-item {
+        padding: 1.3rem;
+    }
+
+    body.portal-page-resources .repository-page-item-actions,
+    body.portal-page-gates .repository-page-item-actions,
+    body.portal-page-dx .repository-page-item-actions {
+        width: 100%;
+        justify-content: flex-start;
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.portal-page-resources .repository-page-shell::before,
+    body.portal-page-gates .repository-page-shell::before,
+    body.portal-page-dx .repository-page-shell::before {
+        height: 24rem;
+    }
+
+    body.portal-page-resources .repository-page-back,
+    body.portal-page-gates .repository-page-back,
+    body.portal-page-dx .repository-page-back {
+        width: 100%;
+        justify-content: center;
+    }
+
+    body.portal-page-resources .repository-page-item h2,
+    body.portal-page-gates .repository-page-item h2,
+    body.portal-page-dx .repository-page-item h2 {
+        font-size: 1.8rem;
+    }
+
+    body.portal-page-resources .repository-page-item-actions .btn,
+    body.portal-page-gates .repository-page-item-actions .btn,
+    body.portal-page-dx .repository-page-item-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1199.98px) {
+}
+
+@media (max-width: 991.98px) {
+    body.portal-page-resources .repository-page-shell,
+    body.portal-page-gates .repository-page-shell,
+    body.portal-page-dx .repository-page-shell {
+        padding-top: 1.5rem;
+    }
+
+    body.portal-page-resources .repository-page-hero,
+    body.portal-page-gates .repository-page-hero,
+    body.portal-page-dx .repository-page-hero {
+        padding: 3.3rem 0 1.6rem;
+    }
+
+    body.portal-page-resources .repository-page-hero .container,
+    body.portal-page-gates .repository-page-hero .container,
+    body.portal-page-dx .repository-page-hero .container {
+        padding: 0;
+        border-radius: 0;
+    }
+
+    body.portal-page-dx .dx-program-page-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body.portal-page-resources .repository-page-controls,
+    body.portal-page-gates .repository-page-controls,
+    body.portal-page-dx .repository-page-controls {
+        grid-template-columns: 1fr;
+    }
+
+    body.portal-page-resources .repository-page-year-wrap,
+    body.portal-page-gates .repository-page-year-wrap,
+    body.portal-page-dx .repository-page-year-wrap {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: .55rem;
+        padding-left: 0;
+    }
+
+    body.portal-page-resources .repository-page-title,
+    body.portal-page-gates .repository-page-title,
+    body.portal-page-dx .repository-page-title {
+        max-width: 100%;
+        font-size: clamp(3rem, 11vw, 4.8rem);
+    }
+
+    body.portal-page-resources .repository-page-item,
+    body.portal-page-gates .repository-page-item,
+    body.portal-page-dx .repository-page-item {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    body.portal-page-resources .repository-page-item-actions,
+    body.portal-page-gates .repository-page-item-actions,
+    body.portal-page-dx .repository-page-item-actions {
+        min-width: 0;
+        justify-content: flex-start;
+    }
+
+    body.portal-page-resources .repository-page-toolbar-card,
+    body.portal-page-gates .repository-page-toolbar-card,
+    body.portal-page-dx .repository-page-toolbar-card {
+        padding: 1.2rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    body.portal-page-resources .repository-page-shell::before,
+    body.portal-page-gates .repository-page-shell::before,
+    body.portal-page-dx .repository-page-shell::before {
+        height: 22rem;
+    }
+
+    body.portal-page-resources .repository-page-shell::after,
+    body.portal-page-gates .repository-page-shell::after,
+    body.portal-page-dx .repository-page-shell::after {
+        height: 22rem;
+    }
+
+    body.portal-page-resources .repository-page-back,
+    body.portal-page-gates .repository-page-back,
+    body.portal-page-dx .repository-page-back {
+        width: 100%;
+        justify-content: center;
+    }
+
+    body.portal-page-resources .repository-page-title,
+    body.portal-page-gates .repository-page-title,
+    body.portal-page-dx .repository-page-title {
+        font-size: clamp(2.6rem, 12vw, 3.6rem);
+    }
+
+    body.portal-page-resources .repository-page-description,
+    body.portal-page-gates .repository-page-description,
+    body.portal-page-dx .repository-page-description {
+        font-size: .94rem;
+    }
+
+    body.portal-page-resources .repository-page-controls,
+    body.portal-page-gates .repository-page-controls,
+    body.portal-page-dx .repository-page-controls,
+    body.portal-page-resources .repository-page-year-wrap,
+    body.portal-page-gates .repository-page-year-wrap,
+    body.portal-page-dx .repository-page-year-wrap {
+        grid-template-columns: 1fr;
+    }
+
+    body.portal-page-resources .repository-page-toolbar-card,
+    body.portal-page-gates .repository-page-toolbar-card,
+    body.portal-page-dx .repository-page-toolbar-card,
+    body.portal-page-resources .repository-page-item,
+    body.portal-page-gates .repository-page-item,
+    body.portal-page-dx .repository-page-item,
+    body.portal-page-resources .repository-page-empty,
+    body.portal-page-gates .repository-page-empty,
+    body.portal-page-dx .repository-page-empty {
+        padding: 1.1rem;
+        border-radius: 1.35rem;
+    }
+
+    body.portal-page-resources .repository-page-item h2,
+    body.portal-page-gates .repository-page-item h2,
+    body.portal-page-dx .repository-page-item h2 {
+        font-size: 1.6rem;
+    }
+
+    body.portal-page-resources .repository-page-item-actions .btn,
+    body.portal-page-gates .repository-page-item-actions .btn,
+    body.portal-page-dx .repository-page-item-actions .btn {
+        width: 100%;
+    }
+
+    body.portal-page-resources .repository-page-item-actions,
+    body.portal-page-gates .repository-page-item-actions,
+    body.portal-page-dx .repository-page-item-actions {
+        min-width: 0;
     }
 }

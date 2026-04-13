@@ -150,6 +150,7 @@
                             data-domain="{{ $item['domain'] }}"
                             data-program-slug="{{ $item['slug'] }}"
                             href="{{ route('portal.dx.program.show', ['domainSlug' => $item['domain'], 'subProgramSlug' => $item['slug']]) }}"
+                            data-transition-label="{{ $item['title'] }}"
                         >
                             <div class="program-index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
                             <h3 class="dx-program-title">{{ $item['title'] }}</h3>

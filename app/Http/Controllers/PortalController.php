@@ -53,6 +53,7 @@ class PortalController extends Controller
 
         $filteredIssuances = $issuances->filter(function (Issuance $item) use ($normalizedIssuanceSearch, $normalizedCategoryFilter) {
             $searchableText = Str::lower(implode(' ', array_filter([
+                $item->erm_number,
                 $item->title,
                 $item->category,
                 $item->division,
@@ -209,13 +210,8 @@ class PortalController extends Controller
             return true;
         }
 
-        $projectCode = Str::of($project['code'] ?? '')->lower()->trim()->value();
         $projectTitle = Str::of($project['title'] ?? '')->lower()->trim()->value();
         $titleWords = preg_split('/\s+/', $projectTitle, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-
-        if ($projectCode !== '' && str_starts_with($projectCode, $normalizedSearch)) {
-            return true;
-        }
 
         if ($projectTitle !== '' && str_starts_with($projectTitle, $normalizedSearch)) {
             return true;
@@ -520,7 +516,6 @@ class PortalController extends Controller
                     'accent' => 'cyan',
                     'projects' => $item->children->map(fn (DxItem $project) => [
                         'slug' => $project->slug,
-                        'code' => $project->code ?: 'DX',
                         'title' => $project->title,
                         'description' => $project->description,
                         'file_url' => $project->file_url,

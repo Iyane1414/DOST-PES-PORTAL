@@ -2,6 +2,7 @@
     <table class="table admin-table admin-issuance-table align-middle">
         <thead>
             <tr>
+                <th>ERMS No.</th>
                 <th>Title</th>
                 <th>Category</th>
                 <th>Date</th>
@@ -15,8 +16,9 @@
             @foreach ($issuanceRows as $item)
                 <tr
                     data-admin-issuance-library-row
-                    data-admin-issuance-library-search="{{ strtolower(trim(($item->title ?? '').' '.($item->category ?? '').' '.($item->division ?? ''))) }}"
+                    data-admin-issuance-library-search="{{ strtolower(trim(($item->erm_number ?? '').' '.($item->title ?? '').' '.($item->category ?? '').' '.($item->division ?? ''))) }}"
                 >
+                    <td>{{ $item->erm_number ?: '—' }}</td>
                     <td>
                         <div class="admin-issuance-record">
                             <div class="admin-issuance-record-title">{{ $item->title }}</div>
@@ -38,7 +40,7 @@
                 </tr>
             @endforeach
                 <tr data-admin-issuance-library-empty-row @if ($issuanceRows->isNotEmpty()) hidden @endif>
-                    <td colspan="4">
+                    <td colspan="5">
                         <div class="admin-issuance-empty-state">
                             <strong>No issuances found</strong>
                             <span>Try a different search term or publish a new issuance record.</span>

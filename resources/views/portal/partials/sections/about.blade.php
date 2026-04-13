@@ -2,7 +2,7 @@
     $aboutDivisions = $divisions->take(4)->values();
 @endphp
 
-<section class="about-section" id="about">
+<section class="about-section" id="about" data-scroll-scene="about">
     <div class="about-grid"></div>
     <div class="about-glow"></div>
 

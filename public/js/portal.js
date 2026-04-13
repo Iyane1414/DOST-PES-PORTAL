@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const navbar = document.getElementById('portal-navbar');
     const progress = document.getElementById('scroll-progress');
+    const pageTransition = document.querySelector('[data-page-transition]');
+    const pageTransitionLabel = document.querySelector('[data-page-transition-label]');
     const scrollScenes = Array.from(document.querySelectorAll('[data-scroll-scene]'));
+    const currentPageTheme = body?.dataset.pageTheme || 'pes';
     let scrollTicking = false;
 
     const applyTheme = (theme) => {
@@ -36,6 +39,329 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark');
     });
 
+    const setPageTransitionTheme = (theme) => {
+        if (!(pageTransition instanceof HTMLElement)) {
+            return;
+        }
+
+        pageTransition.dataset.transitionTheme = theme || currentPageTheme;
+    };
+
+    const setPageTransitionLabel = (label) => {
+        if (!(pageTransitionLabel instanceof HTMLElement)) {
+            return;
+        }
+
+        pageTransitionLabel.textContent = label || 'DOST PES';
+    };
+
+    const cleanupBootTransition = () => {
+        body?.classList.remove('page-transition-revealing', 'page-transition-lock');
+        root.classList.remove('portal-transition-boot');
+
+        try {
+            sessionStorage.removeItem('portal-transition-pending');
+            sessionStorage.removeItem('portal-transition-theme');
+            sessionStorage.removeItem('portal-transition-label');
+        } catch (error) {
+            // Ignore storage cleanup issues.
+        }
+    };
+
+    setPageTransitionTheme(root.dataset.portalTransitionTheme || currentPageTheme);
+    setPageTransitionLabel(root.dataset.portalTransitionLabel || document.title.replace(/\s*\|\s*.*$/, '').trim() || 'DOST PES');
+
+    if (root.classList.contains('portal-transition-boot') && pageTransition instanceof HTMLElement) {
+        body?.classList.add('page-transition-lock');
+
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                body?.classList.add('page-transition-revealing');
+            });
+        });
+
+        window.setTimeout(cleanupBootTransition, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 980);
+    }
+
+    const resolveTransitionTheme = (url) => {
+        const path = url.pathname.toLowerCase();
+        const hash = url.hash.toLowerCase();
+
+        if (path.startsWith('/gates-projects') || hash.includes('gates')) {
+            return 'gates';
+        }
+
+        if (path.startsWith('/dost-dx') || hash.includes('dost-dx')) {
+            return 'dx';
+        }
+
+        return 'pes';
+    };
+
+    const resolveTransitionLabel = (link, theme) => {
+        if (!(link instanceof HTMLAnchorElement)) {
+            return theme === 'gates' ? 'DOST GATES' : 'DOST PES';
+        }
+
+        const explicitLabel = link.dataset.transitionLabel?.trim();
+        if (explicitLabel) {
+            return explicitLabel;
+        }
+
+        const heading = link.querySelector('h1, h2, h3, h4, h5, h6');
+        const headingText = (heading?.textContent || '').replace(/\s+/g, ' ').trim();
+        if (headingText) {
+            return headingText;
+        }
+
+        const text = (link.textContent || '').replace(/\s+/g, ' ').trim();
+        if (text) {
+            return text;
+        }
+
+        return theme === 'gates' ? 'DOST GATES' : theme === 'dx' ? 'DOST DX' : 'DOST PES';
+    };
+
+    const shouldHandlePageTransition = (link, url) => {
+        if (!(link instanceof HTMLAnchorElement) || !(pageTransition instanceof HTMLElement)) {
+            return false;
+        }
+
+        if (!url || url.origin !== window.location.origin) {
+            return false;
+        }
+
+        if (!['http:', 'https:'].includes(url.protocol)) {
+            return false;
+        }
+
+        if (link.target === '_blank' || link.hasAttribute('download') || link.closest('[data-no-page-transition]')) {
+            return false;
+        }
+
+        if (url.pathname.startsWith('/admin')) {
+            return false;
+        }
+
+        const currentUrl = new URL(window.location.href);
+        const isSameDocument = url.pathname === currentUrl.pathname && url.search === currentUrl.search;
+
+        if (isSameDocument) {
+            return false;
+        }
+
+        return true;
+    };
+
+    document.addEventListener('click', (event) => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+            return;
+        }
+
+        const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+        if (!(link instanceof HTMLAnchorElement)) {
+            return;
+        }
+
+        if (link.dataset.bsToggle === 'modal' || link.getAttribute('data-bs-toggle') === 'modal') {
+            return;
+        }
+
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) {
+            return;
+        }
+
+        const destination = new URL(link.href, window.location.href);
+        if (!shouldHandlePageTransition(link, destination)) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const nextTheme = resolveTransitionTheme(destination);
+        const nextLabel = resolveTransitionLabel(link, nextTheme);
+
+        setPageTransitionTheme(nextTheme);
+        setPageTransitionLabel(nextLabel);
+        body?.classList.remove('page-transition-revealing');
+        body?.classList.add('page-transition-entering', 'page-transition-lock');
+
+        try {
+            sessionStorage.setItem('portal-transition-pending', '1');
+            sessionStorage.setItem('portal-transition-theme', nextTheme);
+            sessionStorage.setItem('portal-transition-label', nextLabel);
+        } catch (error) {
+            // Ignore storage issues and continue navigation.
+        }
+
+        window.setTimeout(() => {
+            window.location.href = destination.toString();
+        }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620);
+    });
+
+    const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const heroSection = document.querySelector('.hero-section');
+    const heroPointerGlow = document.getElementById('hero-pointer-glow');
+    const heroContentShell = heroSection instanceof HTMLElement ? heroSection.querySelector('.hero-content-shell') : null;
+    const navLinks = Array.from(document.querySelectorAll('.portal-navbar-menu .nav-link'));
+
+    if (supportsFinePointer && heroSection instanceof HTMLElement) {
+        const cursorOrb = document.createElement('div');
+        cursorOrb.className = 'interactive-cursor-orb';
+        const cursorCore = document.createElement('div');
+        cursorCore.className = 'interactive-cursor-core';
+        document.body.append(cursorOrb, cursorCore);
+
+        let targetX = window.innerWidth * 0.5;
+        let targetY = window.innerHeight * 0.5;
+        let orbX = targetX;
+        let orbY = targetY;
+        let tick = 0;
+
+        const spawnParticle = (x, y) => {
+            const particle = document.createElement('span');
+            particle.className = 'interactive-cursor-particle';
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            document.body.appendChild(particle);
+            window.setTimeout(() => particle.remove(), 620);
+        };
+
+        const updateHeroGlowPosition = (x, y) => {
+            const heroRect = heroSection.getBoundingClientRect();
+            if (x < heroRect.left || x > heroRect.right || y < heroRect.top || y > heroRect.bottom) {
+                if (heroPointerGlow instanceof HTMLElement) {
+                    heroPointerGlow.style.opacity = '.15';
+                }
+                if (heroContentShell instanceof HTMLElement) {
+                    heroContentShell.classList.remove('is-hovered');
+                }
+                heroSection.classList.remove('is-reveal-active');
+                heroSection.style.setProperty('--hero-reveal-size', '0px');
+                return;
+            }
+
+            const relativeX = ((x - heroRect.left) / heroRect.width) * 100;
+            const relativeY = ((y - heroRect.top) / heroRect.height) * 100;
+            if (heroPointerGlow instanceof HTMLElement) {
+                heroPointerGlow.style.opacity = '.85';
+            }
+            heroSection.classList.add('is-reveal-active');
+            heroSection.style.setProperty('--hero-pointer-x', `${relativeX}%`);
+            heroSection.style.setProperty('--hero-pointer-y', `${relativeY}%`);
+            heroSection.style.setProperty('--hero-reveal-size', '220px');
+
+            if (heroContentShell instanceof HTMLElement) {
+                const shellRect = heroContentShell.getBoundingClientRect();
+                const shellX = ((x - shellRect.left) / shellRect.width) * 100;
+                const shellY = ((y - shellRect.top) / shellRect.height) * 100;
+                const inShell = x >= shellRect.left && x <= shellRect.right && y >= shellRect.top && y <= shellRect.bottom;
+                heroContentShell.style.setProperty('--hero-card-x', `${Math.max(0, Math.min(100, shellX))}%`);
+                heroContentShell.style.setProperty('--hero-card-y', `${Math.max(0, Math.min(100, shellY))}%`);
+                heroContentShell.classList.toggle('is-hovered', inShell);
+            }
+        };
+
+        const animateCursor = () => {
+            orbX += (targetX - orbX) * 0.17;
+            orbY += (targetY - orbY) * 0.17;
+            cursorOrb.style.left = `${orbX}px`;
+            cursorOrb.style.top = `${orbY}px`;
+            cursorCore.style.left = `${targetX}px`;
+            cursorCore.style.top = `${targetY}px`;
+            updateHeroGlowPosition(targetX, targetY);
+            window.requestAnimationFrame(animateCursor);
+        };
+
+        window.addEventListener('mousemove', (event) => {
+            targetX = event.clientX;
+            targetY = event.clientY;
+            tick += 1;
+            if (tick % 2 === 0) {
+                spawnParticle(targetX, targetY);
+            }
+        }, { passive: true });
+
+        document.addEventListener('mouseleave', () => {
+            cursorOrb.style.opacity = '.3';
+            cursorCore.style.opacity = '.3';
+            if (heroPointerGlow instanceof HTMLElement) {
+                heroPointerGlow.style.opacity = '.2';
+            }
+            heroSection.classList.remove('is-reveal-active');
+            heroSection.style.setProperty('--hero-reveal-size', '0px');
+        });
+
+        document.addEventListener('mouseenter', () => {
+            cursorOrb.style.opacity = '.88';
+            cursorCore.style.opacity = '1';
+        });
+
+        heroSection.addEventListener('mouseleave', () => {
+            heroSection.classList.remove('is-reveal-active');
+            heroSection.style.setProperty('--hero-reveal-size', '0px');
+            if (heroPointerGlow instanceof HTMLElement) {
+                heroPointerGlow.style.opacity = '.2';
+            }
+            if (heroContentShell instanceof HTMLElement) {
+                heroContentShell.classList.remove('is-hovered');
+            }
+        });
+
+        document.querySelectorAll('[data-magnetic]').forEach((element) => {
+            if (!(element instanceof HTMLElement)) return;
+
+            element.addEventListener('mousemove', (event) => {
+                const rect = element.getBoundingClientRect();
+                const moveX = (event.clientX - rect.left - rect.width / 2) * 0.16;
+                const moveY = (event.clientY - rect.top - rect.height / 2) * 0.16;
+                element.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
+                element.classList.add('is-magnetic-active');
+            });
+
+            element.addEventListener('mouseleave', () => {
+                element.style.transform = 'translate3d(0, 0, 0)';
+                element.classList.remove('is-magnetic-active');
+            });
+        });
+
+        document.querySelectorAll('[data-ripple]').forEach((element) => {
+            if (!(element instanceof HTMLElement)) return;
+
+            element.addEventListener('mousemove', (event) => {
+                const rect = element.getBoundingClientRect();
+                element.style.setProperty('--ripple-x', `${event.clientX - rect.left}px`);
+                element.style.setProperty('--ripple-y', `${event.clientY - rect.top}px`);
+            });
+        });
+
+        animateCursor();
+    }
+
+    const updateActiveNavLink = () => {
+        if (!navLinks.length) return;
+
+        let activeId = 'top';
+        navLinks.forEach((link) => {
+            if (!(link instanceof HTMLAnchorElement)) return;
+            const hash = link.hash?.replace('#', '');
+            if (!hash) return;
+            const section = document.getElementById(hash);
+            if (!(section instanceof HTMLElement)) return;
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= 140 && rect.bottom > 160) {
+                activeId = hash;
+            }
+        });
+
+        navLinks.forEach((link) => {
+            if (!(link instanceof HTMLAnchorElement)) return;
+            const isActive = link.hash === `#${activeId}`;
+            link.classList.toggle('is-active', isActive);
+        });
+    };
+
     const onScroll = () => {
         const scrollTop = window.scrollY;
         const pageHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -61,9 +387,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 scrollTicking = false;
             });
         }
+
+        updateActiveNavLink();
     };
 
     onScroll();
+    updateActiveNavLink();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
 
@@ -321,15 +650,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return true;
         }
 
-        const code = (row.dataset.dxLibraryCode || '').toLowerCase();
         const title = (row.dataset.dxLibraryTitle || '').toLowerCase();
         const program = (row.dataset.dxLibraryProgram || '').toLowerCase();
         const searchText = (row.dataset.dxLibrarySearch || '').toLowerCase();
         const titleWords = title.split(/\s+/).filter(Boolean);
-
-        if (code !== '' && code.startsWith(query)) {
-            return true;
-        }
 
         if (title !== '' && title.startsWith(query)) {
             return true;
@@ -825,20 +1149,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const dxProjectCount = document.querySelector('[data-dx-project-count]');
     const dxProjectEmpty = document.querySelector('[data-dx-project-empty]');
 
-    const dxProjectMatchesSearch = (code, title, query) => {
+    const dxProjectMatchesSearch = (title, query) => {
         const normalizedQuery = query.trim().toLowerCase();
 
         if (normalizedQuery === '') {
             return true;
         }
 
-        const normalizedCode = code.trim().toLowerCase();
         const normalizedTitle = title.trim().toLowerCase();
         const titleWords = normalizedTitle.split(/\s+/).filter(Boolean);
-
-        if (normalizedCode && normalizedCode.startsWith(normalizedQuery)) {
-            return true;
-        }
 
         if (normalizedTitle && normalizedTitle.startsWith(normalizedQuery)) {
             return true;
@@ -864,9 +1183,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const code = item.dataset.projectCode || '';
             const title = item.dataset.projectTitle || '';
-            const visible = dxProjectMatchesSearch(code, title, query);
+            const visible = dxProjectMatchesSearch(title, query);
 
             item.hidden = !visible;
 

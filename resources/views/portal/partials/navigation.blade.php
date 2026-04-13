@@ -4,7 +4,7 @@
 
 <nav class="navbar navbar-expand-lg fixed-top portal-navbar" id="portal-navbar">
     <div class="container-fluid portal-navbar-shell">
-        <a class="navbar-brand portal-brand" href="{{ route('portal.home') }}">
+        <a class="navbar-brand portal-brand" href="{{ route('portal.home') }}" data-magnetic data-transition-label="DOST PES">
             <img src="{{ asset('images/bagongpilipinas.png') }}" alt="Bagong Pilipinas logo" class="portal-brand-logo portal-brand-logo-side">
             <span class="portal-brand-logo-stack">
                 <img src="{{ asset('images/DOST LOGO light.png') }}" alt="DOST light mode logo" class="portal-brand-logo portal-brand-logo-main portal-brand-logo-default">
@@ -16,13 +16,13 @@
         </button>
         <div class="collapse navbar-collapse portal-navbar-collapse" id="mainNav">
             <ul class="navbar-nav align-items-lg-center portal-navbar-menu">
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#top">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#issuances">Issuances</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#materials">Resources</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-dx">DOST DX</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-gates">DOST GATES</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#contact">Contact</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#top" data-magnetic>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#about" data-magnetic>About</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#issuances" data-magnetic>Issuances</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#materials" data-magnetic>Resources</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-dx" data-magnetic>DOST DX</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-gates" data-magnetic>DOST GATES</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#contact" data-magnetic>Contact</a></li>
             </ul>
             <div class="portal-navbar-actions">
                 <div class="dropdown portal-settings-dropdown">
@@ -32,6 +32,7 @@
                         id="portal-settings-toggle"
                         data-bs-toggle="dropdown"
                         data-bs-auto-close="outside"
+                        data-magnetic
                         aria-expanded="false"
                         aria-label="Open settings menu"
                     >

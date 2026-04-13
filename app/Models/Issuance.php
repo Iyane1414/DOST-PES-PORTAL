@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
+ * @property string|null $erm_number
  * @property string $title
  * @property string $category
  * @property \Illuminate\Support\Carbon $date
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 class Issuance extends Model
 {
     protected $fillable = [
+        'erm_number',
         'title',
         'category',
         'date',

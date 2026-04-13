@@ -31,11 +31,12 @@
                     <div class="table-card issuance-table-card">
                         <div class="table-responsive">
                             <table class="table align-middle mb-0">
-                                <thead><tr><th>Title</th><th>Category</th><th>Division</th><th class="issuance-date-col">Date</th><th class="issuance-action-col">Action</th></tr></thead>
+                                <thead><tr><th>ERMS No.</th><th>Title</th><th>Category</th><th>Division</th><th class="issuance-date-col">Date</th><th class="issuance-action-col">Action</th></tr></thead>
                                 <tbody>
                                     @forelse ($filteredIssuances as $issuance)
                                         @php
                                             $searchText = strtolower(implode(' ', array_filter([
+                                                $issuance->erm_number,
                                                 $issuance->title,
                                                 $issuance->category,
                                                 $issuance->division,
@@ -44,6 +45,7 @@
                                             ])));
                                         @endphp
                                         <tr data-issuance-row data-issuance-search="{{ $searchText }}" data-issuance-category="{{ strtolower($issuance->category) }}">
+                                            <td class="fw-semibold">{{ $issuance->erm_number ?: '—' }}</td>
                                             <td class="fw-semibold">{{ $issuance->title }}</td>
                                             <td>{{ $issuance->category }}</td>
                                             <td>{{ $issuance->division }}</td>
@@ -56,10 +58,10 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="5" class="text-center py-5 text-secondary-soft">No issuances found matching your criteria.</td></tr>
+                                        <tr><td colspan="6" class="text-center py-5 text-secondary-soft">No issuances found matching your criteria.</td></tr>
                                     @endforelse
                                     @if ($filteredIssuances->isNotEmpty())
-                                        <tr class="issuance-empty-row" data-issuance-empty-row hidden><td colspan="5" class="text-center py-5 text-secondary-soft">No issuances found matching your criteria.</td></tr>
+                                        <tr class="issuance-empty-row" data-issuance-empty-row hidden><td colspan="6" class="text-center py-5 text-secondary-soft">No issuances found matching your criteria.</td></tr>
                                     @endif
                                 </tbody>
                             </table>

@@ -6,6 +6,9 @@
     $maxAnalytics = max(1, $analytics->max(fn ($item) => max($item['issuances'], $item['materials'])));
 @endphp
 
+@section('body_class', 'portal-page portal-page-home')
+@section('page_theme', 'pes')
+
 @section('content')
     <div class="scroll-progress" id="scroll-progress"></div>
 

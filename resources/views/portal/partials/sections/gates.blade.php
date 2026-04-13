@@ -1,5 +1,26 @@
 @php
     $featuredGatesProject = $gatesProjects->first();
+    $gatesLatestItems = $gatesProjects
+        ->filter(fn ($item) => !str_contains(strtolower((string) ($item->type ?? '')), 'news'))
+        ->sortByDesc(fn ($item) => optional($item->date)->timestamp ?? 0)
+        ->take(8)
+        ->map(function ($item) {
+            $normalizedType = strtolower((string) ($item->type ?? ''));
+            $collectionSlug = str_contains($normalizedType, 'issuance')
+                ? 'issuances'
+                : (str_contains($normalizedType, 'video') ? 'video-presentations' : 'projects');
+            $label = str_contains($normalizedType, 'issuance')
+                ? 'Issuance'
+                : (str_contains($normalizedType, 'video') ? 'Video Presentation' : 'Project');
+
+            return [
+                'label' => $label,
+                'title' => $item->title,
+                'date' => optional($item->date)->format('M d, Y'),
+                'url' => $item->url ?: route('portal.gates.show', ['collectionSlug' => $collectionSlug]),
+            ];
+        })
+        ->values();
 @endphp
 
 <section class="gates-stop-shell" id="gates-stop-shell">
@@ -17,7 +38,7 @@
                                 <p class="section-copy gates-copy">A focused overview of DOST GATES and the project files currently shared through the PES portal. This section keeps the public-facing brief concise while giving visitors quick access to the supporting project references and data-driven initiatives.</p>
                                 <div class="gates-hero-actions">
                                     <a class="btn btn-accent btn-lg rounded-pill px-4" href="#gates-achieves">Learn More <i class="bi bi-chevron-right ms-2"></i></a>
-                                    <a class="btn dx-outline-btn btn-lg rounded-pill px-4" href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}">Browse GATES Library <i class="bi bi-chevron-right ms-2"></i></a>
+                                    <a class="btn dx-outline-btn btn-lg rounded-pill px-4" href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}" data-transition-label="Projects">Browse GATES Library <i class="bi bi-chevron-right ms-2"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -192,6 +213,45 @@
     </div>
 @endforeach
 
+<section class="section-space gates-band-section gates-whats-new-band" id="gates-whats-new" data-scroll-scene="gates-whats-new">
+    <div class="container">
+        <div class="gates-whats-new-shell">
+            <div class="whats-new-orb whats-new-orb-left"></div>
+            <div class="whats-new-orb whats-new-orb-right"></div>
+
+            <div class="section-header whats-new-header gates-whats-new-header">
+                <div>
+                    <div class="whats-new-kicker gates-whats-new-kicker">GATES LIVE UPDATES</div>
+                    <h2 class="section-title split-title">What's <span class="split-title-accent">New in GATES</span></h2>
+                    <p class="section-copy mb-0">Latest GATES issuances, projects, and presentations moving across the portal in real time.</p>
+                </div>
+            </div>
+
+            @if ($gatesLatestItems->isNotEmpty())
+                <div class="whats-new-marquee gates-whats-new-marquee" aria-label="Latest GATES updates">
+                    <div class="whats-new-track gates-whats-new-track">
+                        @foreach ($gatesLatestItems->concat($gatesLatestItems) as $item)
+                            <a class="whats-new-card gates-whats-new-card" href="{{ $item['url'] }}">
+                                <span class="whats-new-card-type gates-whats-new-card-type">{{ $item['label'] }}</span>
+                                <h3>{{ $item['title'] }}</h3>
+                                <div class="whats-new-card-meta">
+                                    <span>{{ $item['date'] }}</span>
+                                    <span class="whats-new-card-link">View <i class="bi bi-arrow-up-right"></i></span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <div class="pes-action-empty-state gates-news-empty-state mt-3">
+                    <strong>No GATES updates yet.</strong>
+                    <span>Latest project, issuance, and video updates will appear here.</span>
+                </div>
+            @endif
+        </div>
+    </div>
+</section>
+
 <section class="section-space gates-band-section gates-library-band" id="gates-projects-section">
     <div class="container">
         <div class="gates-projects-section">
@@ -211,7 +271,7 @@
                         $videosCount = $gatesProjects->filter(fn($p) => strtolower($p->type ?? '') === 'video presentation')->count();
                     @endphp
                     
-                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}" class="gates-collection-card">
+                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}" class="gates-collection-card" data-transition-label="Projects">
                         <div class="gates-collection-icon">
                             <i class="bi bi-briefcase"></i>
                         </div>
@@ -222,7 +282,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'issuances']) }}" class="gates-collection-card">
+                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'issuances']) }}" class="gates-collection-card" data-transition-label="Issuances">
                         <div class="gates-collection-icon">
                             <i class="bi bi-file-earmark-text"></i>
                         </div>
@@ -233,7 +293,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'video-presentations']) }}" class="gates-collection-card">
+                    <a href="{{ route('portal.gates.show', ['collectionSlug' => 'video-presentations']) }}" class="gates-collection-card" data-transition-label="Video Presentations">
                         <div class="gates-collection-icon">
                             <i class="bi bi-play-circle"></i>
                         </div>

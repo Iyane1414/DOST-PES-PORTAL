@@ -1,17 +1,114 @@
 .hero-section { --scene-progress: 0; --scene-enter: 0; min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding: 8rem 0 5rem; isolation: isolate; }
 .hero-section::before, .hero-section::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
-.hero-section::before { background-image: linear-gradient(180deg, rgba(232, 242, 248, .62) 0%, rgba(236, 244, 248, .42) 38%, rgba(244, 248, 250, .68) 100%), url("/images/dost bg day.png"); background-size: cover; background-position: center center; transform: scale(1.04); animation: heroFloat 18s ease-in-out infinite alternate; z-index: -3; }
-.hero-section::after { background: radial-gradient(circle at 18% 24%, rgba(0, 174, 239, .1), transparent 26%), radial-gradient(circle at 82% 18%, rgba(255, 255, 255, .28), transparent 22%), linear-gradient(135deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, 0)); backdrop-filter: blur(4px) saturate(108%); -webkit-backdrop-filter: blur(4px) saturate(108%); z-index: -2; }
-[data-bs-theme="dark"] .hero-section::before { background-image: linear-gradient(180deg, rgba(5, 10, 16, .5) 0%, rgba(7, 12, 18, .44) 38%, rgba(4, 7, 12, .62) 100%), url("/images/dost bg night v2.png"); }
-[data-bs-theme="dark"] .hero-section::after { background: radial-gradient(circle at 18% 24%, rgba(0, 174, 239, .12), transparent 28%), radial-gradient(circle at 82% 20%, rgba(10, 33, 56, .26), transparent 26%), linear-gradient(135deg, rgba(5, 13, 22, .16), rgba(0, 0, 0, 0)); backdrop-filter: blur(5px) saturate(110%); -webkit-backdrop-filter: blur(5px) saturate(110%); }
+.hero-section::before {
+    background-image:
+        linear-gradient(105deg, rgba(218, 236, 252, .5) 0%, rgba(215, 235, 251, .24) 38%, rgba(196, 223, 248, .12) 65%, rgba(179, 211, 242, .22) 100%),
+        url("/images/new.png");
+    background-size: cover;
+    background-position: center center;
+    transform: scale(1.05);
+    animation: heroFloat 18s ease-in-out infinite alternate;
+    z-index: -4;
+}
+.hero-section::after {
+    background-image:
+        linear-gradient(100deg, rgba(228, 244, 255, .55) 0%, rgba(217, 237, 252, .4) 44%, rgba(205, 229, 249, .28) 68%, rgba(194, 223, 247, .42) 100%),
+        url("/images/new.png");
+    background-size: cover;
+    background-position: center center;
+    filter: blur(8px) saturate(106%);
+    transform: scale(1.05);
+    z-index: -3;
+    opacity: .62;
+    -webkit-mask-image: radial-gradient(
+        circle var(--hero-reveal-size, 0px) at var(--hero-pointer-x, 50%) var(--hero-pointer-y, 50%),
+        transparent 0%,
+        transparent 58%,
+        rgba(0, 0, 0, 1) 100%
+    );
+    mask-image: radial-gradient(
+        circle var(--hero-reveal-size, 0px) at var(--hero-pointer-x, 50%) var(--hero-pointer-y, 50%),
+        transparent 0%,
+        transparent 58%,
+        rgba(0, 0, 0, 1) 100%
+    );
+    transition: opacity .24s ease;
+}
+[data-bs-theme="dark"] .hero-section::before {
+    background-image:
+        linear-gradient(120deg, rgba(2, 9, 20, .78), rgba(3, 15, 30, .64) 32%, rgba(3, 21, 43, .52) 56%, rgba(2, 9, 20, .76) 100%),
+        url("/images/dost bg night v2.png");
+}
+[data-bs-theme="dark"] .hero-section::after {
+    background-image:
+        linear-gradient(120deg, rgba(2, 9, 20, .82), rgba(3, 15, 30, .72) 32%, rgba(3, 21, 43, .62) 56%, rgba(2, 9, 20, .8) 100%),
+        url("/images/dost bg night v2.png");
+    filter: blur(13px) saturate(110%);
+}
+.hero-section.is-reveal-active::after { opacity: .98; }
+.hero-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(160, 214, 255, .085) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(160, 214, 255, .085) 1px, transparent 1px);
+    background-size: 72px 72px;
+    opacity: .4;
+    z-index: -2;
+    pointer-events: none;
+}
+.hero-streak {
+    position: absolute;
+    width: min(40vw, 34rem);
+    height: 3px;
+    border-radius: 999px;
+    right: 10%;
+    bottom: 26%;
+    background: linear-gradient(90deg, rgba(125, 205, 255, 0), rgba(130, 211, 255, .95), rgba(133, 214, 255, 0));
+    filter: blur(.3px) drop-shadow(0 0 18px rgba(96, 191, 255, .65));
+    animation: heroStreakDrift 6.4s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+.hero-pointer-glow {
+    position: absolute;
+    width: 22rem;
+    height: 22rem;
+    left: var(--hero-pointer-x, 50%);
+    top: var(--hero-pointer-y, 50%);
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(111, 213, 255, .18) 0%, rgba(111, 213, 255, .08) 38%, rgba(111, 213, 255, 0) 74%);
+    mix-blend-mode: screen;
+    filter: blur(6px);
+    z-index: -1;
+    pointer-events: none;
+    transition: left .18s linear, top .18s linear;
+}
 .hero-orb { position: absolute; border-radius: 999px; filter: blur(70px); opacity: .72; animation: orbShift 14s ease-in-out infinite alternate; }
-.orb-left { width: 24rem; height: 24rem; background: rgba(0,174,239,.14); top: 8rem; left: 2rem; }
-.orb-right { width: 34rem; height: 34rem; background: rgba(140,212,241,.18); right: -6rem; bottom: -2rem; animation-duration: 18s; }
+.orb-left { width: 24rem; height: 24rem; background: rgba(25, 157, 255, .16); top: 8rem; left: 2rem; }
+.orb-right { width: 34rem; height: 34rem; background: rgba(112, 193, 255, .16); right: -6rem; bottom: -2rem; animation-duration: 18s; }
 .hero-section .container { position: relative; z-index: 1; }
-.hero-section .container::before { content: ""; position: absolute; inset: -2rem -1.5rem; background: linear-gradient(135deg, rgba(219, 241, 251, .2), rgba(255, 255, 255, .08) 45%, rgba(194, 233, 249, .14)); border: 1px solid rgba(180, 224, 244, .24); border-radius: 2.5rem; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); box-shadow: 0 28px 80px rgba(17, 34, 56, .08); z-index: -1; }
-[data-bs-theme="dark"] .hero-section .container::before { background: linear-gradient(135deg, rgba(19, 46, 70, .28), rgba(7, 12, 18, .12) 50%, rgba(0, 174, 239, .12)); border-color: rgba(255, 255, 255, .05); box-shadow: 0 28px 80px rgba(0, 0, 0, .28); }
-[data-bs-theme="light"] .hero-section::after { backdrop-filter: blur(1px) saturate(102%); -webkit-backdrop-filter: blur(1px) saturate(102%); }
-[data-bs-theme="light"] .hero-section .container::before { backdrop-filter: blur(.75px); -webkit-backdrop-filter: blur(.75px); }
+.hero-content-shell {
+    position: relative;
+    isolation: isolate;
+    max-width: 43rem;
+    margin: 0;
+    padding: 1.65rem 0 1.3rem;
+    border-radius: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: border-color .28s ease, box-shadow .28s ease, transform .28s ease;
+}
+.hero-content-shell.is-hovered {
+    transform: translateY(-1px);
+}
+[data-bs-theme="dark"] .hero-content-shell {
+    background: transparent;
+    box-shadow: none;
+}
 .hero-section .eyebrow,
 .hero-section .hero-copy,
 .hero-section .d-flex {
@@ -22,13 +119,231 @@
     transform: translate3d(0, calc(var(--scene-progress) * -34px), 0) scale(calc(1 - (var(--scene-progress) * .035)));
     opacity: calc(1 - (var(--scene-progress) * .24));
 }
-.hero-pill { display: inline-flex; align-items: center; justify-content: center; padding: .6rem 1.5rem; border-radius: 999px; background: rgba(0, 174, 239, .1); border: 1px solid rgba(0, 174, 239, .24); }
-.hero-title { letter-spacing: -.06em; margin: 1rem 0 1.5rem; color: #173a68; }
-.text-muted-hero { color: #111; }
-[data-bs-theme="dark"] .text-muted-hero { color: rgba(255,255,255,.36); }
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .62rem 1.28rem;
+    border-radius: 999px;
+    background: rgba(96, 191, 255, .15);
+    border: 1px solid rgba(128, 211, 255, .36);
+    color: rgba(16, 78, 137, .92);
+    font-size: .76rem;
+    letter-spacing: .26em;
+}
+.hero-title {
+    letter-spacing: -.05em;
+    margin: 1rem 0 1.05rem;
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: .88;
+    color: #204a86;
+    text-shadow: 0 10px 24px rgba(130, 183, 232, .3);
+    position: relative;
+    display: inline-block;
+}
+.hero-title::after {
+    content: "";
+    position: absolute;
+    inset: -6% -5%;
+    border-radius: 1rem;
+    background: linear-gradient(110deg, rgba(255,255,255,0) 20%, rgba(163, 228, 255, .24) 50%, rgba(255,255,255,0) 80%);
+    transform: translateX(-72%);
+    animation: heroTitleSweep 7.8s ease-in-out infinite;
+    pointer-events: none;
+}
+.text-muted-hero {
+    color: #1a69b2;
+    text-shadow: none;
+}
+.hero-copy {
+    max-width: 36rem;
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: rgba(26, 49, 79, .82);
+    text-shadow: 0 2px 12px rgba(236, 247, 255, .5);
+    margin-bottom: 1.8rem;
+}
+[data-bs-theme="dark"] .hero-title {
+    color: #f2f8ff;
+    text-shadow: 0 8px 24px rgba(0, 0, 0, .34);
+}
+[data-bs-theme="dark"] .text-muted-hero {
+    color: #74d6ff;
+}
+.hero-cta {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(131, 205, 255, .44);
+    box-shadow: 0 14px 30px rgba(20, 62, 110, .24), 0 0 22px rgba(82, 180, 255, .22);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.hero-cta::after {
+    content: "";
+    position: absolute;
+    width: 8rem;
+    height: 8rem;
+    left: var(--ripple-x, 50%);
+    top: var(--ripple-y, 50%);
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255,255,255,.48) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    transition: transform .35s ease, opacity .35s ease;
+    pointer-events: none;
+}
+.hero-cta:hover,
+.hero-cta:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(157, 220, 255, .65);
+    box-shadow: 0 18px 38px rgba(20, 62, 110, .3), 0 0 30px rgba(111, 213, 255, .34);
+}
+.hero-cta:hover::after,
+.hero-cta:focus-visible::after {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+.hero-cta-secondary {
+    background: linear-gradient(145deg, rgba(18, 44, 88, .96), rgba(21, 66, 128, .92)) !important;
+    border-color: rgba(127, 199, 255, .46);
+}
+.hero-cta i {
+    display: inline-block;
+    margin-left: .25rem;
+    transform: translateX(0);
+    transition: transform .2s ease;
+}
+.hero-cta:hover i,
+.hero-cta:focus-visible i {
+    transform: translateX(3px);
+}
+[data-bs-theme="dark"] .hero-copy {
+    color: rgba(226, 242, 255, .84);
+}
 
-.about-section { --about-top-offset: 6.75rem; position: relative; overflow: clip; background: linear-gradient(180deg, #eef7fb 0%, #e7f2f8 52%, #f4f9fc 100%); color: var(--text-main); }
+.interactive-cursor-orb {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 2.9rem;
+    height: 2.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(145, 220, 255, .72);
+    background: radial-gradient(circle, rgba(111, 213, 255, .45) 0%, rgba(111, 213, 255, .08) 62%, rgba(111, 213, 255, 0) 100%);
+    box-shadow: 0 0 22px rgba(111, 213, 255, .54);
+    pointer-events: none;
+    z-index: 1100;
+    transform: translate3d(-50%, -50%, 0);
+    mix-blend-mode: screen;
+    opacity: .88;
+}
+.interactive-cursor-core {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: .68rem;
+    height: .68rem;
+    border-radius: 999px;
+    background: #b5edff;
+    box-shadow: 0 0 14px rgba(171, 233, 255, .95);
+    pointer-events: none;
+    z-index: 1101;
+    transform: translate3d(-50%, -50%, 0);
+}
+.interactive-cursor-particle {
+    position: fixed;
+    width: .38rem;
+    height: .38rem;
+    border-radius: 999px;
+    background: rgba(165, 230, 255, .9);
+    box-shadow: 0 0 10px rgba(165, 230, 255, .88);
+    pointer-events: none;
+    z-index: 1099;
+    transform: translate(-50%, -50%);
+    animation: cursorParticleFade .6s ease-out forwards;
+}
+[data-magnetic] {
+    transition: transform .22s cubic-bezier(.22,.61,.36,1), box-shadow .22s ease, filter .22s ease;
+    will-change: transform;
+}
+[data-magnetic].is-magnetic-active {
+    filter: brightness(1.02);
+}
+
+@media (hover: none), (pointer: coarse) {
+    .hero-section::after {
+        -webkit-mask-image: none;
+        mask-image: none;
+        filter: blur(5px) saturate(104%);
+        opacity: .35;
+        transform: scale(1.03);
+    }
+    .interactive-cursor-orb,
+    .interactive-cursor-core,
+    .interactive-cursor-particle,
+    .hero-pointer-glow {
+        display: none !important;
+    }
+}
+
+@keyframes cursorParticleFade {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(.2);
+    }
+}
+
+@keyframes heroStreakDrift {
+    from {
+        transform: translate3d(0, 0, 0) rotate(-1deg);
+        opacity: .5;
+    }
+    to {
+        transform: translate3d(22px, -10px, 0) rotate(1deg);
+        opacity: .9;
+    }
+}
+@keyframes heroTitleSweep {
+    0% {
+        transform: translateX(-72%);
+        opacity: .2;
+    }
+    38% {
+        opacity: .9;
+    }
+    58% {
+        transform: translateX(76%);
+        opacity: .12;
+    }
+    100% {
+        transform: translateX(76%);
+        opacity: .12;
+    }
+}
+
+.about-section {
+    --about-top-offset: 6.75rem;
+    position: relative;
+    overflow: clip;
+    background:
+        radial-gradient(circle at 12% 10%, rgba(141, 210, 255, .22), transparent 28%),
+        radial-gradient(circle at 88% 14%, rgba(87, 184, 244, .14), transparent 24%),
+        linear-gradient(180deg, #edf7ff 0%, #e4f2fb 52%, #f2f8fd 100%);
+    color: var(--text-main);
+}
+.about-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(115deg, rgba(255,255,255,.24), rgba(255,255,255,0) 40%, rgba(158, 219, 255, .08) 72%, rgba(255,255,255,0));
+    opacity: .9;
+}
 [data-bs-theme="dark"] .about-section { background: #03070b; color: #f8f9fa; }
+[data-bs-theme="dark"] .about-section::before { opacity: .25; }
 .about-grid, .about-glow { position: absolute; inset: 0; pointer-events: none; }
 .about-grid { background-image: linear-gradient(rgba(59, 138, 179, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(59, 138, 179, .06) 1px, transparent 1px); background-size: 72px 72px; opacity: .7; }
 .about-glow { background: radial-gradient(circle at 22% 32%, rgba(0, 174, 239, .16), transparent 30%), radial-gradient(circle at 72% 18%, rgba(0, 174, 239, .06), transparent 24%), linear-gradient(135deg, rgba(255,255,255,.42), rgba(255,255,255,0)); filter: blur(12px); animation: aboutGlowMove 10s ease-in-out infinite alternate; }
@@ -60,6 +375,25 @@
 .about-scroll-arrow-stack span { width: 1rem; height: 1rem; display: block; border-right: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(45deg); animation: aboutScrollBounce 1.6s ease-in-out infinite; }
 .about-scroll-arrow-stack span:nth-child(2) { animation-delay: .12s; opacity: .7; }
 .about-scroll-arrow-stack span:nth-child(3) { animation-delay: .24s; opacity: .45; }
+.about-section .about-hero-copy,
+.about-section .about-scroll-cue,
+.about-section .about-card {
+    opacity: calc(.24 + (var(--scene-enter, 0) * .76));
+    transform: translate3d(0, calc((1 - var(--scene-enter, 0)) * 46px), 0);
+    transition: opacity .35s ease, transform .35s ease;
+}
+.about-section .about-scroll-cue {
+    transform: translate3d(0, calc((1 - var(--scene-enter, 0)) * 56px), 0);
+}
+.about-section .about-card {
+    transform: translate3d(0, calc((1 - var(--scene-enter, 0)) * 36px), 0) scale(calc(.97 + (var(--scene-enter, 0) * .03)));
+}
+.about-section .about-kicker-wrap,
+.about-section .about-title,
+.about-section .about-copy {
+    filter: blur(calc((1 - var(--scene-enter, 0)) * 2px));
+    transition: filter .35s ease;
+}
 .about-card { position: relative; display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(22rem, .88fr); gap: 1.5rem; width: min(100%, 82rem); margin: 0 auto; padding: 1.65rem; border-radius: 2.15rem; background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(237, 246, 252, .94)); border: 1px solid rgba(101, 190, 235, .16); box-shadow: 0 28px 70px rgba(30, 74, 124, .1), inset 0 1px 0 rgba(255,255,255,.7); backdrop-filter: blur(16px) saturate(116%); -webkit-backdrop-filter: blur(16px) saturate(116%); overflow: hidden; }
 .about-card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 14% 20%, rgba(0, 174, 239, .12), transparent 26%), radial-gradient(circle at 84% 82%, rgba(92, 208, 255, .12), transparent 22%); pointer-events: none; }
 .about-card::after { content: ""; position: absolute; inset: 1px; border-radius: inherit; border: 1px solid rgba(255,255,255,.34); pointer-events: none; opacity: .62; }
@@ -1814,6 +2148,113 @@
     font-weight: 700;
 }
 
+#gates-whats-new {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 16% 16%, rgba(255, 156, 209, .2), transparent 24%),
+        radial-gradient(circle at 82% 14%, rgba(127, 197, 255, .22), transparent 26%),
+        radial-gradient(circle at 68% 78%, rgba(146, 255, 210, .16), transparent 22%),
+        linear-gradient(130deg, #fff3f8 0%, #f3f3ff 24%, #ebf5ff 52%, #ecfff8 74%, #fff7e9 100%);
+}
+
+#gates-whats-new::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(rgba(122, 162, 215, .07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(122, 162, 215, .07) 1px, transparent 1px);
+    background-size: 84px 84px;
+    opacity: .32;
+}
+
+.gates-whats-new-shell {
+    position: relative;
+    padding: 2.1rem 1.2rem 1.5rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(162, 194, 245, .24);
+    background:
+        radial-gradient(circle at 14% 8%, rgba(255, 188, 224, .18), rgba(255, 188, 224, 0) 34%),
+        radial-gradient(circle at 92% 16%, rgba(135, 220, 255, .18), rgba(135, 220, 255, 0) 36%),
+        linear-gradient(155deg, rgba(255,255,255,.74), rgba(246, 250, 255, .56));
+    box-shadow: 0 24px 56px rgba(62, 84, 142, .14), inset 0 1px 0 rgba(255,255,255,.72);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+}
+
+.gates-whats-new-kicker {
+    color: #2f4aa1;
+}
+
+.gates-whats-new-kicker::before,
+.gates-whats-new-kicker::after {
+    background: linear-gradient(90deg, #ff7ab6, #7b7cff, #34c6ff, #39d89f);
+}
+
+#gates-whats-new .whats-new-header .section-title {
+    color: #213b84;
+}
+
+#gates-whats-new .whats-new-header .split-title-accent {
+    background: linear-gradient(92deg, #ff65ad, #7868ff, #26b8ff, #2ad396);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+#gates-whats-new .whats-new-header .section-copy {
+    color: rgba(33, 59, 132, .72);
+}
+
+.gates-whats-new-marquee {
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.gates-whats-new-track {
+    animation-duration: 32s;
+}
+
+.gates-whats-new-card {
+    border-color: rgba(165, 175, 255, .32);
+    background:
+        linear-gradient(160deg, rgba(255,255,255,.9), rgba(246, 250, 255, .82)),
+        linear-gradient(120deg, rgba(255, 141, 208, .1), rgba(112, 116, 255, .08), rgba(43, 190, 255, .1), rgba(58, 218, 156, .08));
+    box-shadow: 0 18px 42px rgba(55, 79, 145, .14), inset 0 1px 0 rgba(255,255,255,.84);
+}
+
+.gates-whats-new-card::before {
+    background:
+        radial-gradient(circle at 14% 16%, rgba(255, 143, 209, .16), transparent 26%),
+        radial-gradient(circle at 82% 86%, rgba(104, 200, 255, .14), transparent 24%),
+        radial-gradient(circle at 62% 20%, rgba(120, 112, 255, .12), transparent 22%);
+}
+
+.gates-whats-new-card:hover {
+    border-color: rgba(126, 162, 255, .52);
+    box-shadow: 0 24px 54px rgba(68, 91, 158, .2), 0 0 24px rgba(117, 166, 255, .24);
+}
+
+.gates-whats-new-card-type {
+    color: #3d4cb0;
+    background: linear-gradient(90deg, rgba(255, 169, 220, .34), rgba(135, 180, 255, .28), rgba(112, 236, 203, .3));
+    border-color: rgba(126, 176, 255, .34);
+}
+
+#gates-whats-new .whats-new-card h3 {
+    color: #1f356f;
+}
+
+#gates-whats-new .whats-new-card-meta {
+    color: rgba(31, 53, 111, .62);
+}
+
+#gates-whats-new .whats-new-card-link {
+    color: #3d4cb0;
+}
+
 #contact {
     position: relative;
     overflow: hidden;
@@ -2114,30 +2555,57 @@
     position: relative;
     overflow: hidden;
     background:
-        radial-gradient(circle at 10% 22%, rgba(0, 174, 239, .1), transparent 20%),
-        radial-gradient(circle at 90% 18%, rgba(17, 136, 239, .08), transparent 18%),
-        linear-gradient(180deg, #dff1fd 0%, #edf7fe 100%);
+        radial-gradient(circle at 18% 10%, rgba(255, 255, 255, .14), transparent 22%),
+        radial-gradient(circle at 84% 14%, rgba(125, 197, 255, .14), transparent 18%),
+        linear-gradient(155deg, #083a78 0%, #0a4f98 28%, #156ebf 58%, #3aa5ec 100%);
+    color: #fff;
 }
 [data-bs-theme="dark"] .pes-action-section {
     background:
-        radial-gradient(circle at 16% 22%, rgba(0, 174, 239, .16), transparent 20%),
-        radial-gradient(circle at 84% 16%, rgba(17, 136, 239, .12), transparent 18%),
-        linear-gradient(180deg, #060b11 0%, #09111a 100%);
+        radial-gradient(circle at 16% 18%, rgba(0, 174, 239, .28), transparent 24%),
+        radial-gradient(circle at 84% 18%, rgba(46, 121, 225, .2), transparent 20%),
+        linear-gradient(155deg, #021026 0%, #07355f 35%, #0d6393 70%, #0a4a74 100%);
 }
 .pes-action-section::before {
     content: "";
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(46, 140, 194, .08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(46, 140, 194, .08) 1px, transparent 1px);
-    background-size: 76px 76px;
-    opacity: .5;
+        radial-gradient(circle at 20% 25%, rgba(255, 255, 255, .38), transparent 18%),
+        radial-gradient(circle at 68% 22%, rgba(255, 255, 255, .18), transparent 14%),
+        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, .20), transparent 20%);
+    filter: blur(26px);
+    opacity: .72;
+    pointer-events: none;
+}
+.pes-action-section::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(160deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, 0) 52%),
+        linear-gradient(90deg, rgba(255, 255, 255, .08) 1px, transparent 1px);
+    background-size: 100% 100%, 84px 84px;
+    opacity: .44;
     pointer-events: none;
 }
 .pes-action-section .container {
     position: relative;
     z-index: 1;
+}
+.pes-action-section .section-title {
+    color: #ffffff;
+    text-shadow: 0 10px 24px rgba(5, 23, 53, .22);
+}
+.pes-action-section .section-title .split-title-accent {
+    color: #a9d9ff;
+}
+.pes-action-section .section-copy {
+    color: #0e315d;
+    font-weight: 500;
+}
+.pes-action-section .pes-action-kicker {
+    color: #d7ecff;
 }
 .pes-action-heading {
     margin-bottom: 1.5rem;
@@ -4321,7 +4789,7 @@
     padding: 7rem 0 2.4rem;
     background:
         radial-gradient(circle at 84% 22%, rgba(80, 194, 255, .18), transparent 18%),
-        linear-gradient(90deg, #071c31 0%, #0b3152 52%, #0e6fb7 100%);
+        linear-gradient(90deg, #0b2b4c 0%, #0f4b79 52%, #1188ef 100%);
     color: #fff;
 }
 .dx-program-page-hero::before {
@@ -4329,10 +4797,10 @@
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(rgba(111, 177, 223, .08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(111, 177, 223, .08) 1px, transparent 1px);
-    background-size: 74px 74px;
-    opacity: .2;
+        linear-gradient(rgba(255, 255, 255, .14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .10) 1px, transparent 1px);
+    background-size: 90px 90px;
+    opacity: .22;
     pointer-events: none;
 }
 .dx-program-page-hero-panel {
@@ -5101,4 +5569,2346 @@
 [data-bs-theme="dark"] .gates-page-item-ext {
     background: rgba(255,255,255,.08);
     color: rgba(255,255,255,.72);
+}
+
+.repository-page-shell {
+    position: relative;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 12% 16%, rgba(255,255,255,.96), rgba(255,255,255,0) 26%),
+        radial-gradient(circle at 90% 14%, rgba(121, 221, 255, .16), rgba(121, 221, 255, 0) 24%),
+        linear-gradient(180deg, #eff5fd 0%, #f7faff 45%, #eef4fb 100%);
+}
+
+.repository-page-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: min(34rem, 56vh);
+    background:
+        radial-gradient(circle at 24% 34%, rgba(255,255,255,.74), rgba(255,255,255,0) 32%),
+        radial-gradient(circle at 88% 18%, rgba(162, 229, 255, .34), rgba(162, 229, 255, 0) 24%),
+        linear-gradient(115deg, rgba(23, 88, 156, .94) 0%, rgba(48, 142, 220, .9) 48%, rgba(97, 195, 255, .86) 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.repository-page-hero,
+.repository-page-content {
+    position: relative;
+    z-index: 1;
+}
+
+.repository-page-hero {
+    overflow: hidden;
+    padding: 8.25rem 0 7rem;
+}
+
+.repository-page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 78% 18%, rgba(255,255,255,.18), rgba(255,255,255,0) 20%),
+        linear-gradient(125deg, rgba(255,255,255,.14), rgba(255,255,255,0) 42%);
+    pointer-events: none;
+}
+
+.repository-page-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 78% 16%, rgba(255,255,255,.18) 1.2px, rgba(255,255,255,0) 1.2px),
+        radial-gradient(circle at 74% 12%, rgba(255,255,255,.12) 1px, rgba(255,255,255,0) 1px),
+        linear-gradient(130deg, rgba(255,255,255,.24), rgba(255,255,255,0) 32%),
+        linear-gradient(160deg, rgba(147, 230, 255, .28), rgba(147, 230, 255, 0) 44%);
+    background-size: 8px 8px, 12px 12px, 100% 100%, 100% 100%;
+    background-position: 76% 10%, 82% 10%, 0 0, 0 0;
+    opacity: .5;
+    pointer-events: none;
+}
+
+.repository-page-back {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    margin-bottom: 1.7rem;
+    padding: .86rem 1.45rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(38, 135, 226, .28), rgba(84, 190, 255, .16));
+    border: 1px solid rgba(202, 234, 255, .55);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 18px 34px rgba(4, 30, 61, .16);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.repository-page-back:hover {
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.repository-page-kicker {
+    display: block;
+    margin-bottom: .95rem;
+    color: #e9f5ff;
+    font-size: .84rem;
+    font-weight: 800;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+}
+
+.repository-page-title {
+    margin: 0 0 .65rem;
+    color: #071b69;
+    font-size: clamp(3.5rem, 8vw, 5.85rem);
+    line-height: .9;
+    letter-spacing: -.07em;
+    font-weight: 900;
+    text-shadow: 0 10px 28px rgba(255,255,255,.14);
+}
+
+.portal-page-resources .repository-page-title,
+.portal-page-gates .repository-page-title,
+.portal-page-dx .repository-page-title {
+    color: #071b69;
+}
+
+.portal-page-resources .repository-page-kicker,
+.portal-page-gates .repository-page-kicker,
+.portal-page-dx .repository-page-kicker {
+    color: #eef7ff;
+}
+
+.repository-page-count {
+    color: rgba(13, 43, 86, .84);
+    font-size: 1.08rem;
+    font-weight: 500;
+}
+
+.repository-page-description {
+    max-width: 42rem;
+    margin-top: 1.3rem;
+    color: rgba(18, 52, 96, .82);
+    font-size: 1.08rem;
+    line-height: 1.7;
+}
+
+.repository-page-content {
+    padding: 0 0 4.75rem;
+}
+
+.repository-page-toolbar-card {
+    margin-top: -3.7rem;
+    padding: 1.1rem 1.2rem 1.3rem;
+    border-radius: 2rem;
+    background:
+        linear-gradient(180deg, rgba(241, 248, 255, .78), rgba(220, 236, 250, .86)),
+        radial-gradient(circle at top right, rgba(115, 215, 255, .16), rgba(115, 215, 255, 0) 24%);
+    border: 1px solid rgba(255,255,255,.72);
+    box-shadow:
+        0 26px 56px rgba(29, 64, 110, .14),
+        inset 0 1px 0 rgba(255,255,255,.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.repository-page-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.repository-page-search-wrap {
+    position: relative;
+    min-width: 0;
+}
+
+.repository-page-search-wrap i {
+    position: absolute;
+    top: 50%;
+    left: 1.2rem;
+    transform: translateY(-50%);
+    color: rgba(78, 103, 142, .82);
+    font-size: 1.35rem;
+}
+
+.repository-page-search {
+    min-height: 3.75rem;
+    padding-left: 3.2rem !important;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(245, 249, 255, .96));
+    border: 1px solid rgba(214, 228, 244, .96);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.95);
+    color: #49648c;
+    font-size: 1rem;
+}
+
+.repository-page-search::placeholder {
+    color: rgba(73, 100, 140, .88);
+}
+
+.repository-page-year-wrap {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    color: #4a6692;
+    font-weight: 600;
+}
+
+.repository-page-year-wrap label {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+.repository-page-year {
+    min-width: 16rem;
+    min-height: 3.75rem;
+    padding-inline: 1.25rem 2.9rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(245, 249, 255, .96));
+    border: 1px solid rgba(214, 228, 244, .96);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.95);
+    color: #1a2851;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.repository-page-status {
+    margin-top: .85rem;
+    padding-inline: .55rem;
+    color: rgba(74, 102, 146, .86);
+    font-size: 1rem;
+}
+
+.repository-page-status strong {
+    color: #2b4f89;
+    font-size: 1.15rem;
+}
+
+.repository-page-results {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: 1.45rem;
+}
+
+.repository-page-item,
+.repository-page-empty {
+    position: relative;
+    padding: 1.4rem 1.55rem;
+    border-radius: 1.9rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(251, 253, 255, .98)),
+        radial-gradient(circle at top right, rgba(105, 212, 255, .08), rgba(105, 212, 255, 0) 24%);
+    border: 1px solid rgba(228, 237, 248, .96);
+    box-shadow:
+        0 18px 42px rgba(27, 63, 107, .08),
+        inset 0 1px 0 rgba(255,255,255,.92);
+}
+
+.repository-page-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    min-height: 9.75rem;
+}
+
+.repository-page-item-main {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.repository-page-item-top {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: .9rem;
+}
+
+.repository-page-item-ext {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.35rem;
+    padding: .45rem .95rem;
+    border-radius: 999px;
+    background: #edf1f7;
+    color: #5e6881;
+    font-size: .96rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+}
+
+.repository-page-item h2 {
+    margin: 0 0 .55rem;
+    color: #18275b;
+    font-size: clamp(1.75rem, 2.5vw, 2.15rem);
+    line-height: 1.08;
+    letter-spacing: -.045em;
+    font-weight: 800;
+}
+
+.repository-page-item p {
+    margin: 0;
+    color: #4a6692;
+    font-size: 1.02rem;
+    line-height: 1.7;
+}
+
+.repository-page-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.15rem;
+    margin-top: 1rem;
+    color: #5f6f8c;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.repository-page-item-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .9rem;
+    flex-shrink: 0;
+}
+
+.repository-page-item-actions .btn {
+    min-width: 9.2rem;
+    min-height: 3.25rem;
+    padding-inline: 1.4rem !important;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-width: 1.5px;
+}
+
+.repository-page-item-actions .btn-outline-dark {
+    border-color: rgba(136, 153, 187, .72);
+    color: #233668;
+    background: rgba(255,255,255,.72);
+}
+
+.repository-page-item-actions .btn-outline-dark:hover {
+    border-color: #2b61b8;
+    color: #173d81;
+    background: rgba(248, 252, 255, .98);
+}
+
+.repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, #1f8cff, #2a67df);
+    border-color: transparent;
+    box-shadow: 0 14px 26px rgba(39, 123, 235, .2);
+}
+
+.repository-page-item-actions .btn-accent:hover {
+    background: linear-gradient(135deg, #1b7cf3, #2359c7);
+}
+
+.portal-page-resources .repository-page-item .badge-soft,
+.portal-page-gates .repository-page-item .badge-soft,
+.portal-page-dx .repository-page-item .badge-soft {
+    background: rgba(33, 150, 255, .12);
+    color: #1580de;
+}
+
+.repository-page-empty {
+    text-align: center;
+}
+
+.repository-page-empty h3 {
+    margin: .95rem 0 .55rem;
+    color: #1c2b5c;
+    font-size: 1.65rem;
+    font-weight: 800;
+}
+
+.repository-page-empty p {
+    margin: 0;
+    color: #4f6a92;
+}
+
+.repository-page-empty-icon {
+    width: 4.25rem;
+    height: 4.25rem;
+    margin: 0 auto;
+    border-radius: 1.35rem;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, rgba(28, 140, 236, .14), rgba(88, 198, 255, .18));
+    color: #2b63bb;
+    font-size: 1.5rem;
+}
+
+.repository-page-summary-card {
+    padding: 1.55rem;
+    border-radius: 1.7rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)),
+        radial-gradient(circle at top right, rgba(165, 225, 255, .24), rgba(165, 225, 255, 0) 32%);
+    border: 1px solid rgba(194, 231, 255, .32);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 22px 40px rgba(3, 24, 53, .14);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.portal-page-dx .repository-page-summary-card .dx-program-page-summary-label {
+    color: rgba(34, 72, 118, .72);
+}
+
+.portal-page-dx .repository-page-summary-card .dx-program-page-summary-value {
+    color: #163164;
+}
+
+.portal-page-dx .repository-page-summary-card .dx-program-page-summary-copy {
+    color: rgba(35, 66, 108, .82);
+}
+
+.portal-page-gates .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 24% 34%, rgba(255,255,255,.7), rgba(255,255,255,0) 32%),
+        radial-gradient(circle at 88% 18%, rgba(170, 235, 255, .34), rgba(170, 235, 255, 0) 24%),
+        linear-gradient(115deg, rgba(18, 79, 145, .95) 0%, rgba(38, 132, 210, .9) 42%, rgba(88, 192, 255, .88) 100%);
+}
+
+.portal-page-dx .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 24% 34%, rgba(255,255,255,.7), rgba(255,255,255,0) 32%),
+        radial-gradient(circle at 88% 18%, rgba(170, 235, 255, .34), rgba(170, 235, 255, 0) 24%),
+        linear-gradient(115deg, rgba(17, 82, 152, .95) 0%, rgba(34, 136, 215, .9) 44%, rgba(94, 201, 255, .88) 100%);
+}
+
+body.portal-page-resources .repository-page-shell,
+body.portal-page-gates .repository-page-shell,
+body.portal-page-dx .repository-page-shell {
+    --repo-accent: #1f6fe5;
+    --repo-accent-soft: #74dcff;
+    --repo-ink: #12244f;
+    --repo-copy: #51688f;
+    --repo-line: rgba(25, 56, 104, .1);
+    --repo-surface: rgba(255, 255, 255, .9);
+    --repo-shadow: 0 24px 80px rgba(16, 43, 84, .12);
+    background:
+        radial-gradient(circle at 10% 10%, rgba(255,255,255,.96), rgba(255,255,255,0) 24%),
+        linear-gradient(180deg, #f7fbff 0%, #eef5fb 100%);
+}
+
+body.portal-page-gates .repository-page-shell {
+    --repo-accent: #1c78d8;
+    --repo-accent-soft: #ffd36d;
+    --repo-theme-text: #f4fbff;
+    --repo-theme-kicker: rgba(232, 247, 255, .9);
+    --repo-theme-meta: rgba(230, 242, 255, .82);
+    --repo-card-title: #143a69;
+    --repo-card-copy: #557198;
+    --repo-card-meta: rgba(82, 104, 136, .92);
+}
+
+body.portal-page-dx .repository-page-shell {
+    --repo-accent: #1766f2;
+    --repo-accent-soft: #7de3ff;
+    --repo-theme-text: #f3faff;
+    --repo-theme-kicker: rgba(229, 245, 255, .9);
+    --repo-theme-meta: rgba(225, 240, 255, .82);
+    --repo-card-title: #123f7d;
+    --repo-card-copy: #4f6d98;
+    --repo-card-meta: rgba(77, 100, 136, .92);
+}
+
+body.portal-page-resources .repository-page-shell {
+    --repo-theme-text: #f7fbff;
+    --repo-theme-kicker: rgba(238, 247, 255, .86);
+    --repo-theme-meta: rgba(236, 244, 255, .84);
+    --repo-card-title: #12244f;
+    --repo-card-copy: #51688f;
+    --repo-card-meta: rgba(84, 102, 131, .92);
+}
+
+body.portal-page-resources .repository-page-shell::before,
+body.portal-page-gates .repository-page-shell::before,
+body.portal-page-dx .repository-page-shell::before {
+    inset: 0;
+    height: 28rem;
+    background:
+        radial-gradient(circle at 16% 16%, rgba(255,255,255,.52), rgba(255,255,255,0) 26%),
+        radial-gradient(circle at 84% 12%, rgba(151, 222, 255, .18), rgba(151, 222, 255, 0) 18%),
+        linear-gradient(180deg, rgba(232, 244, 255, .98) 0%, rgba(204, 229, 252, .95) 52%, rgba(244, 249, 255, .82) 100%);
+}
+
+body.portal-page-gates .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 16% 16%, rgba(255,255,255,.5), rgba(255,255,255,0) 26%),
+        radial-gradient(circle at 84% 12%, rgba(255, 214, 131, .12), rgba(255, 214, 131, 0) 16%),
+        linear-gradient(180deg, rgba(231, 244, 255, .98) 0%, rgba(202, 229, 251, .95) 48%, rgba(240, 250, 248, .84) 100%);
+}
+
+body.portal-page-dx .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 16% 16%, rgba(255,255,255,.5), rgba(255,255,255,0) 26%),
+        radial-gradient(circle at 84% 12%, rgba(150, 226, 255, .16), rgba(150, 226, 255, 0) 16%),
+        linear-gradient(180deg, rgba(231, 243, 255, .98) 0%, rgba(201, 226, 253, .95) 52%, rgba(241, 248, 255, .84) 100%);
+}
+
+body.portal-page-resources .repository-page-shell::after,
+body.portal-page-gates .repository-page-shell::after,
+body.portal-page-dx .repository-page-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 78% 11%, rgba(127, 187, 236, .18) 1.2px, rgba(127, 187, 236, 0) 1.2px),
+        linear-gradient(145deg, rgba(255,255,255,.22), rgba(255,255,255,0) 32%),
+        linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.12) 46%, rgba(246, 250, 255, .96) 100%);
+    background-size: 9px 9px, 100% 100%, 100% 100%;
+    background-position: 78% 10%, 0 0, 0 0;
+    opacity: .72;
+    z-index: 0;
+}
+
+body.portal-page-resources .repository-page-hero,
+body.portal-page-gates .repository-page-hero,
+body.portal-page-dx .repository-page-hero {
+    padding: 8rem 0 2rem;
+}
+
+body.portal-page-resources .repository-page-hero::before,
+body.portal-page-resources .repository-page-hero::after,
+body.portal-page-gates .repository-page-hero::before,
+body.portal-page-gates .repository-page-hero::after,
+body.portal-page-dx .repository-page-hero::before,
+body.portal-page-dx .repository-page-hero::after {
+    display: none;
+}
+
+body.portal-page-resources .repository-page-hero .container,
+body.portal-page-gates .repository-page-hero .container,
+body.portal-page-dx .repository-page-hero .container {
+    position: relative;
+    padding: 2rem 2.2rem 2.4rem;
+    border-radius: 2rem;
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.05)),
+        radial-gradient(circle at 85% 0%, rgba(255,255,255,.26), rgba(255,255,255,0) 28%);
+    border: 1px solid rgba(255,255,255,.2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
+    overflow: hidden;
+}
+
+body.portal-page-resources .repository-page-hero .container::before,
+body.portal-page-gates .repository-page-hero .container::before,
+body.portal-page-dx .repository-page-hero .container::before {
+    content: "";
+    position: absolute;
+    inset: auto -8% -22% 46%;
+    height: 120%;
+    border-radius: 50%;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0)),
+        radial-gradient(circle at 50% 50%, rgba(120, 226, 255, .28), rgba(120, 226, 255, 0) 62%);
+    transform: rotate(-12deg);
+    pointer-events: none;
+}
+
+body.portal-page-resources .repository-page-hero .container::after,
+body.portal-page-gates .repository-page-hero .container::after,
+body.portal-page-dx .repository-page-hero .container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(130deg, rgba(255,255,255,.16), rgba(255,255,255,0) 24%),
+        radial-gradient(circle at 72% 18%, rgba(255,255,255,.15) 1.2px, rgba(255,255,255,0) 1.2px);
+    background-size: 100% 100%, 10px 10px;
+    background-position: 0 0, 76% 12%;
+    opacity: .55;
+    pointer-events: none;
+}
+
+body.portal-page-resources .repository-page-back,
+body.portal-page-gates .repository-page-back,
+body.portal-page-dx .repository-page-back {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.9rem;
+    padding: .88rem 1.35rem;
+    background: rgba(255,255,255,.12);
+    border-color: rgba(255,255,255,.28);
+    box-shadow: none;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.portal-page-resources .repository-page-kicker,
+body.portal-page-gates .repository-page-kicker,
+body.portal-page-dx .repository-page-kicker,
+body.portal-page-resources .repository-page-title,
+body.portal-page-gates .repository-page-title,
+body.portal-page-dx .repository-page-title,
+body.portal-page-resources .repository-page-count,
+body.portal-page-gates .repository-page-count,
+body.portal-page-dx .repository-page-count,
+body.portal-page-resources .repository-page-description,
+body.portal-page-gates .repository-page-description,
+body.portal-page-dx .repository-page-description {
+    position: relative;
+    z-index: 1;
+}
+
+body.portal-page-resources .repository-page-kicker,
+body.portal-page-gates .repository-page-kicker,
+body.portal-page-dx .repository-page-kicker {
+    color: rgba(238, 247, 255, .86);
+    margin-bottom: .65rem;
+}
+
+body.portal-page-resources .repository-page-title,
+body.portal-page-gates .repository-page-title,
+body.portal-page-dx .repository-page-title {
+    max-width: 11ch;
+    color: #f9fcff;
+    font-family: "Cormorant Garamond", serif;
+    font-size: clamp(3.8rem, 7vw, 6.3rem);
+    font-weight: 700;
+    line-height: .9;
+    letter-spacing: -.05em;
+    text-shadow: 0 14px 34px rgba(11, 28, 58, .22);
+}
+
+body.portal-page-resources .repository-page-count,
+body.portal-page-gates .repository-page-count,
+body.portal-page-dx .repository-page-count {
+    color: rgba(236, 244, 255, .84);
+    font-size: 1.08rem;
+}
+
+body.portal-page-resources .repository-page-description,
+body.portal-page-gates .repository-page-description,
+body.portal-page-dx .repository-page-description {
+    color: rgba(232, 241, 255, .84);
+    max-width: 40rem;
+    margin-top: 1rem;
+}
+
+body.portal-page-resources .repository-page-content,
+body.portal-page-gates .repository-page-content,
+body.portal-page-dx .repository-page-content {
+    padding: 1.5rem 0 4.5rem;
+}
+
+body.portal-page-resources .repository-page-toolbar-card,
+body.portal-page-gates .repository-page-toolbar-card,
+body.portal-page-dx .repository-page-toolbar-card {
+    margin-top: 0;
+    padding: 1.45rem;
+    border-radius: 2.1rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(245, 249, 255, .88)),
+        radial-gradient(circle at 100% 0%, rgba(116, 220, 255, .14), rgba(116, 220, 255, 0) 30%);
+    border: 1px solid rgba(255,255,255,.8);
+    box-shadow: var(--repo-shadow);
+}
+
+body.portal-page-resources .repository-page-controls,
+body.portal-page-gates .repository-page-controls,
+body.portal-page-dx .repository-page-controls {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    gap: 1.4rem;
+}
+
+body.portal-page-resources .repository-page-year-wrap,
+body.portal-page-gates .repository-page-year-wrap,
+body.portal-page-dx .repository-page-year-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+body.portal-page-resources .repository-page-year-wrap label,
+body.portal-page-gates .repository-page-year-wrap label,
+body.portal-page-dx .repository-page-year-wrap label {
+    color: var(--repo-copy);
+    font-weight: 700;
+}
+
+body.portal-page-resources .repository-page-search,
+body.portal-page-gates .repository-page-search,
+body.portal-page-dx .repository-page-search,
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-height: 4rem;
+    border-radius: 1.35rem;
+    background: #fff;
+    border-color: rgba(182, 202, 232, .44);
+    box-shadow: 0 10px 24px rgba(21, 55, 101, .06);
+}
+
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-width: 0;
+    width: 100%;
+    border-radius: 999px;
+}
+
+body.portal-page-resources .repository-page-status,
+body.portal-page-gates .repository-page-status,
+body.portal-page-dx .repository-page-status {
+    margin-top: 1rem;
+    padding-inline: .2rem;
+}
+
+body.portal-page-resources .repository-page-results,
+body.portal-page-gates .repository-page-results,
+body.portal-page-dx .repository-page-results {
+    gap: 1.4rem;
+    margin-top: 1.8rem;
+}
+
+body.portal-page-resources .repository-page-item,
+body.portal-page-gates .repository-page-item,
+body.portal-page-dx .repository-page-item {
+    padding: 1.6rem;
+    border-radius: 2rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(251,253,255,.98)),
+        radial-gradient(circle at 110% -10%, rgba(116, 220, 255, .16), rgba(116, 220, 255, 0) 36%);
+    border: 1px solid rgba(206, 223, 244, .68);
+    box-shadow: 0 22px 46px rgba(18, 48, 90, .08);
+    overflow: hidden;
+}
+
+body.portal-page-resources .repository-page-item::before,
+body.portal-page-gates .repository-page-item::before,
+body.portal-page-dx .repository-page-item::before {
+    content: "";
+    position: absolute;
+    inset: 1rem auto 1rem 0;
+    width: 5px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--repo-accent), var(--repo-accent-soft));
+}
+
+body.portal-page-resources .repository-page-item h2,
+body.portal-page-gates .repository-page-item h2,
+body.portal-page-dx .repository-page-item h2 {
+    font-size: clamp(2rem, 2.8vw, 2.6rem);
+    font-family: "Cormorant Garamond", serif;
+    line-height: .95;
+    color: var(--repo-ink);
+}
+
+body.portal-page-resources .repository-page-item p,
+body.portal-page-gates .repository-page-item p,
+body.portal-page-dx .repository-page-item p {
+    color: var(--repo-copy);
+    max-width: 58rem;
+}
+
+body.portal-page-resources .repository-page-item-meta,
+body.portal-page-gates .repository-page-item-meta,
+body.portal-page-dx .repository-page-item-meta {
+    color: rgba(84, 102, 131, .92);
+}
+
+body.portal-page-resources .repository-page-item-ext,
+body.portal-page-gates .repository-page-item-ext,
+body.portal-page-dx .repository-page-item-ext {
+    background: #edf2fa;
+    color: #5f6b83;
+}
+
+body.portal-page-resources .repository-page-item-actions,
+body.portal-page-gates .repository-page-item-actions,
+body.portal-page-dx .repository-page-item-actions {
+    align-self: flex-end;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn,
+body.portal-page-gates .repository-page-item-actions .btn,
+body.portal-page-dx .repository-page-item-actions .btn {
+    min-width: 8.75rem;
+    min-height: 3.15rem;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-outline-dark,
+body.portal-page-gates .repository-page-item-actions .btn-outline-dark,
+body.portal-page-dx .repository-page-item-actions .btn-outline-dark {
+    border-color: rgba(34, 63, 113, .22);
+    background: #fff;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-accent,
+body.portal-page-gates .repository-page-item-actions .btn-accent,
+body.portal-page-dx .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, var(--repo-accent), #2e8fff);
+    box-shadow: 0 16px 28px rgba(35, 107, 210, .18);
+}
+
+body.portal-page-gates .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, #1f82da, #32b7d3);
+}
+
+body.portal-page-dx .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, #2565ef, #20a0ff);
+}
+
+body.portal-page-resources .repository-page-empty,
+body.portal-page-gates .repository-page-empty,
+body.portal-page-dx .repository-page-empty {
+    padding: 2.2rem;
+    background: rgba(255,255,255,.94);
+}
+
+body.portal-page-dx .repository-page-summary-card {
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.08)),
+        radial-gradient(circle at 100% 0%, rgba(126, 225, 255, .22), rgba(126, 225, 255, 0) 28%);
+}
+
+/* Repository pages redesign */
+body.portal-page-resources,
+body.portal-page-gates,
+body.portal-page-dx {
+    --repo-surface: rgba(255, 255, 255, .86);
+    --repo-surface-strong: rgba(255, 255, 255, .96);
+    --repo-line: rgba(143, 177, 214, .28);
+    --repo-shadow-soft: 0 18px 40px rgba(20, 54, 102, .08);
+    --repo-shadow-strong: 0 28px 60px rgba(20, 54, 102, .14);
+    --repo-ink-strong: #0c2850;
+    --repo-ink-muted: #4f6887;
+    --repo-chip: rgba(21, 100, 183, .08);
+    --repo-page-bg:
+        radial-gradient(circle at top left, rgba(174, 219, 255, .58), rgba(174, 219, 255, 0) 32%),
+        radial-gradient(circle at 88% 12%, rgba(87, 198, 255, .22), rgba(87, 198, 255, 0) 28%),
+        linear-gradient(180deg, #f6fbff 0%, #edf4fb 42%, #f9fbfe 100%);
+    background: var(--repo-page-bg);
+}
+
+body.portal-page-resources {
+    --repo-accent: #1870dc;
+    --repo-accent-soft: #65d6ff;
+    --repo-accent-deep: #0d3e88;
+}
+
+body.portal-page-gates {
+    --repo-accent: #1c7ef2;
+    --repo-accent-soft: #51d7d3;
+    --repo-accent-deep: #17376f;
+}
+
+body.portal-page-dx {
+    --repo-accent: #2565ef;
+    --repo-accent-soft: #28b4ff;
+    --repo-accent-deep: #112f73;
+}
+
+body.portal-page-resources .repository-page-shell,
+body.portal-page-gates .repository-page-shell,
+body.portal-page-dx .repository-page-shell {
+    position: relative;
+    overflow: clip;
+    padding-top: 2rem;
+    background: transparent;
+}
+
+body.portal-page-resources .repository-page-shell::before,
+body.portal-page-gates .repository-page-shell::before,
+body.portal-page-dx .repository-page-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 31rem;
+    background:
+        radial-gradient(circle at 8% 18%, rgba(255,255,255,.9), rgba(255,255,255,0) 24%),
+        linear-gradient(130deg, rgba(15, 60, 125, .95) 0%, rgba(24, 112, 220, .92) 46%, rgba(108, 212, 255, .66) 100%);
+    z-index: 0;
+}
+
+body.portal-page-gates .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 8% 18%, rgba(255,255,255,.9), rgba(255,255,255,0) 24%),
+        linear-gradient(120deg, rgba(14, 49, 110, .96) 0%, rgba(24, 119, 228, .92) 40%, rgba(57, 207, 207, .72) 70%, rgba(255, 188, 113, .54) 100%);
+}
+
+body.portal-page-dx .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 12% 14%, rgba(255,255,255,.78), rgba(255,255,255,0) 22%),
+        linear-gradient(135deg, rgba(7, 32, 92, .98) 0%, rgba(34, 86, 204, .94) 42%, rgba(31, 177, 255, .72) 100%);
+}
+
+body.portal-page-resources .repository-page-shell::after,
+body.portal-page-gates .repository-page-shell::after,
+body.portal-page-dx .repository-page-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.15) 22%, transparent 54%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body.portal-page-resources .repository-page-hero,
+body.portal-page-gates .repository-page-hero,
+body.portal-page-dx .repository-page-hero,
+body.portal-page-resources .repository-page-content,
+body.portal-page-gates .repository-page-content,
+body.portal-page-dx .repository-page-content {
+    position: relative;
+    z-index: 1;
+}
+
+body.portal-page-resources .repository-page-hero,
+body.portal-page-gates .repository-page-hero,
+body.portal-page-dx .repository-page-hero {
+    padding: 0 0 1.35rem;
+}
+
+body.portal-page-resources .repository-page-hero .container,
+body.portal-page-gates .repository-page-hero .container,
+body.portal-page-dx .repository-page-hero .container {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 2.15rem 2.25rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(255,255,255,.24);
+    background:
+        linear-gradient(180deg, rgba(6, 32, 82, .26), rgba(13, 52, 116, .12)),
+        linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+    box-shadow: var(--repo-shadow-strong);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+body.portal-page-resources .repository-page-hero .container::before,
+body.portal-page-gates .repository-page-hero .container::before,
+body.portal-page-dx .repository-page-hero .container::before {
+    content: "";
+    position: absolute;
+    width: 24rem;
+    height: 24rem;
+    right: -8rem;
+    top: -9rem;
+    border-radius: 999px;
+    background: radial-gradient(circle, rgba(255,255,255,.32) 0%, rgba(255,255,255,0) 70%);
+    pointer-events: none;
+}
+
+body.portal-page-gates .repository-page-hero .container::after {
+    content: "";
+    position: absolute;
+    inset: auto -5rem -5rem auto;
+    width: 24rem;
+    height: 24rem;
+    border-radius: 999px;
+    background: conic-gradient(from 180deg, rgba(255, 124, 164, .18), rgba(255, 215, 117, .18), rgba(73, 222, 255, .2), rgba(255, 124, 164, .18));
+    filter: blur(10px);
+    pointer-events: none;
+}
+
+body.portal-page-dx .dx-program-page-hero-panel {
+    position: relative;
+    z-index: 1;
+}
+
+body.portal-page-dx .dx-program-page-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, .9fr);
+    gap: 1.4rem;
+    align-items: end;
+}
+
+body.portal-page-resources .repository-page-back,
+body.portal-page-gates .repository-page-back,
+body.portal-page-dx .repository-page-back {
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: 1.55rem;
+    padding: .88rem 1.3rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.28);
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.98);
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2);
+}
+
+body.portal-page-resources .repository-page-back:hover,
+body.portal-page-gates .repository-page-back:hover,
+body.portal-page-dx .repository-page-back:hover {
+    color: #fff;
+    transform: translateY(-1px);
+    background: rgba(255,255,255,.14);
+}
+
+body.portal-page-resources .repository-page-kicker,
+body.portal-page-gates .repository-page-kicker,
+body.portal-page-dx .repository-page-kicker {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: .52rem .9rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    color: rgba(235, 246, 255, .96);
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .24em;
+}
+
+body.portal-page-resources .repository-page-title,
+body.portal-page-gates .repository-page-title,
+body.portal-page-dx .repository-page-title {
+    margin: 0;
+    max-width: 11ch;
+    font-family: "Inter", sans-serif;
+    font-size: clamp(3.5rem, 7vw, 6.2rem);
+    font-weight: 900;
+    line-height: .94;
+    letter-spacing: -.06em;
+    color: #fff;
+    text-shadow: 0 12px 30px rgba(9, 25, 62, .2);
+}
+
+body.portal-page-resources .repository-page-count,
+body.portal-page-gates .repository-page-count,
+body.portal-page-dx .repository-page-count {
+    margin-top: 1rem;
+    color: rgba(233, 245, 255, .96);
+    font-size: 1.02rem;
+    font-weight: 700;
+}
+
+body.portal-page-resources .repository-page-description,
+body.portal-page-gates .repository-page-description,
+body.portal-page-dx .repository-page-description {
+    max-width: 48rem;
+    margin: 1rem 0 0;
+    color: rgba(235, 245, 255, .92);
+    font-size: 1.08rem;
+    line-height: 1.72;
+}
+
+body.portal-page-dx .repository-page-summary-card {
+    padding: 1.35rem;
+    border-radius: 1.6rem;
+    border: 1px solid rgba(255,255,255,.18);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08)),
+        linear-gradient(135deg, rgba(66, 196, 255, .14), rgba(255,255,255,.06));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+    color: #fff;
+}
+
+body.portal-page-dx .repository-page-summary-card .dx-program-page-summary-label {
+    color: rgba(222, 241, 255, .72);
+    font-size: .76rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+}
+
+body.portal-page-dx .repository-page-summary-card .dx-program-page-summary-value {
+    margin-top: .45rem;
+    color: #fff;
+    font-size: 1.55rem;
+    font-weight: 800;
+}
+
+body.portal-page-dx .repository-page-summary-card .dx-program-page-summary-copy {
+    margin-top: .7rem;
+    color: rgba(230, 245, 255, .9);
+    line-height: 1.68;
+}
+
+body.portal-page-resources .repository-page-content,
+body.portal-page-gates .repository-page-content,
+body.portal-page-dx .repository-page-content {
+    padding: .35rem 0 4.5rem;
+}
+
+body.portal-page-resources .repository-page-toolbar-card,
+body.portal-page-gates .repository-page-toolbar-card,
+body.portal-page-dx .repository-page-toolbar-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1.25rem;
+    border-radius: 1.8rem;
+    border: 1px solid rgba(255,255,255,.78);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(248,251,255,.92)),
+        linear-gradient(135deg, rgba(71, 170, 255, .06), rgba(255,255,255,0));
+    box-shadow: var(--repo-shadow-soft);
+}
+
+body.portal-page-resources .repository-page-toolbar-card::before,
+body.portal-page-gates .repository-page-toolbar-card::before,
+body.portal-page-dx .repository-page-toolbar-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: linear-gradient(180deg, var(--repo-accent), var(--repo-accent-soft));
+}
+
+body.portal-page-resources .repository-page-controls,
+body.portal-page-gates .repository-page-controls,
+body.portal-page-dx .repository-page-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(230px, 18rem);
+    gap: 1rem;
+}
+
+body.portal-page-resources .repository-page-search-wrap,
+body.portal-page-gates .repository-page-search-wrap,
+body.portal-page-dx .repository-page-search-wrap {
+    position: relative;
+}
+
+body.portal-page-resources .repository-page-search-wrap i,
+body.portal-page-gates .repository-page-search-wrap i,
+body.portal-page-dx .repository-page-search-wrap i {
+    left: 1.15rem;
+    color: rgba(64, 104, 155, .72);
+}
+
+body.portal-page-resources .repository-page-search,
+body.portal-page-gates .repository-page-search,
+body.portal-page-dx .repository-page-search,
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-height: 3.75rem;
+    padding-inline: 3rem 1.1rem;
+    border-radius: 1.2rem;
+    border: 1px solid rgba(151, 184, 224, .22);
+    background: rgba(255,255,255,.88);
+    color: var(--repo-ink-strong);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+
+body.portal-page-resources .repository-page-year-wrap,
+body.portal-page-gates .repository-page-year-wrap,
+body.portal-page-dx .repository-page-year-wrap {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    padding-left: .2rem;
+}
+
+body.portal-page-resources .repository-page-year-wrap label,
+body.portal-page-gates .repository-page-year-wrap label,
+body.portal-page-dx .repository-page-year-wrap label {
+    margin: 0;
+    color: var(--repo-ink-muted);
+    font-weight: 700;
+}
+
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-width: 0;
+    width: 100%;
+    padding-left: 1rem;
+    border-radius: 999px;
+    background-position: right 1rem center;
+}
+
+body.portal-page-resources .repository-page-status,
+body.portal-page-gates .repository-page-status,
+body.portal-page-dx .repository-page-status {
+    margin-top: .95rem;
+    padding-left: .1rem;
+    color: var(--repo-ink-muted);
+    font-size: 1rem;
+}
+
+body.portal-page-resources .repository-page-status strong,
+body.portal-page-gates .repository-page-status strong,
+body.portal-page-dx .repository-page-status strong {
+    color: var(--repo-accent-deep);
+}
+
+body.portal-page-resources .repository-page-results,
+body.portal-page-gates .repository-page-results,
+body.portal-page-dx .repository-page-results {
+    display: grid;
+    gap: 1.2rem;
+    margin-top: 1.45rem;
+}
+
+body.portal-page-resources .repository-page-item,
+body.portal-page-gates .repository-page-item,
+body.portal-page-dx .repository-page-item,
+body.portal-page-resources .repository-page-empty,
+body.portal-page-gates .repository-page-empty,
+body.portal-page-dx .repository-page-empty {
+    position: relative;
+    overflow: hidden;
+    padding: 1.4rem 1.45rem;
+    border-radius: 1.7rem;
+    border: 1px solid rgba(201, 219, 241, .82);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(251,253,255,.96)),
+        radial-gradient(circle at 100% 0%, rgba(92, 209, 255, .08), rgba(92, 209, 255, 0) 34%);
+    box-shadow: 0 14px 32px rgba(20, 54, 102, .08);
+}
+
+body.portal-page-resources .repository-page-item::before,
+body.portal-page-gates .repository-page-item::before,
+body.portal-page-dx .repository-page-item::before {
+    content: "";
+    position: absolute;
+    inset: 1rem auto 1rem 0;
+    width: 4px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--repo-accent), var(--repo-accent-soft));
+}
+
+body.portal-page-resources .repository-page-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.35rem;
+    align-items: end;
+}
+
+body.portal-page-gates .repository-page-item,
+body.portal-page-dx .repository-page-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.35rem;
+    align-items: end;
+}
+
+body.portal-page-resources .repository-page-item-top,
+body.portal-page-gates .repository-page-item-top,
+body.portal-page-dx .repository-page-item-top {
+    gap: .65rem;
+}
+
+body.portal-page-resources .repository-page-item .badge-soft,
+body.portal-page-gates .repository-page-item .badge-soft,
+body.portal-page-dx .repository-page-item .badge-soft {
+    background: var(--repo-chip);
+    color: var(--repo-accent);
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .17em;
+}
+
+body.portal-page-resources .repository-page-item-ext,
+body.portal-page-gates .repository-page-item-ext,
+body.portal-page-dx .repository-page-item-ext {
+    background: #eef3fb;
+    color: #5f6f87;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+body.portal-page-resources .repository-page-item h2,
+body.portal-page-gates .repository-page-item h2,
+body.portal-page-dx .repository-page-item h2 {
+    margin: .9rem 0 .7rem;
+    font-family: "Inter", sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.15rem);
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--repo-ink-strong);
+    letter-spacing: -.04em;
+}
+
+body.portal-page-resources .repository-page-item p,
+body.portal-page-gates .repository-page-item p,
+body.portal-page-dx .repository-page-item p {
+    margin: 0;
+    max-width: 60rem;
+    color: var(--repo-ink-muted);
+    font-size: 1rem;
+    line-height: 1.72;
+}
+
+body.portal-page-resources .repository-page-item-meta,
+body.portal-page-gates .repository-page-item-meta,
+body.portal-page-dx .repository-page-item-meta {
+    margin-top: 1rem;
+    color: #607694;
+    font-size: .98rem;
+}
+
+body.portal-page-resources .repository-page-item-actions,
+body.portal-page-gates .repository-page-item-actions,
+body.portal-page-dx .repository-page-item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: .75rem;
+    min-width: 16rem;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn,
+body.portal-page-gates .repository-page-item-actions .btn,
+body.portal-page-dx .repository-page-item-actions .btn {
+    min-width: 8.8rem;
+    min-height: 3.15rem;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-outline-dark,
+body.portal-page-gates .repository-page-item-actions .btn-outline-dark,
+body.portal-page-dx .repository-page-item-actions .btn-outline-dark {
+    border-color: rgba(27, 67, 123, .18);
+    background: rgba(255,255,255,.86);
+    color: var(--repo-accent-deep);
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-outline-dark:hover,
+body.portal-page-gates .repository-page-item-actions .btn-outline-dark:hover,
+body.portal-page-dx .repository-page-item-actions .btn-outline-dark:hover {
+    border-color: rgba(27, 67, 123, .34);
+    background: #fff;
+    color: var(--repo-accent-deep);
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-accent,
+body.portal-page-gates .repository-page-item-actions .btn-accent,
+body.portal-page-dx .repository-page-item-actions .btn-accent {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--repo-accent-deep), var(--repo-accent));
+    color: #fff;
+    box-shadow: 0 14px 24px rgba(21, 84, 170, .18);
+}
+
+body.portal-page-gates .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, #14489f, #1f82da 55%, #34c6cb 100%);
+}
+
+body.portal-page-dx .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, #103b97, #2565ef 55%, #20a6ff 100%);
+}
+
+body.portal-page-dx .repository-page-item-action span,
+body.portal-page-dx .repository-page-item-action i {
+    color: var(--repo-accent-deep);
+}
+
+body.portal-page-resources .repository-page-empty,
+body.portal-page-gates .repository-page-empty,
+body.portal-page-dx .repository-page-empty {
+    text-align: center;
+}
+
+body.portal-page-resources .repository-page-empty h3,
+body.portal-page-gates .repository-page-empty h3,
+body.portal-page-dx .repository-page-empty h3 {
+    color: var(--repo-ink-strong);
+}
+
+body.portal-page-resources .repository-page-empty p,
+body.portal-page-gates .repository-page-empty p,
+body.portal-page-dx .repository-page-empty p {
+    color: var(--repo-ink-muted);
+}
+
+/* Repository pages reference-style refinement */
+body.portal-page-resources,
+body.portal-page-gates,
+body.portal-page-dx {
+    --repo-header-top: #0f4eac;
+    --repo-header-mid: #2f90ea;
+    --repo-header-soft: #79d9ff;
+    --repo-page-bottom: #f7fbff;
+    --repo-page-mid: #edf4fc;
+    --repo-card-shadow: 0 22px 48px rgba(30, 72, 128, .12);
+    background:
+        radial-gradient(circle at 12% 20%, rgba(194, 225, 255, .68), rgba(194, 225, 255, 0) 26%),
+        linear-gradient(180deg, #f6fbff 0%, #eef5fd 48%, #f9fbff 100%);
+}
+
+body.portal-page-gates {
+    --repo-header-top: #0a458f;
+    --repo-header-mid: #2583df;
+    --repo-header-soft: #64d4db;
+}
+
+body.portal-page-dx {
+    --repo-header-top: #093a8c;
+    --repo-header-mid: #2565ef;
+    --repo-header-soft: #4cc7ff;
+}
+
+body.portal-page-resources .repository-page-shell,
+body.portal-page-gates .repository-page-shell,
+body.portal-page-dx .repository-page-shell {
+    padding-top: 2.1rem;
+}
+
+body.portal-page-resources .repository-page-shell::before,
+body.portal-page-gates .repository-page-shell::before,
+body.portal-page-dx .repository-page-shell::before {
+    height: 24rem;
+    background:
+        radial-gradient(circle at 76% 20%, rgba(255,255,255,.3), rgba(255,255,255,0) 18%),
+        linear-gradient(135deg, var(--repo-header-top) 0%, var(--repo-header-mid) 58%, var(--repo-header-soft) 100%);
+}
+
+body.portal-page-resources .repository-page-shell::after,
+body.portal-page-gates .repository-page-shell::after,
+body.portal-page-dx .repository-page-shell::after {
+    inset: 0 0 auto;
+    height: 24rem;
+    background:
+        radial-gradient(circle at 96% 18%, rgba(255,255,255,.38) 0 2px, transparent 3px) 0 0 / 10px 10px,
+        linear-gradient(115deg, rgba(255,255,255,.24), rgba(255,255,255,0) 28%) right top / 46% 100% no-repeat;
+    mask: none;
+    opacity: .85;
+}
+
+body.portal-page-resources .repository-page-hero,
+body.portal-page-gates .repository-page-hero,
+body.portal-page-dx .repository-page-hero {
+    padding: 0;
+}
+
+body.portal-page-resources .repository-page-hero .container,
+body.portal-page-gates .repository-page-hero .container,
+body.portal-page-dx .repository-page-hero .container {
+    padding: 1rem 0 1.55rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
+}
+
+body.portal-page-resources .repository-page-hero .container::before,
+body.portal-page-resources .repository-page-hero .container::after,
+body.portal-page-gates .repository-page-hero .container::before,
+body.portal-page-gates .repository-page-hero .container::after,
+body.portal-page-dx .repository-page-hero .container::before,
+body.portal-page-dx .repository-page-hero .container::after {
+    content: none;
+}
+
+body.portal-page-resources .repository-page-hero::before,
+body.portal-page-gates .repository-page-hero::before,
+body.portal-page-dx .repository-page-hero::before {
+    content: "";
+    position: absolute;
+    top: .55rem;
+    right: clamp(1rem, 6vw, 10rem);
+    width: min(42vw, 34rem);
+    height: 13rem;
+    background:
+        linear-gradient(160deg, rgba(255,255,255,.2), rgba(255,255,255,0) 58%),
+        linear-gradient(112deg, rgba(255,255,255,.12), rgba(255,255,255,0) 36%);
+    clip-path: polygon(18% 0, 100% 0, 64% 100%, 0 100%);
+    opacity: .85;
+    pointer-events: none;
+}
+
+body.portal-page-resources .repository-page-hero::after,
+body.portal-page-gates .repository-page-hero::after,
+body.portal-page-dx .repository-page-hero::after {
+    content: "";
+    position: absolute;
+    inset: 2rem 0 auto auto;
+    width: min(40vw, 30rem);
+    height: 12rem;
+    right: clamp(.5rem, 3vw, 4rem);
+    background:
+        linear-gradient(110deg, rgba(185, 239, 255, 0) 0%, rgba(185, 239, 255, .76) 48%, rgba(185, 239, 255, 0) 100%) 100% 32% / 100% 2px no-repeat,
+        linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.48) 48%, rgba(255,255,255,0) 100%) 100% 54% / 100% 1px no-repeat,
+        linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.34) 48%, rgba(255,255,255,0) 100%) 100% 74% / 100% 1px no-repeat;
+    transform: skewX(-18deg);
+    opacity: .9;
+    pointer-events: none;
+}
+
+body.portal-page-resources .repository-page-back,
+body.portal-page-gates .repository-page-back,
+body.portal-page-dx .repository-page-back {
+    margin-bottom: 1.2rem;
+    padding: .78rem 1.28rem;
+    border-color: rgba(255,255,255,.52);
+    background: linear-gradient(180deg, rgba(58, 153, 247, .58), rgba(27, 115, 214, .54));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.34), 0 10px 24px rgba(17, 76, 148, .16);
+}
+
+body.portal-page-resources .repository-page-kicker,
+body.portal-page-gates .repository-page-kicker,
+body.portal-page-dx .repository-page-kicker {
+    margin-bottom: .7rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(242, 249, 255, .92);
+    font-size: .9rem;
+    letter-spacing: .24em;
+}
+
+body.portal-page-resources .repository-page-title,
+body.portal-page-gates .repository-page-title,
+body.portal-page-dx .repository-page-title {
+    max-width: 12ch;
+    font-size: clamp(3.2rem, 6vw, 4.9rem);
+    color: #061e5d;
+    text-shadow: none;
+}
+
+body.portal-page-resources .repository-page-count,
+body.portal-page-gates .repository-page-count,
+body.portal-page-dx .repository-page-count {
+    margin-top: .55rem;
+    color: rgba(18, 54, 109, .78);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+body.portal-page-resources .repository-page-description,
+body.portal-page-gates .repository-page-description,
+body.portal-page-dx .repository-page-description {
+    margin-top: .75rem;
+    color: rgba(24, 62, 118, .82);
+    font-size: 1rem;
+    line-height: 1.62;
+}
+
+body.portal-page-dx .dx-program-page-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 310px);
+    gap: 1.2rem;
+    align-items: start;
+}
+
+body.portal-page-dx .repository-page-summary-card {
+    padding: 1rem 1.1rem;
+    border-radius: 1.35rem;
+    border: 1px solid rgba(255,255,255,.46);
+    background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.16));
+    box-shadow: 0 14px 28px rgba(17, 66, 129, .1);
+}
+
+body.portal-page-resources .repository-page-content,
+body.portal-page-gates .repository-page-content,
+body.portal-page-dx .repository-page-content {
+    padding: .1rem 0 4.5rem;
+}
+
+body.portal-page-resources .repository-page-toolbar-card,
+body.portal-page-gates .repository-page-toolbar-card,
+body.portal-page-dx .repository-page-toolbar-card {
+    margin-top: .35rem;
+    padding: 1.15rem 1.15rem 1.2rem;
+    border-radius: 1.9rem;
+    border: 1px solid rgba(255,255,255,.88);
+    background:
+        linear-gradient(180deg, rgba(247,250,255,.78), rgba(232,240,251,.66)),
+        linear-gradient(135deg, rgba(255,255,255,.74), rgba(255,255,255,.22));
+    box-shadow: 0 24px 50px rgba(31, 76, 134, .12);
+}
+
+body.portal-page-resources .repository-page-toolbar-card::before,
+body.portal-page-gates .repository-page-toolbar-card::before,
+body.portal-page-dx .repository-page-toolbar-card::before {
+    display: none;
+}
+
+body.portal-page-resources .repository-page-controls,
+body.portal-page-gates .repository-page-controls,
+body.portal-page-dx .repository-page-controls {
+    grid-template-columns: minmax(0, 1fr) 16.5rem;
+    align-items: center;
+    gap: 1.15rem;
+}
+
+body.portal-page-dx .repository-page-controls {
+    grid-template-columns: 1fr;
+}
+
+body.portal-page-resources .repository-page-search,
+body.portal-page-gates .repository-page-search,
+body.portal-page-dx .repository-page-search,
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-height: 3.5rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,.82);
+    border-color: rgba(194, 212, 238, .58);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.95);
+}
+
+body.portal-page-resources .repository-page-year-wrap,
+body.portal-page-gates .repository-page-year-wrap,
+body.portal-page-dx .repository-page-year-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .8rem;
+    align-items: center;
+}
+
+body.portal-page-resources .repository-page-year-wrap label,
+body.portal-page-gates .repository-page-year-wrap label,
+body.portal-page-dx .repository-page-year-wrap label {
+    line-height: 1.2;
+}
+
+body.portal-page-resources .repository-page-status,
+body.portal-page-gates .repository-page-status,
+body.portal-page-dx .repository-page-status {
+    margin-top: .8rem;
+    color: rgba(34, 70, 121, .8);
+}
+
+body.portal-page-resources .repository-page-results,
+body.portal-page-gates .repository-page-results,
+body.portal-page-dx .repository-page-results {
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+body.portal-page-resources .repository-page-item,
+body.portal-page-gates .repository-page-item,
+body.portal-page-dx .repository-page-item,
+body.portal-page-resources .repository-page-empty,
+body.portal-page-gates .repository-page-empty,
+body.portal-page-dx .repository-page-empty {
+    padding: 1.15rem 1.2rem;
+    border-radius: 1.6rem;
+    border: 1px solid rgba(255,255,255,.92);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.95), rgba(248,251,255,.92)),
+        linear-gradient(135deg, rgba(196, 226, 255, .18), rgba(255,255,255,0));
+    box-shadow: var(--repo-card-shadow);
+}
+
+body.portal-page-resources .repository-page-item::before,
+body.portal-page-gates .repository-page-item::before,
+body.portal-page-dx .repository-page-item::before {
+    display: none;
+}
+
+body.portal-page-resources .repository-page-item,
+body.portal-page-gates .repository-page-item,
+body.portal-page-dx .repository-page-item {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+body.portal-page-resources .repository-page-item h2,
+body.portal-page-gates .repository-page-item h2,
+body.portal-page-dx .repository-page-item h2 {
+    margin: .7rem 0 .45rem;
+    font-size: clamp(1.45rem, 2.4vw, 1.95rem);
+    color: #162c72;
+}
+
+body.portal-page-resources .repository-page-item p,
+body.portal-page-gates .repository-page-item p,
+body.portal-page-dx .repository-page-item p {
+    font-size: .98rem;
+    line-height: 1.62;
+}
+
+body.portal-page-resources .repository-page-item-meta,
+body.portal-page-gates .repository-page-item-meta,
+body.portal-page-dx .repository-page-item-meta {
+    margin-top: .7rem;
+    font-size: .95rem;
+}
+
+body.portal-page-resources .repository-page-item-actions,
+body.portal-page-gates .repository-page-item-actions,
+body.portal-page-dx .repository-page-item-actions {
+    min-width: 14.5rem;
+    gap: .65rem;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn,
+body.portal-page-gates .repository-page-item-actions .btn,
+body.portal-page-dx .repository-page-item-actions .btn {
+    min-width: 7.65rem;
+    min-height: 2.9rem;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-outline-dark,
+body.portal-page-gates .repository-page-item-actions .btn-outline-dark,
+body.portal-page-dx .repository-page-item-actions .btn-outline-dark {
+    background: rgba(255,255,255,.72);
+}
+
+/* Repository pages hierarchy polish */
+body.portal-page-resources,
+body.portal-page-gates,
+body.portal-page-dx {
+    --repo-content-width: min(1120px, calc(100% - 2rem));
+    background:
+        radial-gradient(circle at 14% 18%, rgba(187, 222, 255, .56), rgba(187, 222, 255, 0) 24%),
+        linear-gradient(180deg, #f4f9ff 0%, #eef5fc 38%, #f8fbff 100%);
+}
+
+body.portal-page-resources .repository-page-shell,
+body.portal-page-gates .repository-page-shell,
+body.portal-page-dx .repository-page-shell {
+    padding-top: 1.7rem;
+}
+
+body.portal-page-resources .repository-page-shell::before,
+body.portal-page-gates .repository-page-shell::before,
+body.portal-page-dx .repository-page-shell::before {
+    height: 20rem;
+    background:
+        radial-gradient(circle at 82% 18%, rgba(255,255,255,.38), rgba(255,255,255,0) 18%),
+        linear-gradient(180deg, rgba(232, 244, 255, .98) 0%, rgba(206, 232, 255, .95) 58%, rgba(244, 249, 255, .84) 100%);
+}
+
+body.portal-page-resources .repository-page-shell::after,
+body.portal-page-gates .repository-page-shell::after,
+body.portal-page-dx .repository-page-shell::after {
+    height: 20rem;
+    background:
+        radial-gradient(circle at 96% 16%, rgba(120, 186, 234, .16) 0 1.7px, transparent 2.7px) 0 0 / 10px 10px,
+        linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,.12) 52%, rgba(246, 250, 255, .96) 100%),
+        linear-gradient(112deg, rgba(154, 213, 255, .14), rgba(154, 213, 255, 0) 28%) right top / 44% 100% no-repeat;
+    opacity: .78;
+}
+
+body.portal-page-resources .repository-page-hero::before,
+body.portal-page-gates .repository-page-hero::before,
+body.portal-page-dx .repository-page-hero::before {
+    top: 1.6rem;
+    width: min(38vw, 28rem);
+    height: 10rem;
+    opacity: .62;
+}
+
+body.portal-page-resources .repository-page-hero::after,
+body.portal-page-gates .repository-page-hero::after,
+body.portal-page-dx .repository-page-hero::after {
+    top: 2.2rem;
+    width: min(34vw, 24rem);
+    height: 8rem;
+    opacity: .72;
+}
+
+body.portal-page-resources .repository-page-hero .container,
+body.portal-page-gates .repository-page-hero .container,
+body.portal-page-dx .repository-page-hero .container,
+body.portal-page-resources .repository-page-content .container,
+body.portal-page-gates .repository-page-content .container,
+body.portal-page-dx .repository-page-content .container {
+    width: var(--repo-content-width);
+    max-width: var(--repo-content-width);
+}
+
+body.portal-page-resources .repository-page-hero .container,
+body.portal-page-gates .repository-page-hero .container,
+body.portal-page-dx .repository-page-hero .container {
+    padding: .85rem 0 1rem;
+}
+
+body.portal-page-resources .repository-page-back,
+body.portal-page-gates .repository-page-back,
+body.portal-page-dx .repository-page-back {
+    margin-bottom: .95rem;
+    padding: .72rem 1.14rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08)),
+        linear-gradient(180deg, rgba(41, 137, 235, .34), rgba(24, 107, 205, .28));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+body.portal-page-resources .repository-page-kicker,
+body.portal-page-gates .repository-page-kicker,
+body.portal-page-dx .repository-page-kicker {
+    margin-bottom: .5rem;
+    font-size: .82rem;
+}
+
+body.portal-page-resources .repository-page-title,
+body.portal-page-gates .repository-page-title,
+body.portal-page-dx .repository-page-title {
+    max-width: 10ch;
+    font-size: clamp(2.7rem, 4.8vw, 4rem);
+    line-height: .96;
+}
+
+body.portal-page-resources .repository-page-count,
+body.portal-page-gates .repository-page-count,
+body.portal-page-dx .repository-page-count {
+    margin-top: .45rem;
+    font-size: .98rem;
+}
+
+body.portal-page-resources .repository-page-description,
+body.portal-page-gates .repository-page-description,
+body.portal-page-dx .repository-page-description {
+    max-width: 40rem;
+    margin-top: .55rem;
+    font-size: .98rem;
+}
+
+body.portal-page-dx .dx-program-page-hero-grid {
+    gap: 1rem;
+}
+
+body.portal-page-dx .repository-page-summary-card {
+    padding: .9rem 1rem;
+}
+
+body.portal-page-resources .repository-page-content,
+body.portal-page-gates .repository-page-content,
+body.portal-page-dx .repository-page-content {
+    padding: .15rem 0 4rem;
+}
+
+body.portal-page-resources .repository-page-toolbar-card,
+body.portal-page-gates .repository-page-toolbar-card,
+body.portal-page-dx .repository-page-toolbar-card {
+    position: relative;
+    margin-top: .15rem;
+    padding: .95rem .95rem 1rem;
+    border-radius: 1.7rem 1.7rem 1.4rem 1.4rem;
+    background:
+        linear-gradient(180deg, rgba(246,250,255,.84), rgba(232,240,251,.74)),
+        linear-gradient(135deg, rgba(255,255,255,.76), rgba(255,255,255,.3));
+    box-shadow: 0 18px 38px rgba(31, 76, 134, .1);
+}
+
+body.portal-page-resources .repository-page-toolbar-card::after,
+body.portal-page-gates .repository-page-toolbar-card::after,
+body.portal-page-dx .repository-page-toolbar-card::after {
+    content: "";
+    position: absolute;
+    left: 1.15rem;
+    right: 1.15rem;
+    bottom: -.8rem;
+    height: 1rem;
+    border-radius: 0 0 1rem 1rem;
+    background: linear-gradient(180deg, rgba(201, 219, 241, .52), rgba(201, 219, 241, 0));
+    filter: blur(10px);
+    pointer-events: none;
+}
+
+body.portal-page-resources .repository-page-controls,
+body.portal-page-gates .repository-page-controls,
+body.portal-page-dx .repository-page-controls {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    gap: .9rem;
+}
+
+body.portal-page-resources .repository-page-search,
+body.portal-page-gates .repository-page-search,
+body.portal-page-dx .repository-page-search,
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-height: 3.25rem;
+}
+
+body.portal-page-resources .repository-page-search,
+body.portal-page-gates .repository-page-search,
+body.portal-page-dx .repository-page-search {
+    padding-inline: 2.8rem 1rem;
+}
+
+body.portal-page-resources .repository-page-year-wrap,
+body.portal-page-gates .repository-page-year-wrap,
+body.portal-page-dx .repository-page-year-wrap {
+    gap: .65rem;
+}
+
+body.portal-page-resources .repository-page-status,
+body.portal-page-gates .repository-page-status,
+body.portal-page-dx .repository-page-status {
+    margin-top: .55rem;
+    font-size: .94rem;
+}
+
+body.portal-page-resources .repository-page-results,
+body.portal-page-gates .repository-page-results,
+body.portal-page-dx .repository-page-results {
+    gap: 0;
+    margin-top: .4rem;
+}
+
+body.portal-page-resources .repository-page-item,
+body.portal-page-gates .repository-page-item,
+body.portal-page-dx .repository-page-item {
+    margin-top: .85rem;
+    padding: 1.1rem 1.15rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 16px 34px rgba(30, 72, 128, .09);
+}
+
+body.portal-page-resources .repository-page-item-top,
+body.portal-page-gates .repository-page-item-top,
+body.portal-page-dx .repository-page-item-top {
+    gap: .55rem;
+}
+
+body.portal-page-resources .repository-page-item h2,
+body.portal-page-gates .repository-page-item h2,
+body.portal-page-dx .repository-page-item h2 {
+    margin: .6rem 0 .35rem;
+    font-size: clamp(1.3rem, 2vw, 1.72rem);
+}
+
+body.portal-page-resources .repository-page-item p,
+body.portal-page-gates .repository-page-item p,
+body.portal-page-dx .repository-page-item p {
+    max-width: 52rem;
+    font-size: .96rem;
+}
+
+body.portal-page-resources .repository-page-item-meta,
+body.portal-page-gates .repository-page-item-meta,
+body.portal-page-dx .repository-page-item-meta {
+    margin-top: .6rem;
+    gap: .95rem;
+}
+
+body.portal-page-resources .repository-page-item-actions,
+body.portal-page-gates .repository-page-item-actions,
+body.portal-page-dx .repository-page-item-actions {
+    min-width: 13.5rem;
+    gap: .55rem;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn,
+body.portal-page-gates .repository-page-item-actions .btn,
+body.portal-page-dx .repository-page-item-actions .btn {
+    min-width: 7.1rem;
+    min-height: 2.8rem;
+    font-size: .95rem;
+}
+
+/* Restore original repository design without navbar */
+body.portal-page-resources .repository-page-shell,
+body.portal-page-gates .repository-page-shell,
+body.portal-page-dx .repository-page-shell {
+    --repo-accent: #1f6fe5;
+    --repo-accent-soft: #74dcff;
+    --repo-ink: #12244f;
+    --repo-copy: #51688f;
+    --repo-line: rgba(25, 56, 104, .1);
+    --repo-surface: rgba(255, 255, 255, .9);
+    --repo-shadow: 0 24px 80px rgba(16, 43, 84, .12);
+    padding-top: 2rem;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(255,255,255,.96), rgba(255,255,255,0) 24%),
+        linear-gradient(180deg, #f7fbff 0%, #eef5fb 100%);
+}
+
+body.portal-page-gates .repository-page-shell {
+    --repo-accent: #1c78d8;
+    --repo-accent-soft: #ffd36d;
+}
+
+body.portal-page-dx .repository-page-shell {
+    --repo-accent: #1766f2;
+    --repo-accent-soft: #7de3ff;
+}
+
+body.portal-page-resources .repository-page-shell::before,
+body.portal-page-gates .repository-page-shell::before,
+body.portal-page-dx .repository-page-shell::before {
+    inset: 0;
+    height: 25rem;
+    background:
+        radial-gradient(circle at 14% 18%, rgba(255,255,255,.35), rgba(255,255,255,0) 24%),
+        radial-gradient(circle at 84% 12%, rgba(124, 225, 255, .22), rgba(124, 225, 255, 0) 18%),
+        linear-gradient(120deg, #16355f 0%, #1f5ea1 46%, #2696df 100%);
+}
+
+body.portal-page-gates .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 14% 18%, rgba(255,255,255,.3), rgba(255,255,255,0) 24%),
+        radial-gradient(circle at 84% 12%, rgba(255, 212, 111, .18), rgba(255, 212, 111, 0) 16%),
+        linear-gradient(120deg, #14335f 0%, #1b5d97 34%, #1f8bd6 68%, #40c6c8 100%);
+}
+
+body.portal-page-dx .repository-page-shell::before {
+    background:
+        radial-gradient(circle at 14% 18%, rgba(255,255,255,.3), rgba(255,255,255,0) 24%),
+        radial-gradient(circle at 84% 12%, rgba(125, 227, 255, .22), rgba(125, 227, 255, 0) 16%),
+        linear-gradient(120deg, #132f64 0%, #19509a 42%, #1e75d8 72%, #6ad8ff 100%);
+}
+
+body.portal-page-resources .repository-page-shell::after,
+body.portal-page-gates .repository-page-shell::after,
+body.portal-page-dx .repository-page-shell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 78% 11%, rgba(255,255,255,.22) 1.2px, rgba(255,255,255,0) 1.2px),
+        linear-gradient(145deg, rgba(255,255,255,.18), rgba(255,255,255,0) 30%),
+        linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.36) 62%, rgba(255,255,255,0) 100%);
+    background-size: 9px 9px, 100% 100%, 100% 100%;
+    background-position: 78% 10%, 0 0, 0 0;
+    opacity: .5;
+    z-index: 0;
+}
+
+body.portal-page-resources .repository-page-hero,
+body.portal-page-gates .repository-page-hero,
+body.portal-page-dx .repository-page-hero {
+    padding: 4.2rem 0 2rem;
+}
+
+body.portal-page-resources .repository-page-hero::before,
+body.portal-page-resources .repository-page-hero::after,
+body.portal-page-gates .repository-page-hero::before,
+body.portal-page-gates .repository-page-hero::after,
+body.portal-page-dx .repository-page-hero::before,
+body.portal-page-dx .repository-page-hero::after {
+    display: none;
+}
+
+body.portal-page-resources .repository-page-hero .container,
+body.portal-page-gates .repository-page-hero .container,
+body.portal-page-dx .repository-page-hero .container {
+    position: relative;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+
+body.portal-page-resources .repository-page-hero .container::before,
+body.portal-page-gates .repository-page-hero .container::before,
+body.portal-page-dx .repository-page-hero .container::before,
+body.portal-page-resources .repository-page-hero .container::after,
+body.portal-page-gates .repository-page-hero .container::after,
+body.portal-page-dx .repository-page-hero .container::after {
+    content: none;
+}
+
+body.portal-page-resources .repository-page-back,
+body.portal-page-gates .repository-page-back,
+body.portal-page-dx .repository-page-back {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
+    padding: .76rem 1.32rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.58);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.08)),
+        linear-gradient(135deg, rgba(74, 171, 248, .52), rgba(40, 126, 223, .4));
+    color: #f8fbff;
+    text-decoration: none;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.34),
+        0 10px 24px rgba(17, 86, 165, .18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+
+body.portal-page-resources .repository-page-back::after,
+body.portal-page-gates .repository-page-back::after,
+body.portal-page-dx .repository-page-back::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: inherit;
+    border: 1px solid rgba(255,255,255,.18);
+    pointer-events: none;
+}
+
+body.portal-page-resources .repository-page-back:hover,
+body.portal-page-resources .repository-page-back:focus-visible,
+body.portal-page-gates .repository-page-back:hover,
+body.portal-page-gates .repository-page-back:focus-visible,
+body.portal-page-dx .repository-page-back:hover,
+body.portal-page-dx .repository-page-back:focus-visible {
+    color: #ffffff;
+    border-color: rgba(255,255,255,.74);
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.1)),
+        linear-gradient(135deg, rgba(93, 189, 255, .58), rgba(47, 135, 236, .45));
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.38),
+        0 14px 28px rgba(17, 86, 165, .22);
+    transform: translateY(-1px);
+}
+
+body.portal-page-resources .repository-page-kicker,
+body.portal-page-gates .repository-page-kicker,
+body.portal-page-dx .repository-page-kicker,
+body.portal-page-resources .repository-page-title,
+body.portal-page-gates .repository-page-title,
+body.portal-page-dx .repository-page-title,
+body.portal-page-resources .repository-page-count,
+body.portal-page-gates .repository-page-count,
+body.portal-page-dx .repository-page-count,
+body.portal-page-resources .repository-page-description,
+body.portal-page-gates .repository-page-description,
+body.portal-page-dx .repository-page-description {
+    position: relative;
+    z-index: 1;
+}
+
+body.portal-page-resources .repository-page-kicker,
+body.portal-page-gates .repository-page-kicker,
+body.portal-page-dx .repository-page-kicker {
+    display: block;
+    color: var(--repo-theme-kicker);
+    margin-bottom: .65rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+}
+
+body.portal-page-resources .repository-page-title,
+body.portal-page-gates .repository-page-title,
+body.portal-page-dx .repository-page-title {
+    max-width: 11ch;
+    color: var(--repo-theme-text);
+    font-family: "Inter", sans-serif;
+    font-size: clamp(3.45rem, 6.2vw, 5.4rem);
+    font-weight: 800;
+    line-height: .88;
+    letter-spacing: -.05em;
+    text-shadow: 0 14px 34px rgba(11, 28, 58, .22);
+}
+
+body.portal-page-resources .repository-page-count,
+body.portal-page-gates .repository-page-count,
+body.portal-page-dx .repository-page-count {
+    color: var(--repo-theme-meta);
+    font-size: 1.08rem;
+    font-family: "Inter", sans-serif;
+}
+
+body.portal-page-resources .repository-page-description,
+body.portal-page-gates .repository-page-description,
+body.portal-page-dx .repository-page-description {
+    color: var(--repo-theme-meta);
+    max-width: 40rem;
+    margin-top: 1rem;
+    display: block;
+    font-family: "Inter", sans-serif;
+}
+
+body.portal-page-resources .repository-page-content,
+body.portal-page-gates .repository-page-content,
+body.portal-page-dx .repository-page-content {
+    padding: 1.5rem 0 4.5rem;
+}
+
+body.portal-page-resources .repository-page-toolbar-card,
+body.portal-page-gates .repository-page-toolbar-card,
+body.portal-page-dx .repository-page-toolbar-card {
+    margin-top: 0;
+    padding: 1.45rem;
+    border-radius: 2.1rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(245, 249, 255, .88)),
+        radial-gradient(circle at 100% 0%, rgba(116, 220, 255, .14), rgba(116, 220, 255, 0) 30%);
+    border: 1px solid rgba(255,255,255,.8);
+    box-shadow: var(--repo-shadow);
+}
+
+body.portal-page-resources .repository-page-toolbar-card::before,
+body.portal-page-gates .repository-page-toolbar-card::before,
+body.portal-page-dx .repository-page-toolbar-card::before,
+body.portal-page-resources .repository-page-toolbar-card::after,
+body.portal-page-gates .repository-page-toolbar-card::after,
+body.portal-page-dx .repository-page-toolbar-card::after {
+    display: none;
+}
+
+body.portal-page-resources .repository-page-controls,
+body.portal-page-gates .repository-page-controls,
+body.portal-page-dx .repository-page-controls {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    gap: 1.4rem;
+}
+
+body.portal-page-dx .repository-page-controls {
+    grid-template-columns: 1fr;
+}
+
+body.portal-page-resources .repository-page-year-wrap,
+body.portal-page-gates .repository-page-year-wrap,
+body.portal-page-dx .repository-page-year-wrap {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    align-items: center;
+}
+
+body.portal-page-resources .repository-page-year-wrap label,
+body.portal-page-gates .repository-page-year-wrap label,
+body.portal-page-dx .repository-page-year-wrap label {
+    color: var(--repo-copy);
+    font-weight: 700;
+    font-family: "Inter", sans-serif;
+}
+
+body.portal-page-resources .repository-page-search,
+body.portal-page-gates .repository-page-search,
+body.portal-page-dx .repository-page-search,
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-height: 4rem;
+    border-radius: 1.35rem;
+    background: #fff;
+    border-color: rgba(182, 202, 232, .44);
+    box-shadow: 0 10px 24px rgba(21, 55, 101, .06);
+    color: var(--repo-copy);
+}
+
+body.portal-page-resources .repository-page-year,
+body.portal-page-gates .repository-page-year,
+body.portal-page-dx .repository-page-year {
+    min-width: 0;
+    width: 100%;
+    border-radius: 999px;
+}
+
+body.portal-page-resources .repository-page-status,
+body.portal-page-gates .repository-page-status,
+body.portal-page-dx .repository-page-status {
+    margin-top: 1rem;
+    padding-inline: .2rem;
+    color: var(--repo-copy);
+    font-family: "Inter", sans-serif;
+}
+
+body.portal-page-resources .repository-page-results,
+body.portal-page-gates .repository-page-results,
+body.portal-page-dx .repository-page-results {
+    gap: 1.4rem;
+    margin-top: 1.8rem;
+}
+
+body.portal-page-resources .repository-page-item,
+body.portal-page-gates .repository-page-item,
+body.portal-page-dx .repository-page-item {
+    margin-top: 0;
+    padding: 1.6rem;
+    border-radius: 2rem;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(251,253,255,.98)),
+        radial-gradient(circle at 110% -10%, rgba(116, 220, 255, .16), rgba(116, 220, 255, 0) 36%);
+    border: 1px solid rgba(206, 223, 244, .68);
+    box-shadow: 0 22px 46px rgba(18, 48, 90, .08);
+    overflow: hidden;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.35rem;
+    align-items: end;
+}
+
+body.portal-page-resources .repository-page-item::before,
+body.portal-page-gates .repository-page-item::before,
+body.portal-page-dx .repository-page-item::before {
+    display: block;
+    content: "";
+    position: absolute;
+    inset: 1rem auto 1rem 0;
+    width: 5px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--repo-accent), var(--repo-accent-soft));
+}
+
+body.portal-page-resources .repository-page-item h2,
+body.portal-page-gates .repository-page-item h2,
+body.portal-page-dx .repository-page-item h2 {
+    margin: .9rem 0 .7rem;
+    font-size: clamp(1.9rem, 2.6vw, 2.35rem);
+    font-family: "Inter", sans-serif;
+    font-weight: 800;
+    line-height: .96;
+    color: var(--repo-card-title);
+    text-shadow: none;
+    letter-spacing: -.04em;
+}
+
+body.portal-page-resources .repository-page-item p,
+body.portal-page-gates .repository-page-item p,
+body.portal-page-dx .repository-page-item p {
+    color: var(--repo-card-copy);
+    max-width: 58rem;
+    font-size: 1rem;
+    font-family: "Inter", sans-serif;
+}
+
+body.portal-page-resources .repository-page-item-meta,
+body.portal-page-gates .repository-page-item-meta,
+body.portal-page-dx .repository-page-item-meta {
+    margin-top: 1rem;
+    color: var(--repo-card-meta);
+    gap: 1rem;
+    font-family: "Inter", sans-serif;
+}
+
+body.portal-page-resources .repository-page-item-actions,
+body.portal-page-gates .repository-page-item-actions,
+body.portal-page-dx .repository-page-item-actions {
+    min-width: 16rem;
+    gap: .75rem;
+    justify-content: flex-end;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn,
+body.portal-page-gates .repository-page-item-actions .btn,
+body.portal-page-dx .repository-page-item-actions .btn {
+    min-width: 8.75rem;
+    min-height: 3.15rem;
+    font-size: 1rem;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-outline-dark,
+body.portal-page-gates .repository-page-item-actions .btn-outline-dark,
+body.portal-page-dx .repository-page-item-actions .btn-outline-dark {
+    border-color: rgba(34, 63, 113, .22);
+    background: #fff;
+    color: #1d315b;
+}
+
+body.portal-page-resources .repository-page-item-actions .btn-accent,
+body.portal-page-gates .repository-page-item-actions .btn-accent,
+body.portal-page-dx .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, var(--repo-accent), #2e8fff);
+    box-shadow: 0 16px 28px rgba(35, 107, 210, .18);
+}
+
+body.portal-page-gates .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, #1f82da, #32b7d3);
+}
+
+body.portal-page-dx .repository-page-item-actions .btn-accent {
+    background: linear-gradient(135deg, #2565ef, #20a0ff);
 }

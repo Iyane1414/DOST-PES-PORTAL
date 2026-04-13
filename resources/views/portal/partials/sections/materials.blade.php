@@ -19,6 +19,7 @@
                                 id="{{ $collection['anchor'] }}"
                                 class="materials-home-card"
                                 href="{{ route('portal.resources.show', ['collectionSlug' => $collection['slug']]) }}"
+                                data-transition-label="{{ $collection['label'] }}"
                             >
                                 <div class="materials-home-art materials-home-art-{{ $collection['artwork'] }}">
                                     <div class="materials-home-illustration">

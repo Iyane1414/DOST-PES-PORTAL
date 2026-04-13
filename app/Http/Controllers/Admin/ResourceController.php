@@ -314,6 +314,7 @@ class ResourceController extends Controller
     {
         return $request->validate(
             [
+                'erm_number' => ['nullable', 'string', 'max:255'],
                 'title' => ['required', 'string', 'max:255'],
                 'category' => ['required', 'string', 'max:255'],
                 'date' => ['required', 'date'],
@@ -332,6 +333,7 @@ class ResourceController extends Controller
     private function issuancePayload(array $data, string $url): array
     {
         return [
+            'erm_number' => $data['erm_number'] ?? null,
             'title' => $data['title'],
             'category' => $data['category'],
             'date' => $data['date'],
@@ -533,7 +535,6 @@ class ResourceController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:2000'],
             'parent_id' => ['nullable', 'integer', 'exists:dx_items,id'],
-            'code' => ['nullable', 'string', 'max:50'],
             'icon' => ['nullable', 'string', 'max:100'],
             'image' => ['nullable', 'image', 'max:5120'],
             'document' => ['nullable', 'file', 'extensions:pdf,doc,docx,xls,xlsx,ppt,pptx,mp4,mov,jpg,jpeg,png', 'max:102400'],
@@ -617,7 +618,7 @@ class ResourceController extends Controller
             'slug' => $dxItem?->slug ?: $this->makeUniqueDxSlug($data['title']),
             'parent_id' => $parentId,
             'domain_key' => $resolvedDomainKey,
-            'code' => $data['category'] === 'project' ? ($data['code'] ?: null) : null,
+            'code' => null,
             'icon' => $data['category'] === 'domain' ? ($data['icon'] ?: ($dxItem?->icon ?: $this->defaultDxDomainIcon($resolvedDomainKey))) : null,
             'image_path' => $data['category'] === 'domain' ? ($imagePath ?: $this->defaultDxDomainImage($resolvedDomainKey)) : null,
             'file_url' => $data['category'] === 'project' ? $fileUrl : null,
