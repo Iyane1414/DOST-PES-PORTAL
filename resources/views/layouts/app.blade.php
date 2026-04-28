@@ -22,7 +22,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link href="{{ asset('css/portal.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/portal.css') }}?v={{ filemtime(public_path('css/portal.css')) }}" rel="stylesheet">
 </head>
 <body class="@yield('body_class')" data-page-theme="@yield('page_theme', 'pes')" data-page-title="{{ $title ?? 'DOST PES Portal' }}">
     <div class="page-transition" data-page-transition aria-hidden="true">
@@ -55,7 +55,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/portal.js') }}"></script>
+    <script src="{{ asset('js/portal.js') }}?v={{ filemtime(public_path('js/portal.js')) }}"></script>
     @stack('scripts')
 </body>
 </html>

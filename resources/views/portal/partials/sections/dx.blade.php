@@ -45,68 +45,22 @@
                 </div>
             </div>
             <div class="dx-roadmap-track">
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-year">2021</div>
-                    <h4 class="dx-roadmap-title">Plan &amp; Assess</h4>
-                    <p class="dx-roadmap-copy">The initial stage focused on defining the DOST-DX direction, assessing readiness, and securing the first set of approvals.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>Roadmap</li>
-                        <li>Gap Analysis</li>
-                        <li>Initial Approvals</li>
-                    </ul>
-                </article>
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-year">2022</div>
-                    <h4 class="dx-roadmap-title">Build Foundations</h4>
-                    <p class="dx-roadmap-copy">This stage established the first operational building blocks needed to support transformation initiatives across DOST.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>Software Dev Pack</li>
-                        <li>Structure Rationalization</li>
-                        <li>iLab Launch</li>
-                    </ul>
-                </article>
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-year">2023</div>
-                    <h4 class="dx-roadmap-title">Strengthen Governance</h4>
-                    <p class="dx-roadmap-copy">Governance, portfolio coordination, and cyber capability-building were reinforced to prepare for wider digital delivery.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>Portfolio Groups</li>
-                        <li>EA Training</li>
-                        <li>Cybersecurity Expansion</li>
-                    </ul>
-                </article>
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-year">2024</div>
-                    <h4 class="dx-roadmap-title">Standardize Processes</h4>
-                    <p class="dx-roadmap-copy">DOST-DX advanced process standardization, project management structures, and broader stakeholder engagement.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>PM Process</li>
-                        <li>DX Core Team Proposal</li>
-                        <li>Engagement Expansion</li>
-                    </ul>
-                </article>
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-year">2025</div>
-                    <h4 class="dx-roadmap-title">System Integration</h4>
-                    <p class="dx-roadmap-copy">Major integration workstreams were lined up to harmonize systems and strengthen portal and knowledge-management development.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>Harmonized iHRMIS</li>
-                        <li>Portal &amp; KM Dev</li>
-                        <li>Phase 2 IS</li>
-                    </ul>
-                </article>
-                <article class="dx-roadmap-card">
-                    <div class="dx-roadmap-year">2026&ndash;2028</div>
-                    <h4 class="dx-roadmap-title">Modernize &amp; Expand</h4>
-                    <p class="dx-roadmap-copy">The long-range phase focuses on infrastructure modernization, harmonized rollouts, cyber capability expansion, and broader transformation support.</p>
-                    <ul class="dx-roadmap-list">
-                        <li>Data Centers</li>
-                        <li>Cloud Plans</li>
-                        <li>Harmonized IS Rollout</li>
-                        <li>Cybersecurity Unit and ITD Transformation</li>
-                        <li>Geospatial</li>
-                    </ul>
-                </article>
+                @forelse ($dxRoadmapItems as $item)
+                    <article class="dx-roadmap-card">
+                        <div class="dx-roadmap-year">{{ $item->year_label }}</div>
+                        <h4 class="dx-roadmap-title">{{ $item->title }}</h4>
+                        <p class="dx-roadmap-copy">{{ $item->description }}</p>
+                        @if (!empty($item->milestones))
+                            <ul class="dx-roadmap-list">
+                                @foreach ($item->milestones as $milestone)
+                                    <li>{{ $milestone }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </article>
+                @empty
+                    <div class="dx-empty-state">No roadmap stages available yet.</div>
+                @endforelse
             </div>
         </section>
 
@@ -152,7 +106,12 @@
                             href="{{ route('portal.dx.program.show', ['domainSlug' => $item['domain'], 'subProgramSlug' => $item['slug']]) }}"
                             data-transition-label="{{ $item['title'] }}"
                         >
-                            <div class="program-index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+                            <div class="dx-sub-card-top">
+                                <div class="program-index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</div>
+                                <div class="dx-program-icon" aria-hidden="true">
+                                    <i class="bi {{ $item['icon'] }}"></i>
+                                </div>
+                            </div>
                             <h3 class="dx-program-title">{{ $item['title'] }}</h3>
                             <p class="text-white-50 mb-0">{{ $item['description'] }}</p>
                             <span class="dx-program-domain">{{ strtoupper($item['domain_label']) }}</span>

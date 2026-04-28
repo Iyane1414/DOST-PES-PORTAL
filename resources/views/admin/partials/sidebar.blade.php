@@ -1,3 +1,4 @@
+
 @php
     $activeSection = $activeSection ?? 'workspace';
     $sidebarTabIcons = [
@@ -5,6 +6,7 @@
         'materials' => 'bi-collection-play',
         'news' => 'bi-newspaper',
         'dx' => 'bi-cpu',
+        'roadmap' => 'bi-signpost-split',
         'messages' => 'bi-chat-left-text',
         'ai' => 'bi-robot',
         'gates-projects' => 'bi-folder',
@@ -42,7 +44,7 @@
     <div class="admin-nav-group">
         <div class="admin-nav-label">PES Workspace</div>
         <div class="nav flex-column nav-pills gap-2">
-            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'news' => 'PES News', 'dx' => 'DOST DX', 'messages' => 'Messages', 'ai' => 'AI Agent'] as $tab => $label)
+            @foreach (['issuances' => 'Issuances', 'materials' => 'Materials', 'news' => 'PES News', 'dx' => 'DOST DX', 'roadmap' => 'DX Roadmap', 'messages' => 'Messages'] as $tab => $label)
                 <a href="{{ route('admin.workspace', ['tab' => $tab]) }}" class="nav-link admin-nav-link @if (($activeTab ?? null) === $tab) active @endif">
                     <span class="admin-nav-link-main">
                         <span class="admin-nav-link-icon">
@@ -57,9 +59,9 @@
     </div>
 
     <div class="admin-nav-group">
-        <div class="admin-nav-label">DOST GATES</div>
+        <div class="admin-nav-label">GATES Project 1</div>
         <div class="nav flex-column nav-pills gap-2">
-            @foreach (['gates-projects' => 'Projects', 'gates-issuances' => 'Issuances', 'gates-news' => 'GATES P1 News'] as $tab => $label)
+            @foreach (['gates-projects' => 'Projects', 'gates-issuances' => 'Issuances', 'gates-news' => 'Project 1 News'] as $tab => $label)
                 <a href="{{ route('admin.workspace', ['tab' => $tab]) }}" class="nav-link admin-nav-link @if (($activeTab ?? null) === $tab) active @endif">
                     <span class="admin-nav-link-main">
                         <span class="admin-nav-link-icon">

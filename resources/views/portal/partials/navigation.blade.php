@@ -21,7 +21,7 @@
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#issuances" data-magnetic>Issuances</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#materials" data-magnetic>Resources</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-dx" data-magnetic>DOST DX</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-gates" data-magnetic>DOST GATES</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#dost-gates" data-magnetic>GATES Project 1</a></li>
                 <li class="nav-item"><a class="nav-link" href="{{ $portalHomeUrl }}#contact" data-magnetic>Contact</a></li>
             </ul>
             <div class="portal-navbar-actions">

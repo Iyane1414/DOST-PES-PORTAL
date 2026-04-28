@@ -48,6 +48,9 @@ Route::prefix('admin')->group(function (): void {
         Route::post('/dx-items', [ResourceController::class, 'storeDxItem'])->name('admin.dx-items.store');
         Route::put('/dx-items/{dxItem}', [ResourceController::class, 'updateDxItem'])->name('admin.dx-items.update');
         Route::delete('/dx-items/{dxItem}', [ResourceController::class, 'destroyDxItem'])->name('admin.dx-items.destroy');
+        Route::post('/dx-roadmap', [ResourceController::class, 'storeDxRoadmapItem'])->name('admin.dx-roadmap.store');
+        Route::put('/dx-roadmap/{dxRoadmapItem}', [ResourceController::class, 'updateDxRoadmapItem'])->name('admin.dx-roadmap.update');
+        Route::delete('/dx-roadmap/{dxRoadmapItem}', [ResourceController::class, 'destroyDxRoadmapItem'])->name('admin.dx-roadmap.destroy');
 
         Route::post('/categories', [ResourceController::class, 'storeCategory'])->name('admin.categories.store');
         Route::delete('/categories/{issuanceCategory}', [ResourceController::class, 'destroyCategory'])->name('admin.categories.destroy');

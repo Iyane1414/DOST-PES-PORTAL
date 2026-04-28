@@ -7,6 +7,7 @@ use App\Models\AiSetting;
 use App\Models\ContactMessage;
 use App\Models\Division;
 use App\Models\DxItem;
+use App\Models\DxRoadmapItem;
 use App\Models\GatesProject;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
@@ -69,7 +70,7 @@ class DashboardController extends Controller
     public function workspace(Request $request, ?string $tab = null): View
     {
         $data = $this->dashboardData();
-        $allowedTabs = ['issuances', 'materials', 'news', 'divisions', 'dx', 'categories', 'messages', 'ai', 'gates-projects', 'gates-issuances', 'gates-news', 'gates'];
+        $allowedTabs = ['issuances', 'materials', 'news', 'divisions', 'dx', 'roadmap', 'categories', 'messages', 'ai', 'gates-projects', 'gates-issuances', 'gates-news', 'gates'];
         $requestedTab = $tab ?: $request->string('tab')->toString() ?: 'issuances';
         if ($requestedTab === 'gates') {
             $requestedTab = 'gates-projects';
@@ -95,6 +96,9 @@ class DashboardController extends Controller
         $selectedNews = $activeTab === 'news' ? News::query()->find($request->integer('edit_news')) : null;
         $selectedDxItem = $activeTab === 'dx'
             ? DxItem::query()->with('parent')->where('category', 'project')->find($request->integer('edit_dx'))
+            : null;
+        $selectedRoadmapItem = $activeTab === 'roadmap'
+            ? DxRoadmapItem::query()->find($request->integer('edit_roadmap'))
             : null;
 
         if ($issuanceSearch !== '') {
@@ -176,6 +180,7 @@ class DashboardController extends Controller
             'selectedGatesProject' => $selectedGatesProject,
             'selectedNews' => $selectedNews,
             'selectedDxItem' => $selectedDxItem,
+            'selectedRoadmapItem' => $selectedRoadmapItem,
         ]);
     }
 
@@ -219,6 +224,7 @@ class DashboardController extends Controller
         $dxPrograms = $dxItems->where('category', 'program')->values();
         $dxProjects = $dxItems->where('category', 'project')->values();
         $dxDomains = $dxItems->where('category', 'domain')->values();
+        $dxRoadmapItems = DxRoadmapItem::query()->orderBy('sort_order')->orderBy('id')->get();
         $aiSetting = AiSetting::query()->first();
         $projectAnalytics = $this->projectAnalytics($dxPrograms);
         $viewStats = $this->websiteViewStats();
@@ -234,6 +240,7 @@ class DashboardController extends Controller
             'dxPrograms' => $dxPrograms,
             'dxProjects' => $dxProjects,
             'dxDomains' => $dxDomains,
+            'dxRoadmapItems' => $dxRoadmapItems,
             'categories' => $categories,
             'aiSetting' => $aiSetting,
             'projectAnalytics' => $projectAnalytics,

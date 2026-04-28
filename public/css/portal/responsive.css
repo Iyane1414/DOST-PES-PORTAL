@@ -1,9 +1,134 @@
+@media (min-width: 1200px) {
+    .materials-directory-section .container {
+        max-width: min(96vw, 1520px);
+    }
+
+    .materials-home-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        gap: .95rem;
+    }
+
+    .materials-home-card {
+        min-width: 0;
+    }
+
+    .materials-home-body h3 {
+        font-size: 1.24rem;
+    }
+
+    .materials-home-body p {
+        font-size: .92rem;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    .materials-home-grid {
+        gap: .82rem;
+    }
+
+    .materials-home-body {
+        padding: 0 1rem 1.16rem;
+    }
+
+    .materials-home-device {
+        width: 5rem;
+        height: 5rem;
+        font-size: 1.55rem;
+    }
+
+    .materials-home-illustration {
+        min-height: 10.1rem;
+    }
+}
+
 @media (max-width: 991.98px) {
+    .portal-intro-shell {
+        padding-top: 1.2rem;
+        padding-bottom: 2.1rem;
+    }
+    .portal-intro-topline {
+        flex-direction: column;
+        justify-content: center;
+        gap: .6rem;
+    }
+    .portal-intro-stage {
+        min-height: 21rem;
+        width: min(100%, 34rem);
+    }
+    .portal-intro-loading {
+        margin-top: -.4rem;
+        width: min(100%, 28rem);
+    }
+    .portal-intro-label {
+        font-size: .72rem;
+        letter-spacing: .11em;
+        padding: .68rem .88rem;
+    }
+    .intro-label-pes {
+        bottom: 14%;
+        left: 50%;
+    }
+    .intro-label-dx {
+        top: 18%;
+        right: 2%;
+    }
+    .intro-label-gates {
+        top: 18%;
+        left: 2%;
+        width: max-content;
+        max-width: calc(100% - 1rem);
+    }
+    .portal-intro-kicker {
+        font-size: .66rem;
+        letter-spacing: .2em;
+        padding: .72rem 1rem;
+    }
+    .portal-intro-subtitle {
+        font-size: .78rem;
+        letter-spacing: .12em;
+    }
     .hero-section { min-height: auto; padding-top: 7.2rem; padding-bottom: 3.4rem; }
-    .hero-content-shell { padding: 1.8rem 1rem 1.3rem; border-radius: 0; }
+    .hero-layout { display: block; }
+    .hero-content-shell { padding: 1.2rem 0 .5rem; border-radius: 0; max-width: 100%; }
+    [data-bs-theme="dark"] .hero-content-shell { padding: 1.2rem 0 .9rem; }
     .hero-title { font-size: clamp(2.4rem, 10vw, 3.9rem); }
     .hero-copy { font-size: 1rem; margin-bottom: 1.45rem; }
     .hero-streak { width: 50vw; right: 2%; bottom: 22%; }
+    .hero-visual {
+        width: 76.4%;
+        max-width: 44rem;
+        right: -1.8%;
+        top: 4rem;
+        opacity: .94;
+    }
+    .hero-card-row { grid-template-columns: 1fr; gap: 1rem; margin-top: 2.3rem; }
+    .hero-feature-card {
+        min-height: 14.2rem;
+        padding: 1.2rem 1.15rem;
+    }
+    .hero-feature-logo-row,
+    .hero-feature-title {
+        max-width: 58%;
+    }
+    .hero-feature-art-wrap {
+        width: 38%;
+        right: .55rem;
+        bottom: .35rem;
+    }
+    .hero-art-cubes {
+        transform: scale(.88);
+        transform-origin: bottom right;
+    }
+    .hero-art-people {
+        transform: scale(.88);
+        transform-origin: bottom right;
+    }
+    .hero-cloud-one { right: 16%; top: 13%; }
+    .hero-cloud-two { right: 8%; top: 14%; left: auto; }
+    .hero-cloud-three { right: 42%; top: 44%; }
+    .hero-cloud-four { right: 56%; top: 28%; }
+    .hero-info-modal .modal-body { padding: 1.6rem; }
+    .hero-info-head { align-items: flex-start; flex-direction: column; }
     .gates-whats-new-shell {
         padding: 1.5rem .95rem 1.1rem;
         border-radius: 1.35rem;
@@ -62,7 +187,7 @@
     }
     .about-intro-panel {
         min-height: auto;
-        padding: 7rem 0 1.5rem;
+        padding: 5.5rem 0 1.25rem;
     }
     .about-horizontal-track {
         display: grid;
@@ -71,7 +196,7 @@
     .about-panel {
         width: auto;
         min-height: auto;
-        padding: 7rem 0 1.5rem;
+        padding: 5.5rem 0 1.5rem;
     }
     .about-panel:last-child {
         padding-bottom: 0;
@@ -344,6 +469,61 @@
     .admin-sidebar { border-right: 0; border-bottom: 1px solid rgba(15,23,42,.06); }
     .portal-brand-logo-main { height: 3.3rem; }
     .portal-brand-logo-side { height: 3.3rem; }
+}
+
+@media (max-width: 575.98px) {
+    .materials-home-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-visual {
+        width: 88%;
+        max-width: 30rem;
+        right: -10%;
+        top: auto;
+        bottom: 9.5rem;
+        opacity: .9;
+    }
+    .hero-pill {
+        font-size: .63rem;
+        letter-spacing: .18em;
+        padding: .6rem 1rem;
+    }
+    .hero-title {
+        line-height: .92;
+    }
+    .hero-feature-card {
+        padding: 1.15rem 1rem;
+    }
+    .hero-feature-menu {
+        width: 2.1rem;
+        height: 2.1rem;
+    }
+    .hero-feature-logo-row,
+    .hero-feature-title {
+        max-width: 60%;
+    }
+    .hero-feature-title {
+        font-size: 1rem;
+    }
+    .hero-feature-link {
+        font-size: .92rem;
+    }
+    .hero-feature-art-wrap {
+        width: 34%;
+    }
+    .hero-art-chart {
+        transform: scale(.82);
+        transform-origin: bottom right;
+    }
+    .hero-art-cubes,
+    .hero-art-people {
+        transform: scale(.76);
+        transform-origin: bottom right;
+    }
+    .hero-info-title {
+        font-size: 1.45rem;
+    }
 }
 
 @media (max-width: 991.98px) {
