@@ -34,11 +34,11 @@
                         <div class="col-lg-6">
                             <div class="gates-copy-wrap">
                                 <span class="eyebrow gates-kicker">Geospatial Analytics Program</span>
-                                <h2 class="gates-title mt-3 mb-3">DOST<br><span class="split-title-accent">GATES</span></h2>
-                                <p class="section-copy gates-copy">A focused overview of DOST GATES and the project files currently shared through the PES portal. This section keeps the public-facing brief concise while giving visitors quick access to the supporting project references and data-driven initiatives.</p>
+                                <h2 class="gates-title mt-3 mb-3">DOST<br><span class="split-title-accent">GATES Project 1</span></h2>
+                                <p class="section-copy gates-copy">A focused overview of DOST GATES Project 1 and the project files currently shared through the PES portal. This section keeps the public-facing brief concise while giving visitors quick access to the supporting project references and data-driven initiatives.</p>
                                 <div class="gates-hero-actions">
                                     <a class="btn btn-accent btn-lg rounded-pill px-4" href="#gates-achieves">Learn More <i class="bi bi-chevron-right ms-2"></i></a>
-                                    <a class="btn dx-outline-btn btn-lg rounded-pill px-4" href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}" data-transition-label="Projects">Browse GATES Library <i class="bi bi-chevron-right ms-2"></i></a>
+                                    <a class="btn dx-outline-btn btn-lg rounded-pill px-4" href="{{ route('portal.gates.show', ['collectionSlug' => 'projects']) }}" data-transition-label="Projects">Browse Project 1 Library <i class="bi bi-chevron-right ms-2"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -46,7 +46,7 @@
                             <div class="gates-hero-visual">
                                 <div class="gates-hero-decoration"></div>
                                 <div class="gates-logo-display">
-                                    <img src="{{ asset('images/GATES LOGO.png') }}" alt="DOST GATES Logo" class="gates-hero-logo">
+                                    <img src="{{ asset('images/GATES LOGO.png') }}" alt="DOST GATES Project 1 Logo" class="gates-hero-logo">
                                 </div>
                             </div>
                         </div>
@@ -56,7 +56,7 @@
                 <div class="gates-achieves-section" id="gates-achieves">
                     <div class="gates-achieves-shell">
                         <div class="gates-achieves-header">
-                            <h3 class="section-title split-title">What the GATES Program <span class="split-title-accent">Aims to Achieve</span></h3>
+                            <h3 class="section-title split-title">What GATES Project 1 <span class="split-title-accent">Aims to Achieve</span></h3>
                         </div>
                         <div class="gates-achieves-grid">
                             <div class="gates-achieve-item">
@@ -96,10 +96,10 @@
         <div class="gates-news-section">
             <div class="gates-news-shell">
                 <div class="pes-action-heading gates-news-head">
-                    <span class="eyebrow">GATES P1 NEWS</span>
+                    <span class="eyebrow">GATES PROJECT 1 NEWS</span>
                     <div class="pes-action-heading-copy">
-                        <h2 class="section-title split-title">GATES P1 <span class="split-title-accent">News</span></h2>
-                        <p class="section-copy mb-0">Latest stories and program updates from DOST GATES.</p>
+                        <h2 class="section-title split-title">GATES Project 1 <span class="split-title-accent">News</span></h2>
+                        <p class="section-copy mb-0">Latest stories and program updates from DOST GATES Project 1.</p>
                     </div>
                 </div>
 
@@ -140,7 +140,7 @@
                                     @endif
                                 </div>
                                 <div class="pes-action-news-body">
-                                    <div class="pes-action-news-eyebrow">{{ data_get($item, 'eyebrow', 'GATES P1 NEWS') }}</div>
+                                    <div class="pes-action-news-eyebrow">{{ data_get($item, 'eyebrow', 'GATES PROJECT 1 NEWS') }}</div>
                                     <h3 class="pes-action-news-title">{{ data_get($item, 'title') }}</h3>
                                     <div class="pes-action-news-date">{{ optional(data_get($item, 'date'))->format('F d, Y') }}</div>
                                     <p class="pes-action-news-summary">{{ data_get($item, 'summary') }}</p>
@@ -157,8 +157,8 @@
                         </article>
                     @empty
                         <div class="pes-action-empty-state gates-news-empty-state">
-                            <strong>No GATES P1 News yet.</strong>
-                            <span>Stories published from DOST GATES admin will appear here.</span>
+                            <strong>No GATES Project 1 news yet.</strong>
+                            <span>Stories published from the DOST GATES Project 1 admin workspace will appear here.</span>
                         </div>
                     @endforelse
                 </div>
@@ -195,7 +195,7 @@
                     </div>
 
                     <div class="pes-action-modal-content">
-                        <div class="pes-action-modal-eyebrow">{{ data_get($item, 'eyebrow', 'GATES P1 NEWS') }}</div>
+                        <div class="pes-action-modal-eyebrow">{{ data_get($item, 'eyebrow', 'GATES PROJECT 1 NEWS') }}</div>
                         <h3 class="pes-action-modal-title">{{ data_get($item, 'title') }}</h3>
                         @if ($formattedDate)
                             <div class="pes-action-modal-date">{{ $formattedDate }}</div>
@@ -221,14 +221,14 @@
 
             <div class="section-header whats-new-header gates-whats-new-header">
                 <div>
-                    <div class="whats-new-kicker gates-whats-new-kicker">GATES LIVE UPDATES</div>
-                    <h2 class="section-title split-title">What's <span class="split-title-accent">New in GATES</span></h2>
-                    <p class="section-copy mb-0">Latest GATES issuances, projects, and presentations moving across the portal in real time.</p>
+                    <div class="whats-new-kicker gates-whats-new-kicker">GATES PROJECT 1 LIVE UPDATES</div>
+                    <h2 class="section-title split-title">What's <span class="split-title-accent">New in GATES Project 1</span></h2>
+                    <p class="section-copy mb-0">Latest GATES Project 1 issuances, projects, and presentations moving across the portal in real time.</p>
                 </div>
             </div>
 
             @if ($gatesLatestItems->isNotEmpty())
-                <div class="whats-new-marquee gates-whats-new-marquee" aria-label="Latest GATES updates">
+                <div class="whats-new-marquee gates-whats-new-marquee" aria-label="Latest GATES Project 1 updates">
                     <div class="whats-new-track gates-whats-new-track">
                         @foreach ($gatesLatestItems->concat($gatesLatestItems) as $item)
                             <a class="whats-new-card gates-whats-new-card" href="{{ $item['url'] }}">
@@ -244,7 +244,7 @@
                 </div>
             @else
                 <div class="pes-action-empty-state gates-news-empty-state mt-3">
-                    <strong>No GATES updates yet.</strong>
+                    <strong>No GATES Project 1 updates yet.</strong>
                     <span>Latest project, issuance, and video updates will appear here.</span>
                 </div>
             @endif
@@ -260,7 +260,7 @@
                     <div>
                         <span class="eyebrow">Project Library</span>
                         <h3 class="section-title split-title mb-2">Browse by <span class="split-title-accent">Category</span></h3>
-                        <p class="section-copy mb-0">Explore GATES projects, issuances, and video presentations organized by category.</p>
+                        <p class="section-copy mb-0">Explore GATES Project 1 projects, issuances, and video presentations organized by category.</p>
                     </div>
                 </div>
 

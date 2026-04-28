@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AiSetting;
 use App\Models\ContactMessage;
 use App\Models\DxItem;
+use App\Models\DxRoadmapItem;
 use App\Models\GatesProject;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
@@ -39,6 +40,7 @@ class PortalController extends Controller
         $divisions = $this->organizationDivisions();
         $dxCoreDomains = $this->dxCoreDomains();
         $dxSubPrograms = $this->dxSubPrograms();
+        $dxRoadmapItems = DxRoadmapItem::query()->where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
         $categories = IssuanceCategory::query()->orderBy('name')->get();
         if ($categories->isEmpty()) {
             $categories = collect($this->defaultIssuanceCategories())->map(fn (string $name) => (object) ['name' => $name]);
@@ -133,6 +135,15 @@ class PortalController extends Controller
                 'url' => '#',
                 'icon' => 'bi-easel2',
             ],
+            [
+                'type' => 'Projects',
+                'title' => 'PES Project Portfolio Snapshot',
+                'summary' => 'A sample project collection for implementation briefs, portfolio tracking, and supporting project references.',
+                'division' => 'Planning and Evaluation Service',
+                'date' => 'Jan 05, 2026',
+                'url' => '#',
+                'icon' => 'bi-kanban',
+            ],
         ]);
 
         $resourceCollections = $this->resourceCollections($materials);
@@ -148,6 +159,7 @@ class PortalController extends Controller
             'divisions' => $divisions,
             'dxCoreDomains' => $dxCoreDomains,
             'dxSubPrograms' => $dxSubPrograms,
+            'dxRoadmapItems' => $dxRoadmapItems,
             'materialTypes' => $materialTypes,
             'categories' => $categories,
             'dxDomains' => $dxItems->where('category', 'domain')->values(),
@@ -299,7 +311,7 @@ class PortalController extends Controller
         })->values();
 
         return view('portal.gates.show', [
-            'title' => $gatesCollection['label'].' - DOST GATES',
+            'title' => $gatesCollection['label'].' - DOST GATES Project 1',
             'gatesCollection' => $gatesCollection,
             'gatesCollections' => $gatesCollections,
             'gatesProjects' => $filteredProjects,
@@ -397,6 +409,17 @@ class PortalController extends Controller
                 'page_copy' => 'No presentations have been uploaded yet.',
                 'artwork' => 'slides',
             ],
+            [
+                'slug' => 'projects',
+                'label' => 'Projects',
+                'filter' => 'Projects',
+                'anchor' => 'materials-projects',
+                'icon' => 'bi-kanban',
+                'eyebrow' => 'Projects',
+                'description' => 'Project files, implementation references, and portfolio support materials.',
+                'page_copy' => 'No project files have been uploaded yet.',
+                'artwork' => 'projects',
+            ],
         ])->map(function (array $collection) use ($materials) {
             $collection['count'] = $materials->filter(fn (Material $item) => $this->matchesResourceCollection($item, $collection))->count();
 
@@ -413,8 +436,8 @@ class PortalController extends Controller
                 'anchor' => 'gates-projects',
                 'icon' => 'bi-briefcase',
                 'eyebrow' => 'Project',
-                'description' => 'GATES program projects and initiatives.',
-                'page_copy' => 'No GATES projects have been uploaded yet.',
+                'description' => 'GATES Project 1 program projects and initiatives.',
+                'page_copy' => 'No GATES Project 1 projects have been uploaded yet.',
             ],
             [
                 'slug' => 'issuances',
@@ -423,8 +446,8 @@ class PortalController extends Controller
                 'anchor' => 'gates-issuances',
                 'icon' => 'bi-file-earmark-text',
                 'eyebrow' => 'Issuance',
-                'description' => 'GATES advisories, memoranda, and official issuances.',
-                'page_copy' => 'No GATES issuances have been uploaded yet.',
+                'description' => 'GATES Project 1 advisories, memoranda, and official issuances.',
+                'page_copy' => 'No GATES Project 1 issuances have been uploaded yet.',
             ],
             [
                 'slug' => 'video-presentations',
@@ -433,8 +456,8 @@ class PortalController extends Controller
                 'anchor' => 'gates-videos',
                 'icon' => 'bi-play-circle',
                 'eyebrow' => 'Video',
-                'description' => 'GATES video presentations and demos.',
-                'page_copy' => 'No GATES video presentations have been uploaded yet.',
+                'description' => 'GATES Project 1 video presentations and demos.',
+                'page_copy' => 'No GATES Project 1 video presentations have been uploaded yet.',
             ],
         ])->map(function (array $collection) use ($gatesProjects) {
             $collection['count'] = $gatesProjects->filter(fn (GatesProject $item) => $this->matchesGatesCollection($item, $collection))->count();
@@ -513,6 +536,7 @@ class PortalController extends Controller
                     'domain_label' => $item->parent?->title ?: ($item->domain_key === 'other' ? 'Others' : Str::headline($item->domain_key)),
                     'title' => $item->title,
                     'description' => $item->description,
+                    'icon' => $item->icon ?: $this->defaultDxProgramIcon($item),
                     'accent' => 'cyan',
                     'projects' => $item->children->map(fn (DxItem $project) => [
                         'slug' => $project->slug,
@@ -534,6 +558,26 @@ class PortalController extends Controller
         };
     }
 
+    private function defaultDxProgramIcon(DxItem $item): string
+    {
+        $slug = Str::lower($item->slug ?? '');
+        $title = Str::lower($item->title ?? '');
+
+        return match (true) {
+            str_contains($slug, 'govern') || str_contains($title, 'govern') => 'bi-diagram-3',
+            str_contains($slug, 'data') || str_contains($title, 'data') => 'bi-database',
+            str_contains($slug, 'platform') || str_contains($title, 'platform') => 'bi-window-stack',
+            str_contains($slug, 'service') || str_contains($title, 'service') => 'bi-grid-1x2',
+            str_contains($slug, 'security') || str_contains($title, 'security') => 'bi-shield-lock',
+            str_contains($slug, 'workforce') || str_contains($title, 'capability') || str_contains($title, 'people') => 'bi-people',
+            str_contains($slug, 'process') || str_contains($title, 'process') => 'bi-gear-wide-connected',
+            str_contains($slug, 'innovation') || str_contains($title, 'innovation') => 'bi-stars',
+            $item->domain_key === 'people' => 'bi-people',
+            $item->domain_key === 'process' => 'bi-diagram-3',
+            default => 'bi-cpu',
+        };
+    }
+
     private function matchesResourceCollection(Material $item, array $collection): bool
     {
         $type = Str::lower($item->type);
@@ -550,6 +594,9 @@ class PortalController extends Controller
                 || str_contains($type, 'deck')
                 || str_contains($type, 'video')
                 || str_contains($type, 'infographic'),
+            'projects' => str_contains($type, 'project')
+                || str_contains($title, 'project')
+                || str_contains($title, 'portfolio'),
             default => false,
         };
     }
@@ -583,9 +630,9 @@ class PortalController extends Controller
 
                 return [
                     'id' => 'gates-news-'.$item->id,
-                    'eyebrow' => $item->news_eyebrow ?: 'GATES P1 NEWS',
+                    'eyebrow' => $item->news_eyebrow ?: 'GATES PROJECT 1 NEWS',
                     'title' => $item->title,
-                    'summary' => Str::limit((string) ($item->news_summary ?: $item->description ?: 'Read the latest GATES P1 update.'), 130),
+                    'summary' => Str::limit((string) ($item->news_summary ?: $item->description ?: 'Read the latest GATES Project 1 update.'), 130),
                     'content' => $item->news_content ?: $item->description ?: 'No full story has been added yet for this update.',
                     'date' => $item->date,
                     'image_url' => $imageUrl,
@@ -607,22 +654,22 @@ class PortalController extends Controller
         return collect([
             [
                 'id' => 'gates-news-demo-1',
-                'eyebrow' => 'GATES P1 NEWS',
-                'title' => 'GATES Program Kickoff Briefing',
+                'eyebrow' => 'GATES PROJECT 1 NEWS',
+                'title' => 'GATES Project 1 Kickoff Briefing',
                 'summary' => 'Initial alignment session on geospatial priorities, implementation timeline, and inter-office coordination.',
-                'content' => 'This is sample content for GATES P1 News. Admin can replace this by adding a record under DOST GATES > GATES P1 News in the admin portal.',
+                'content' => 'This is sample content for GATES Project 1 News. Admin can replace this by adding a record under the GATES Project 1 workspace in the admin portal.',
                 'date' => now()->subDays(4),
                 'image_url' => asset('images/GATES LOGO.png'),
-                'image_alt' => 'GATES Program Kickoff Briefing',
+                'image_alt' => 'GATES Project 1 Kickoff Briefing',
                 'story_url' => null,
                 'accent' => 'cyan',
             ],
             [
                 'id' => 'gates-news-demo-2',
-                'eyebrow' => 'GATES P1 NEWS',
+                'eyebrow' => 'GATES PROJECT 1 NEWS',
                 'title' => 'Data Harmonization Workshop',
                 'summary' => 'Teams reviewed data standards and prepared baseline mapping templates for pilot deployment.',
-                'content' => 'This is sample content for GATES P1 News. Add your official story and attachment in admin to publish your real update here.',
+                'content' => 'This is sample content for GATES Project 1 News. Add your official story and attachment in admin to publish your real update here.',
                 'date' => now()->subDays(10),
                 'image_url' => asset('images/GATES LOGO.png'),
                 'image_alt' => 'Data Harmonization Workshop',
@@ -631,10 +678,10 @@ class PortalController extends Controller
             ],
             [
                 'id' => 'gates-news-demo-3',
-                'eyebrow' => 'GATES P1 NEWS',
+                'eyebrow' => 'GATES PROJECT 1 NEWS',
                 'title' => 'Pilot Dashboard Preview',
                 'summary' => 'A preview of the dashboard experience was presented with initial geospatial layers and analytics blocks.',
-                'content' => 'This is sample content for GATES P1 News. Once admin publishes real GATES P1 News entries, these demo cards will automatically disappear.',
+                'content' => 'This is sample content for GATES Project 1 News. Once admin publishes real GATES Project 1 news entries, these demo cards will automatically disappear.',
                 'date' => now()->subDays(16),
                 'image_url' => asset('images/GATES LOGO.png'),
                 'image_alt' => 'Pilot Dashboard Preview',
@@ -649,6 +696,7 @@ class PortalController extends Controller
         $normalized = Str::lower(trim($type));
 
         return str_contains($normalized, 'p1 news')
+            || str_contains($normalized, 'project 1 news')
             || str_contains($normalized, 'gates p1 news')
             || (str_contains($normalized, 'news') && str_contains($normalized, 'gates'));
     }
@@ -770,7 +818,7 @@ class PortalController extends Controller
             $divisionSummary !== '' ? 'Current PES divisions: '.$divisionSummary.'.' : null,
             $dxDomains !== '' ? 'DOST DX core domains: '.$dxDomains.'.' : null,
             $dxPrograms !== '' ? 'DOST DX sub-programs: '.$dxPrograms.'.' : null,
-            GatesProject::query()->exists() ? 'DOST GATES project records are also available in the portal.' : null,
+            GatesProject::query()->exists() ? 'DOST GATES Project 1 records are also available in the portal.' : null,
             'Official contact details: DOST Complex, Gen Santos Ave., Bicutan, Taguig City, Philippines; phone +63 (2) 8837-2071 to 82; email pes@dost.gov.ph; office hours Monday to Thursday, 8:00AM to 5:00PM.',
             $sourceLines !== '' ? "Matched portal sources:\n".$sourceLines : 'Matched portal sources: none strongly matched for this question.',
         ]));
@@ -852,7 +900,7 @@ class PortalController extends Controller
 
             return [
                 'score' => $scoreText($summary),
-                'citation' => '[Source: DOST GATES - '.$project->title.']',
+                'citation' => '[Source: DOST GATES Project 1 - '.$project->title.']',
                 'summary' => $summary,
             ];
         });
@@ -943,11 +991,11 @@ class PortalController extends Controller
             $latest = GatesProject::query()->orderBy('sort_order')->latest('date')->take(3)->pluck('title')->implode('; ');
 
             return $latest !== ''
-                ? 'DOST GATES currently highlights these projects: '.$latest.'.'
-                : 'DOST GATES project records will appear once they are added by the admin team.';
+                ? 'DOST GATES Project 1 currently highlights these projects: '.$latest.'.'
+                : 'DOST GATES Project 1 records will appear once they are added by the admin team.';
         }
 
-        return 'I can help with PES mandates, divisions, issuances, materials, DOST GATES, and DOST DX updates.';
+        return 'I can help with PES mandates, divisions, issuances, materials, DOST GATES Project 1, and DOST DX updates.';
     }
 
     private function recordWebsiteVisit(Request $request): void

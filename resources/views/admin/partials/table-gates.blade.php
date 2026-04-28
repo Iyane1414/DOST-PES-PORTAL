@@ -13,9 +13,9 @@
             @php
                 $gateRows = ($workspaceGatesProjects ?? $gatesProjects)->values();
                 $emptyStateLabel = match ($activeTab ?? '') {
-                    'gates-issuances' => 'GATES issuances',
-                    'gates-news' => 'GATES P1 news',
-                    default => 'GATES projects and videos',
+                    'gates-issuances' => 'GATES Project 1 issuances',
+                    'gates-news' => 'GATES Project 1 news',
+                    default => 'GATES Project 1 projects and videos',
                 };
             @endphp
             @foreach ($gateRows as $item)

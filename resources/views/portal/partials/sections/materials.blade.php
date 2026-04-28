@@ -8,7 +8,7 @@
                             <div class="materials-header-copy">
                                 <span class="materials-kicker">Knowledge Library</span>
                                 <h2 class="section-title materials-title split-title">PES <span class="split-title-accent">Materials</span></h2>
-                                <p class="section-copy materials-copy">Policies, reports, surveys, and presentations organized in one refined browsing space for PES references.</p>
+                                <p class="section-copy materials-copy">Policies, reports, surveys, projects, and presentations organized in one refined browsing space for PES references.</p>
                             </div>
                         </div>
                     </div>

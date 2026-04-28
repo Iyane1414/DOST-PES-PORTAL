@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('gates_projects', function (Blueprint $table): void {
-            $table->string('news_eyebrow', 100)->nullable()->after('type');
+            $table->string('news_eyebrow', 100)->nullable()->after('code');
             $table->text('news_summary')->nullable()->after('description');
             $table->longText('news_content')->nullable()->after('news_summary');
             $table->string('news_link_url')->nullable()->after('url');

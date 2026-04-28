@@ -9,10 +9,10 @@
             <div class="container">
                 <a class="gates-page-back repository-page-back" href="{{ route('portal.home') }}#dost-gates">
                     <i class="bi bi-arrow-left"></i>
-                    <span>Back to GATES</span>
+                    <span>Back to GATES Project 1</span>
                 </a>
 
-                <div class="gates-page-kicker repository-page-kicker">DOST GATES</div>
+                <div class="gates-page-kicker repository-page-kicker">DOST GATES Project 1</div>
                 <h1 class="gates-page-title repository-page-title">{{ $gatesCollection['label'] }}</h1>
                 <div class="gates-page-count repository-page-count">{{ $totalGatesProjectsCount }} items found</div>
                 <p class="gates-page-description repository-page-description">{{ $gatesCollection['description'] }}</p>

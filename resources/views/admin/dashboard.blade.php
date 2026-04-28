@@ -13,25 +13,25 @@
         'materials' => [
             'label' => 'Materials',
             'section_title' => 'Add New Material',
-            'section_copy' => 'Manage videos, infographics, presentations, and supporting resources.',
+            'section_copy' => 'Manage policies, reports, surveys, projects, presentations, and supporting resources.',
             'icon' => 'bi-collection-play',
         ],
         'gates-projects' => [
-            'label' => 'DOST GATES Projects',
-            'section_title' => 'Add GATES Project',
-            'section_copy' => 'Manage DOST GATES project and video presentation files shown on the public portal.',
+            'label' => 'DOST GATES Project 1 Projects',
+            'section_title' => 'Add GATES Project 1 File',
+            'section_copy' => 'Manage DOST GATES Project 1 project and video presentation files shown on the public portal.',
             'icon' => 'bi-folder',
         ],
         'gates-issuances' => [
-            'label' => 'DOST GATES Issuances',
-            'section_title' => 'Add GATES Issuance',
-            'section_copy' => 'Manage issuances published under the DOST GATES workspace.',
+            'label' => 'DOST GATES Project 1 Issuances',
+            'section_title' => 'Add GATES Project 1 Issuance',
+            'section_copy' => 'Manage issuances published under the DOST GATES Project 1 workspace.',
             'icon' => 'bi-file-earmark-text',
         ],
         'gates-news' => [
-            'label' => 'DOST GATES P1 News',
+            'label' => 'DOST GATES Project 1 News',
             'section_title' => 'Add News Story',
-            'section_copy' => 'Manage GATES P1 stories with thumbnails, summaries, and optional external article links.',
+            'section_copy' => 'Manage GATES Project 1 stories with thumbnails, summaries, and optional external article links.',
             'icon' => 'bi-megaphone',
         ],
         'news' => [
@@ -51,6 +51,12 @@
             'section_title' => 'Add DX Content',
             'section_copy' => 'Update DOST DX domains, sub-programs, and transformation content.',
             'icon' => 'bi-cpu',
+        ],
+        'roadmap' => [
+            'label' => 'DX Roadmap',
+            'section_title' => 'Add Roadmap Stage',
+            'section_copy' => 'Manage the public DOST DX roadmap timeline shown on the portal.',
+            'icon' => 'bi-signpost-split',
         ],
         'categories' => [
             'label' => 'Categories',
@@ -78,6 +84,7 @@
     $isEditingGates = isset($selectedGatesProject) && $selectedGatesProject;
     $isEditingNews = isset($selectedNews) && $selectedNews;
     $isEditingDx = isset($selectedDxItem) && $selectedDxItem;
+    $isEditingRoadmap = isset($selectedRoadmapItem) && $selectedRoadmapItem;
     $isGatesWorkspace = in_array($activeTab, ['gates-projects', 'gates-issuances', 'gates-news'], true);
     $gatesTypeByTab = [
         'gates-projects' => 'project_library',
@@ -87,7 +94,7 @@
     $gatesLabelByTab = [
         'gates-projects' => 'Project / Video Presentation',
         'gates-issuances' => 'Issuance',
-        'gates-news' => 'GATES P1 News',
+        'gates-news' => 'GATES Project 1 News',
     ];
     $activeGatesType = $gatesTypeByTab[$activeTab] ?? 'project_library';
     $activeGatesLabel = $gatesLabelByTab[$activeTab] ?? 'Project / Video Presentation';
@@ -235,6 +242,7 @@
                                                 <option value="Policy" @selected(old('type', $selectedMaterial->type ?? '') === 'Policy')>Policy</option>
                                                 <option value="Annual Report" @selected(old('type', $selectedMaterial->type ?? '') === 'Annual Report')>Annual Report</option>
                                                 <option value="R&D Survey" @selected(old('type', $selectedMaterial->type ?? '') === 'R&D Survey')>R&amp;D Survey</option>
+                                                <option value="Projects" @selected(old('type', $selectedMaterial->type ?? '') === 'Projects')>Projects</option>
                                                 <option value="Presentation" @selected(old('type', $selectedMaterial->type ?? '') === 'Presentation')>Presentation</option>
                                             </select>
                                         </div>
@@ -345,7 +353,7 @@
                                         <div class="col-md-4">
                                             <div class="admin-issuance-field">
                                                 <label class="form-label">Story Label</label>
-                                                <input class="form-control" type="text" name="eyebrow" value="{{ old('eyebrow', $selectedGatesProject->news_eyebrow ?? 'GATES P1 NEWS') }}" placeholder="Featured, Event, Update..." required>
+                                                <input class="form-control" type="text" name="eyebrow" value="{{ old('eyebrow', $selectedGatesProject->news_eyebrow ?? 'GATES PROJECT 1 NEWS') }}" placeholder="Featured, Event, Update..." required>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -367,7 +375,7 @@
                                         <div class="col-12">
                                             <div class="admin-issuance-field">
                                                 <label class="form-label">Headline</label>
-                                                <input class="form-control" type="text" name="title" value="{{ old('title', $selectedGatesProject->title ?? '') }}" placeholder="Enter GATES P1 news headline" required>
+                                                <input class="form-control" type="text" name="title" value="{{ old('title', $selectedGatesProject->title ?? '') }}" placeholder="Enter GATES Project 1 news headline" required>
                                             </div>
                                         </div>
                                         <div class="col-12">
@@ -726,22 +734,43 @@
                                 </form>
                             @endif
 
-                            @if ($activeTab === 'ai')
-                                <form method="POST" action="{{ route('admin.ai-settings.store') }}" class="row g-3">@csrf
-                                    <div class="col-12">
-                                        <label class="form-label fw-semibold">System Prompt</label>
-                                        <textarea class="form-control" name="system_prompt" rows="6" required>{{ old('system_prompt', $aiSetting?->system_prompt ?? 'You are the PES AI Assistant for the DOST Planning and Evaluation Service. Answer only with PES-related information found in the provided portal context. Be concise, factual, and helpful. Use citation-style references from the supplied source list when possible.') }}</textarea>
+                            @if ($activeTab === 'roadmap')
+                                <form method="POST" action="{{ $isEditingRoadmap ? route('admin.dx-roadmap.update', $selectedRoadmapItem) : route('admin.dx-roadmap.store') }}" class="row g-3">@csrf
+                                    @if ($isEditingRoadmap)
+                                        @method('PUT')
+                                    @endif
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Year Label</label>
+                                        <input class="form-control" type="text" name="year_label" value="{{ old('year_label', $selectedRoadmapItem->year_label ?? '') }}" placeholder="2026-2028" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Sort Order</label>
+                                        <input class="form-control" type="number" name="sort_order" min="0" value="{{ old('sort_order', $selectedRoadmapItem->sort_order ?? 0) }}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold">Visibility</label>
+                                        <select class="form-select" name="is_active">
+                                            <option value="1" @selected((string) old('is_active', isset($selectedRoadmapItem) ? (int) $selectedRoadmapItem->is_active : 1) === '1')>Visible</option>
+                                            <option value="0" @selected((string) old('is_active', isset($selectedRoadmapItem) ? (int) $selectedRoadmapItem->is_active : 1) === '0')>Hidden</option>
+                                        </select>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label fw-semibold">Scope Prompt</label>
-                                        <textarea class="form-control" name="scope_prompt" rows="4" required>{{ old('scope_prompt', $aiSetting?->scope_prompt ?? 'Only answer questions about PES mandates, divisions, issuances, materials, contact details, DOST DX, and information clearly present in the portal database context. If a question is outside PES scope, refuse briefly.') }}</textarea>
+                                        <label class="form-label fw-semibold">Stage Title</label>
+                                        <input class="form-control" type="text" name="title" value="{{ old('title', $selectedRoadmapItem->title ?? '') }}" placeholder="Modernize & Expand" required>
                                     </div>
                                     <div class="col-12">
-                                        <label class="form-label fw-semibold">Refusal Message</label>
-                                        <input class="form-control" type="text" name="refusal_message" value="{{ old('refusal_message', $aiSetting?->refusal_message ?? 'I can only help with PES-related information available in this portal, such as mandates, divisions, issuances, materials, contact details, and DOST DX content.') }}" required>
+                                        <label class="form-label fw-semibold">Description</label>
+                                        <textarea class="form-control" name="description" rows="4" required>{{ old('description', $selectedRoadmapItem->description ?? '') }}</textarea>
                                     </div>
                                     <div class="col-12">
-                                        <button class="btn btn-accent rounded-pill px-4" type="submit">Save AI Settings</button>
+                                        <label class="form-label fw-semibold">Milestones</label>
+                                        <textarea class="form-control" name="milestones" rows="5" placeholder="One milestone per line">{{ old('milestones', collect($selectedRoadmapItem->milestones ?? [])->implode(PHP_EOL)) }}</textarea>
+                                    </div>
+                                    <div class="col-12 d-flex flex-wrap gap-2">
+                                        <button class="btn btn-accent rounded-pill px-4" type="submit">{{ $isEditingRoadmap ? 'Update Roadmap Stage' : 'Save Roadmap Stage' }}</button>
+                                        @if ($isEditingRoadmap)
+                                            <a class="btn btn-outline-secondary rounded-pill px-4" href="{{ route('admin.workspace', ['tab' => 'roadmap']) }}">Cancel Edit</a>
+                                        @endif
                                     </div>
                                 </form>
                             @endif
@@ -763,13 +792,8 @@
                                 @include('admin.partials.table-categories')
                             @endif
 
-                            @if ($activeTab === 'ai')
-                                <div class="admin-side-list">
-                                    <div class="admin-side-item">
-                                        <div class="admin-side-item-title">How This Works</div>
-                                        <div class="admin-side-item-copy">The assistant uses your OpenAI key, your admin-managed prompts, and portal records from issuances, materials, divisions, DOST DX, and contact details. It now prefers PES-only answers and adds source-style citations based on matched records.</div>
-                                    </div>
-                                </div>
+                            @if ($activeTab === 'roadmap')
+                                @include('admin.partials.table-roadmap')
                             @endif
                         </div>
                     @endif

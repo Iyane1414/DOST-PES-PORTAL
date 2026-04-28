@@ -12,11 +12,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageTransitionLabel = document.querySelector('[data-page-transition-label]');
     const scrollScenes = Array.from(document.querySelectorAll('[data-scroll-scene]'));
     const currentPageTheme = body?.dataset.pageTheme || 'pes';
+    const intro = document.getElementById('portal-intro');
+    const introStage = document.getElementById('portal-intro-stage');
+    const introLogoWrap = introStage instanceof HTMLElement ? introStage.querySelector('.portal-intro-logo-wrap') : null;
+    const introParticles = document.getElementById('portal-intro-particles');
+    const introProgressFill = document.getElementById('portal-intro-progress-fill');
+    const introProgressValue = document.getElementById('portal-intro-progress-value');
+    const introLoadingLabel = document.getElementById('portal-intro-loading-label');
+    const introStorageKey = 'pes-home-intro-seen-session';
+    let introAlreadySeen = false;
+    try {
+        introAlreadySeen = sessionStorage.getItem(introStorageKey) === '1';
+    } catch (error) {
+        introAlreadySeen = false;
+    }
+    const introEnabled = body?.classList.contains('portal-page-home')
+        && intro instanceof HTMLElement
+        && introStage instanceof HTMLElement
+        && !introAlreadySeen;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let scrollTicking = false;
 
-    const applyTheme = (theme) => {
+    let themeAnimationTimer = null;
+
+    const applyTheme = (theme, options = {}) => {
+        const { animate = false } = options;
         root.setAttribute('data-bs-theme', theme);
         localStorage.setItem('pes-theme', theme);
+        root.classList.remove('theme-switching-to-dark', 'theme-switching-to-light');
+        if (themeAnimationTimer) {
+            window.clearTimeout(themeAnimationTimer);
+            themeAnimationTimer = null;
+        }
+        if (animate) {
+            root.classList.add(theme === 'dark' ? 'theme-switching-to-dark' : 'theme-switching-to-light');
+            themeAnimationTimer = window.setTimeout(() => {
+                root.classList.remove('theme-switching-to-dark', 'theme-switching-to-light');
+                themeAnimationTimer = null;
+            }, 1100);
+        }
         if (themeToggle) {
             const isDark = theme === 'dark';
             themeToggle.setAttribute('aria-checked', isDark ? 'true' : 'false');
@@ -35,9 +69,256 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme(savedTheme || (systemDark ? 'dark' : 'light'));
     }
 
+    if (introEnabled) {
+        body.classList.add('intro-active');
+    } else if (intro instanceof HTMLElement) {
+        intro.classList.add('is-hidden');
+        intro.setAttribute('aria-hidden', 'true');
+        intro.style.pointerEvents = 'none';
+    }
+
     themeToggle?.addEventListener('click', () => {
-        applyTheme(root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark');
+        applyTheme(root.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark', { animate: true });
     });
+
+    if (introEnabled) {
+        let introAudioContext = null;
+        let introAudioUnlocked = false;
+        let introDismissed = false;
+        let introReady = false;
+        const introLabels = Array.from(intro.querySelectorAll('.portal-intro-label'));
+        const introLoadingStates = [
+            { progress: 18, label: 'Authenticating systems' },
+            { progress: 42, label: 'Mapping service modules' },
+            { progress: 67, label: 'Initializing solutions' },
+            { progress: 86, label: 'Synchronizing interfaces' },
+            { progress: 100, label: 'System ready' },
+        ];
+
+        const setIntroProgress = (value) => {
+            const normalizedValue = Math.max(0, Math.min(100, Math.round(value)));
+            const progressText = `${normalizedValue}%`;
+
+            if (intro instanceof HTMLElement) {
+                intro.style.setProperty('--intro-progress', progressText);
+            }
+
+            if (introProgressFill instanceof HTMLElement) {
+                introProgressFill.style.width = progressText;
+            }
+
+            if (introProgressValue instanceof HTMLElement) {
+                introProgressValue.textContent = progressText;
+            }
+
+            const state = introLoadingStates.find((item) => normalizedValue <= item.progress) || introLoadingStates[introLoadingStates.length - 1];
+            if (introLoadingLabel instanceof HTMLElement && state) {
+                introLoadingLabel.textContent = state.label;
+            }
+        };
+
+        const completeIntroLoading = () => {
+            introReady = true;
+            intro.classList.add('is-ready');
+            setIntroProgress(100);
+        };
+
+        const startIntroLoading = () => {
+            if (reducedMotion) {
+                completeIntroLoading();
+                return;
+            }
+
+            const startedAt = performance.now();
+            const duration = 4300;
+
+            const tick = (now) => {
+                const elapsed = now - startedAt;
+                const progressValue = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progressValue, 3);
+
+                setIntroProgress(eased * 100);
+
+                if (progressValue < 1) {
+                    window.requestAnimationFrame(tick);
+                    return;
+                }
+
+                completeIntroLoading();
+            };
+
+            window.requestAnimationFrame(tick);
+        };
+
+        const spawnIntroParticles = () => {
+            if (!(introParticles instanceof HTMLElement)) {
+                return;
+            }
+
+            const particleCount = window.innerWidth < 768 ? 18 : 34;
+
+            for (let i = 0; i < particleCount; i += 1) {
+                const particle = document.createElement('span');
+                particle.className = 'portal-intro-particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${50 + (Math.random() * 40)}%`;
+                particle.style.animationDuration = `${7 + (Math.random() * 8)}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particle.style.opacity = `${0.16 + (Math.random() * 0.34)}`;
+                introParticles.appendChild(particle);
+            }
+        };
+
+        const getIntroAudioContext = () => {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) {
+                return null;
+            }
+
+            if (!introAudioContext) {
+                introAudioContext = new AudioContextClass();
+            }
+
+            return introAudioContext;
+        };
+
+        const unlockIntroAudio = async () => {
+            if (introAudioUnlocked) {
+                return getIntroAudioContext();
+            }
+
+            const context = getIntroAudioContext();
+            if (!context) {
+                return null;
+            }
+
+            if (context.state === 'suspended') {
+                try {
+                    await context.resume();
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            introAudioUnlocked = true;
+            return context;
+        };
+
+        const playIntroTone = async (frequency, duration, volume, type = 'sine') => {
+            const context = await unlockIntroAudio();
+            if (!context) {
+                return;
+            }
+
+            const oscillator = context.createOscillator();
+            const gainNode = context.createGain();
+            const now = context.currentTime;
+
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, now);
+            gainNode.gain.setValueAtTime(0.0001, now);
+            gainNode.gain.exponentialRampToValueAtTime(volume, now + 0.04);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(context.destination);
+            oscillator.start(now);
+            oscillator.stop(now + duration + 0.02);
+        };
+
+        const playIntroStartSound = async () => {
+            await playIntroTone(392, 0.45, 0.012, 'sine');
+            window.setTimeout(() => playIntroTone(523.25, 0.52, 0.01, 'triangle'), 90);
+        };
+
+        const dismissIntro = async () => {
+            if (introDismissed || !introReady) {
+                return;
+            }
+
+            introDismissed = true;
+            try {
+                sessionStorage.setItem(introStorageKey, '1');
+            } catch (error) {
+                // Ignore storage failures and continue dismissing the intro.
+            }
+            await playIntroStartSound();
+
+            body.classList.remove('intro-active');
+            intro.classList.add('is-hidden');
+            intro.style.pointerEvents = 'none';
+
+            window.setTimeout(() => {
+                intro.setAttribute('aria-hidden', 'true');
+                const homeTarget = document.getElementById('top');
+                const homeTop = homeTarget instanceof HTMLElement
+                    ? Math.max(window.scrollY + homeTarget.getBoundingClientRect().top, 0)
+                    : 0;
+
+                window.scrollTo({
+                    top: homeTop,
+                    behavior: reducedMotion ? 'auto' : 'smooth',
+                });
+            }, reducedMotion ? 0 : 120);
+        };
+
+        spawnIntroParticles();
+        setIntroProgress(0);
+        startIntroLoading();
+
+        if (!reducedMotion && introStage instanceof HTMLElement && introLogoWrap instanceof HTMLElement) {
+            introStage.addEventListener('pointermove', (event) => {
+                const rect = introStage.getBoundingClientRect();
+                const offsetX = ((event.clientX - rect.left) / rect.width) - 0.5;
+                const offsetY = ((event.clientY - rect.top) / rect.height) - 0.5;
+                const tiltX = offsetX * 12;
+                const tiltY = offsetY * -9;
+                const shiftX = offsetX * 12;
+                const shiftY = offsetY * 9;
+
+                introStage.style.setProperty('--intro-tilt-x', `${tiltX.toFixed(2)}deg`);
+                introStage.style.setProperty('--intro-tilt-y', `${tiltY.toFixed(2)}deg`);
+                introStage.style.setProperty('--intro-shift-x', `${shiftX.toFixed(2)}px`);
+                introStage.style.setProperty('--intro-shift-y', `${shiftY.toFixed(2)}px`);
+
+                introLabels.forEach((label) => {
+                    if (!(label instanceof HTMLElement)) {
+                        return;
+                    }
+
+                    const depth = Number.parseFloat(label.dataset.depth || '1');
+                    const labelX = offsetX * 18 * depth;
+                    const labelY = offsetY * 12 * depth;
+
+                    label.style.setProperty('--intro-label-offset-x', `${labelX.toFixed(2)}px`);
+                    label.style.setProperty('--intro-label-offset-y', `${labelY.toFixed(2)}px`);
+                });
+            });
+
+            introStage.addEventListener('pointerleave', () => {
+                introStage.style.setProperty('--intro-tilt-x', '0deg');
+                introStage.style.setProperty('--intro-tilt-y', '0deg');
+                introStage.style.setProperty('--intro-shift-x', '0px');
+                introStage.style.setProperty('--intro-shift-y', '0px');
+                introLabels.forEach((label) => {
+                    if (!(label instanceof HTMLElement)) {
+                        return;
+                    }
+
+                    label.style.setProperty('--intro-label-offset-x', '0px');
+                    label.style.setProperty('--intro-label-offset-y', '0px');
+                });
+            });
+        }
+
+        intro.addEventListener('pointerdown', () => {
+            unlockIntroAudio();
+        }, { once: true });
+
+        intro.addEventListener('click', () => {
+            dismissIntro();
+        });
+    }
 
     const setPageTransitionTheme = (theme) => {
         if (!(pageTransition instanceof HTMLElement)) {
@@ -100,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const resolveTransitionLabel = (link, theme) => {
         if (!(link instanceof HTMLAnchorElement)) {
-            return theme === 'gates' ? 'DOST GATES' : 'DOST PES';
+            return theme === 'gates' ? 'DOST GATES Project 1' : 'DOST PES';
         }
 
         const explicitLabel = link.dataset.transitionLabel?.trim();
@@ -119,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return text;
         }
 
-        return theme === 'gates' ? 'DOST GATES' : theme === 'dx' ? 'DOST DX' : 'DOST PES';
+        return theme === 'gates' ? 'DOST GATES Project 1' : theme === 'dx' ? 'DOST DX' : 'DOST PES';
     };
 
     const shouldHandlePageTransition = (link, url) => {

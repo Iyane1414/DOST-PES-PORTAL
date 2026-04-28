@@ -8,6 +8,7 @@ use App\Models\AiSetting;
 use App\Models\ContactMessage;
 use App\Models\Division;
 use App\Models\DxItem;
+use App\Models\DxRoadmapItem;
 use App\Models\GatesProject;
 use App\Models\Issuance;
 use App\Models\IssuanceCategory;
@@ -122,7 +123,7 @@ class ResourceController extends Controller
 
         GatesProject::query()->create($this->gatesProjectPayload($data, $fileUrl, $thumbnailPath));
 
-        return $this->redirectWithTab($this->resolveGatesWorkspaceTab($request), 'GATES item saved.');
+        return $this->redirectWithTab($this->resolveGatesWorkspaceTab($request), 'GATES Project 1 item saved.');
     }
 
     public function updateGatesProject(Request $request, GatesProject $gatesProject): RedirectResponse
@@ -148,7 +149,7 @@ class ResourceController extends Controller
 
         $gatesProject->update($this->gatesProjectPayload($data, $url, $thumbnailPath));
 
-        return $this->redirectWithTab($this->resolveGatesWorkspaceTab($request, $gatesProject), 'GATES item updated.');
+        return $this->redirectWithTab($this->resolveGatesWorkspaceTab($request, $gatesProject), 'GATES Project 1 item updated.');
     }
 
     public function destroyGatesProject(Request $request, GatesProject $gatesProject): RedirectResponse
@@ -158,7 +159,7 @@ class ResourceController extends Controller
         $workspaceTab = $this->resolveGatesWorkspaceTab($request, $gatesProject);
         $gatesProject->delete();
 
-        return $this->redirectWithTab($workspaceTab, 'GATES item deleted.');
+        return $this->redirectWithTab($workspaceTab, 'GATES Project 1 item deleted.');
     }
 
     public function storeNews(Request $request): RedirectResponse
@@ -228,6 +229,30 @@ class ResourceController extends Controller
         $this->deleteDxItemTree($dxItem);
 
         return $this->redirectWithTab('dx', 'DX content deleted.');
+    }
+
+    public function storeDxRoadmapItem(Request $request): RedirectResponse
+    {
+        $data = $this->validateDxRoadmapItem($request);
+
+        DxRoadmapItem::query()->create($this->dxRoadmapPayload($data));
+
+        return $this->redirectWithTab('roadmap', 'DX roadmap item saved.');
+    }
+
+    public function updateDxRoadmapItem(Request $request, DxRoadmapItem $dxRoadmapItem): RedirectResponse
+    {
+        $data = $this->validateDxRoadmapItem($request);
+        $dxRoadmapItem->update($this->dxRoadmapPayload($data));
+
+        return $this->redirectWithTab('roadmap', 'DX roadmap item updated.');
+    }
+
+    public function destroyDxRoadmapItem(DxRoadmapItem $dxRoadmapItem): RedirectResponse
+    {
+        $dxRoadmapItem->delete();
+
+        return $this->redirectWithTab('roadmap', 'DX roadmap item deleted.');
     }
 
     public function storeCategory(Request $request): RedirectResponse
@@ -422,6 +447,36 @@ class ResourceController extends Controller
         );
     }
 
+    private function validateDxRoadmapItem(Request $request): array
+    {
+        return $request->validate([
+            'year_label' => ['required', 'string', 'max:50'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:2000'],
+            'milestones' => ['nullable', 'string', 'max:4000'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
+        ]);
+    }
+
+    private function dxRoadmapPayload(array $data): array
+    {
+        $milestones = collect(preg_split('/\r\n|\r|\n/', (string) ($data['milestones'] ?? '')) ?: [])
+            ->map(fn (string $item) => trim($item))
+            ->filter()
+            ->values()
+            ->all();
+
+        return [
+            'year_label' => $data['year_label'],
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'milestones' => $milestones,
+            'sort_order' => (int) ($data['sort_order'] ?? 0),
+            'is_active' => (bool) ($data['is_active'] ?? false),
+        ];
+    }
+
     private function gatesProjectPayload(array $data, ?string $url, ?string $thumbnailPath = null): array
     {
         $isNews = $this->isGatesNewsType($data['type'] ?? '');
@@ -461,6 +516,10 @@ class ResourceController extends Controller
             return 'R&D Survey';
         }
 
+        if (str_contains($normalized, 'project')) {
+            return 'Projects';
+        }
+
         return 'Presentation';
     }
 
@@ -476,8 +535,13 @@ class ResourceController extends Controller
             return 'Issuance';
         }
 
-        if ($normalized === 'gates_p1_news' || str_contains($normalized, 'p1 news') || str_contains($normalized, 'gates news')) {
-            return 'GATES P1 News';
+        if (
+            $normalized === 'gates_p1_news'
+            || str_contains($normalized, 'p1 news')
+            || str_contains($normalized, 'project 1 news')
+            || str_contains($normalized, 'gates news')
+        ) {
+            return 'GATES Project 1 News';
         }
 
         if ($normalized === 'video_presentation' || $normalized === 'video presentation' || str_contains($normalized, 'video')) {
@@ -493,6 +557,7 @@ class ResourceController extends Controller
 
         return $normalized === 'gates_p1_news'
             || str_contains($normalized, 'p1 news')
+            || str_contains($normalized, 'project 1 news')
             || str_contains($normalized, 'gates p1 news');
     }
 
@@ -520,7 +585,12 @@ class ResourceController extends Controller
             return 'gates-issuances';
         }
 
-        if (str_contains($normalized, 'p1 news') || str_contains($normalized, 'gates p1 news') || str_contains($normalized, 'news')) {
+        if (
+            str_contains($normalized, 'p1 news')
+            || str_contains($normalized, 'project 1 news')
+            || str_contains($normalized, 'gates p1 news')
+            || str_contains($normalized, 'news')
+        ) {
             return 'gates-news';
         }
 
